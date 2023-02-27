@@ -9,14 +9,14 @@ Created on Mon Jan  9 10:25:07 2023.
 import numpy as np
 
 
-def get_population_evolution(filepath: str, e_acc: list = list(range(1, 31)),
-                             delimiter: str = ' ') -> list:
+def get_population_evolution(filepath: str, e_acc: list, delimiter: str = ' ',
+                             to_numpy: bool = False) -> list:
     """
     Get population evolution data from a SPARK3D export.
 
     Parameters
     ----------
-    filepat : str
+    filepath : str
         Path to the file to be loaded.
     e_acc : list
         List of accelerating field values in MV/m.

@@ -111,9 +111,41 @@ def get_values(
         d_data: dict, key_data: str, *args, to_numpy: bool = True,
         warn_missing: bool = False, ins_param: bool = False) \
         -> np.array:
-    """Return a n-dim numpy array containing (key_)data sorted by args."""
-    # We get the sorted mapping of data and the unique values for each
-    # parameter
+    """
+    Return a n-dim numpy array containing (key_)data sorted by args.
+
+    Parameters
+    ----------
+    d_data : dict
+        Dict holding all data, as returned by get_parameter_sweep_auto_export.
+    key_data : str
+        Key to the data you want (should be a filename in
+        Export_Parametric/mmdd-xxxxxxx folders).
+    *args : str
+        Keys to against which parameter key_data should be sorted (should be in
+        Parameters.txt).
+    to_numpy : bool, optional
+        Return the data as a numpy array. The default is True.
+    warn_missing : bool, optional
+        Raise a warning if there is no data for some combinations of
+        parameters. The default is False.
+    ins_param : bool, optional
+        Tells if the value of the parameters defined by *args should be
+        INSerted in the first axis. The default is False.
+
+    Raises
+    ------
+    NotImplementedError
+        Raised when the number of *args is too high.
+
+    Returns
+    -------
+    out : np.ndarray
+        Array holding key_data, sorted by combination of parameters (*args).
+        If ins_param, first line of every axis holds parameter value.
+        If not to_numpy, out is converted to a list.
+    """
+    # We get the sorted mapping of data and the unique values for each param
     map_id, d_uniques = full_map_param_to_id(d_data, *args)
 
     # Generate all combinations of parameters
@@ -140,6 +172,7 @@ def get_values(
 
     # We add values of the parameters in the first column, row, for easier data
     # manipulation
+    # FIXME there are more Pythonic ways to do this...
     if ins_param:
         if len(args) == 1:
             out = np.column_stack((_lp[0], out))
@@ -158,7 +191,10 @@ def get_values(
             out = new_out
         else:
             # TODO
-            raise IOError("Param value insertion not implemented for dim>3.")
+            raise NotImplementedError(
+                "Too much parameters.",
+                """Parameter value insertion not implemented for more than 3
+                parameters.""")
 
     if not to_numpy:
         return out.tolist()
