@@ -20,7 +20,10 @@ plt.rcParams["figure.figsize"] = (19.2, 11.24)
 plt.rcParams["figure.dpi"] = 100
 
 
-def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str, **kwargs):
+def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str,
+                        title: str = None, x_label: str = None,
+                        y_label: str = None, yscale: str = None,
+                        l_plot_kwargs: list = None):
     """
     Plot 2D data for every set of parameters.
 
@@ -33,6 +36,19 @@ def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str, **kwargs):
         loader_cst.full_map_param_to_id.
     key_data : str
         Key to the 2D data that you want to plot.
+    title : str, optional
+        Plot title. The default is None.
+    x_label : str, optional
+        x axis label. The default is None.
+    y_label : str, optional
+        y axis label. The default is None.
+    yscale : str, optional
+        Key for set_yscale method. The default is None.
+    l_plot_kwargs : dict or list of dict, optional
+        kwargs for the ax.plot method.
+        If it is a dict, the same kwargs are used for every plot.
+        If it is a list of dicts, it's length must match the length of d_data
+        and map_id.
 
     Returns
     -------
@@ -43,22 +59,29 @@ def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str, **kwargs):
 
     """
     fig, axx = create_fig_if_not_exists(1, sharex=True)
-    if 'title' in kwargs.keys():
-        axx[0].set_title(kwargs['title'], {'fontsize': 10})
-    if 'x_label' in kwargs.keys():
-        axx[-1].set_xlabel(kwargs['x_label'])
+    if title is not None:
+        axx[0].set_title(title, {'fontsize': 10})
+    if x_label is not None:
+        axx[-1].set_xlabel(x_label)
 
     axx = axx[0]
-    if 'y_label' in kwargs.keys():
-        axx.set_ylabel(kwargs['y_label'])
+    if y_label is not None:
+        axx.set_ylabel(y_label)
     axx.grid(True)
 
-    if 'yscale' in kwargs.keys():
-        axx.set_yscale(kwargs['yscale'])
+    if yscale is not None:
+        axx.set_yscale(yscale)
 
-    for _id, val in map_id.items():
+    # No specific plot kwargs
+    if l_plot_kwargs is None:
+        l_plot_kwargs = [{} for _id in map_id.keys()]
+    # All plots have same kwargs
+    elif isinstance(l_plot_kwargs, dict):
+        l_plot_kwargs = [l_plot_kwargs for _id in map_id.keys()]
+
+    for (_id, val), kwargs in zip(map_id.items(), l_plot_kwargs):
         axx.plot(d_data[_id][key_data][:, 0], d_data[_id][key_data][:, 1],
-                 label=val)
+                 label=val, **kwargs)
     axx.legend()
 
     return fig, axx
