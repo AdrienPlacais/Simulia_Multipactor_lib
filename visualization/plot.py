@@ -6,7 +6,7 @@ Created on Mon Feb 27 13:14:58 2023
 @author: placais
 """
 
-import numpy as np
+# import numpy as np
 import matplotlib.pyplot as plt
 # from collections import OrderedDict
 
@@ -33,12 +33,6 @@ def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str, **kwargs):
         loader_cst.full_map_param_to_id.
     key_data : str
         Key to the 2D data that you want to plot.
-    x_label : str, optional
-        x label. The default is None.
-    y_label : str, optional
-        y label. The default is None.
-    labels : dict, optional
-        Dict of strings for every parameter. The default is None.
 
     Returns
     -------
@@ -49,6 +43,8 @@ def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str, **kwargs):
 
     """
     fig, axx = create_fig_if_not_exists(1, sharex=True)
+    if 'title' in kwargs.keys():
+        axx[0].set_title(kwargs['title'], {'fontsize': 10})
     if 'x_label' in kwargs.keys():
         axx[-1].set_xlabel(kwargs['x_label'])
 
@@ -59,9 +55,6 @@ def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str, **kwargs):
 
     if 'yscale' in kwargs.keys():
         axx.set_yscale(kwargs['yscale'])
-
-    if 'title' in kwargs.keys():
-        axx.set_title(kwargs['title'], {'fontsize': 10})
 
     for _id, val in map_id.items():
         axx.plot(d_data[_id][key_data][:, 0], d_data[_id][key_data][:, 1],
@@ -74,19 +67,29 @@ def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str, **kwargs):
 # =============================================================================
 # Generic plot helpers
 # =============================================================================
-def create_fig_if_not_exists(axnum, sharex=False, num=1, clean_fig=False):
+def create_fig_if_not_exists(axnum: int, sharex=False, num=1, clean_fig=False):
     """
     Check if figures were already created, create it if not.
 
     Parameters
     ----------
-    axnum : list of int or int
+    axnum : int or list of int
         Axes indexes as understood by fig.add_subplot or number of desired
         axes.
-    sharex : boolean, opt
-        If x axis should be shared.
-    num : int, opt
-        Fig number.
+    sharex : boolean, optional
+        If x axis should be shared. The default is False.
+    num : int, optional
+        Fig number. The default is 1.
+    clean_fig : bool, optional
+        To tell if the Figure should be cleaned from previous plots. The
+        default is False.
+
+    Return
+    ------
+    fig : matplotlib.figure
+        Figure holding axes.
+    axlist : list of matplotlib.Axes.axes
+        Axes of Figure.
     """
     if isinstance(axnum, int):
         # We make a one-column, axnum rows figure
