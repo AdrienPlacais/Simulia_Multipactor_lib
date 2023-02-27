@@ -5,18 +5,15 @@ Created on Mon Jan  9 10:25:07 2023.
 
 @author: placais
 
-This module holds all the functions to import CST data. There is two main
-functions:
-    - get_parameter_sweep_auto_export works with the Template Based
-      Post-Processing 'Save Export Folder during Parameter Sweep' (one folder
-      per set of parameters, in which several quantities may be stored).
-    - get_parameter_sweep_manual works with the manual Import/Export button
-      (one file per quantity, set of parameters are written in comments).
-
-@TODO: evaluate expressions such as "param2 = 2 * param1"
+This module holds all the functions to import CST data. The main function is
+get_parameter_sweep_auto_export. It works with the Template Based
+Post-Processing 'Save Export Folder during Parameter Sweep' (one folder per set
+of parameters, in which several quantities may be stored).
 
 Needs Python 3.7+ as uses ordering of dicts
 https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
+
+@TODO: evaluate expressions such as "param2 = 2 * param1"
 """
 
 import os
@@ -247,81 +244,3 @@ def _parameters_file_to_dict(filepath: str) -> dict:
             continue
 
     return d_parameters
-
-
-def get_parameter_sweep_manual(filepath: str, key: str = None,
-                               delimiter: str = '\t') -> list:
-    """
-    Get parameter sweep data from a CST manual ASCII export.
-
-    Tables > 1D Results > what you want. Then
-    Post-Processing ribbon > Import/Export > Plot Data (ASCII)
-
-    Parameters
-    ----------
-    filepat : str
-        Path to the file to be loaded.
-    key : str, optional
-        Sort the parameters dict by a key.
-    delimiter : str, optional
-        Delimiter between columns
-
-    Returns
-    -------
-    data : list
-        Holds evolution of the data with time.
-    parameters : list of dict or np.array
-        Dictionary of all parameters. If key is provided, it returns the value
-        of this key instead.
-    """
-    data = []
-    data_this_param = []
-    parameters = []
-
-    with open(filepath, 'r') as file:
-        for line in file:
-            if line[:11] == "#Parameters":
-                parameters.append(_str_to_dict(line))
-
-                # If not first iteration, save data from preceedent iteration
-                if len(data_this_param) > 0:
-                    data.append(np.array(data_this_param))
-                data_this_param = []
-
-            if line[0] == '#':
-                continue
-
-            data_this_param.append([float(line.split(delimiter)[0]),
-                                    float(line.split(delimiter)[1])])
-
-    # Handle last data of array
-    data.append(np.array(data_this_param))
-
-    # Check that key is here
-    if not(key is None or key in parameters[0]):
-        print(f"Warning! key {key} not found in the file.")
-        print("Script will continue anyway.")
-        key = None
-
-    # We return only the value of the desired key
-    if key is not None:
-        parameters = np.array([param[key] for param in parameters])
-        idx = np.argsort(parameters)
-
-        parameters = parameters[idx]
-        data = [data[i] for i in idx]
-
-    return data, parameters
-
-
-def _str_to_dict(parameters: str) -> dict:
-    """Convert the string Parameters to a dict."""
-    # Remove useless
-    parameters = parameters[14:]
-    parameters = parameters.replace('=', '" : ')
-    parameters = parameters.replace('; ', ', "')
-    parameters = parameters.replace('{', '{"')
-
-    # Convert string into actual dict
-    parameters = ast.literal_eval(parameters)
-    return parameters

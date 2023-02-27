@@ -87,6 +87,71 @@ def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str,
     return fig, axx
 
 
+def plot_dict_of_floats(d_data: dict, map_id: dict, key_data: str,
+                        title: str = None, x_label: str = None,
+                        y_label: str = None, yscale: str = None,
+                        l_plot_kwargs: list = None):
+    """
+    Plot 1D data as a function of the first parameter, for every other params.
+
+    Parameters
+    ----------
+    d_data : dict
+        Data as returned by loader_cst.get_parameter_sweep_auto_export.
+    map_id : dict
+        Links every d_data key to parameter values, as returned by
+        loader_cst.full_map_param_to_id.
+    key_data : str
+        Key to the 2D data that you want to plot.
+    title : str, optional
+        Plot title. The default is None.
+    x_label : str, optional
+        x axis label. The default is None.
+    y_label : str, optional
+        y axis label. The default is None.
+    yscale : str, optional
+        Key for set_yscale method. The default is None.
+    l_plot_kwargs : dict or list of dict, optional
+        kwargs for the ax.plot method.
+        If it is a dict, the same kwargs are used for every plot.
+        If it is a list of dicts, it's length must match the length of d_data
+        and map_id.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        Figure plotted.
+    axx : matplotlib.axes.Axes
+        Plotted axe.
+
+    """
+    fig, axx = create_fig_if_not_exists(2, sharex=True)
+    if title is not None:
+        axx[0].set_title(title, {'fontsize': 10})
+    if x_label is not None:
+        axx[-1].set_xlabel(x_label)
+
+    axx = axx[0]
+    if y_label is not None:
+        axx.set_ylabel(y_label)
+    axx.grid(True)
+
+    if yscale is not None:
+        axx.set_yscale(yscale)
+
+    # No specific plot kwargs
+    if l_plot_kwargs is None:
+        l_plot_kwargs = [{} for _id in map_id.keys()]
+    # All plots have same kwargs
+    elif isinstance(l_plot_kwargs, dict):
+        l_plot_kwargs = [l_plot_kwargs for _id in map_id.keys()]
+
+    for (_id, val), kwargs in zip(map_id.items(), l_plot_kwargs):
+        axx.plot(d_data[_id][key_data][:, 0], d_data[_id][key_data][:, 1],
+                 label=val, **kwargs)
+    axx.legend()
+
+    return fig, axx
 # =============================================================================
 # Generic plot helpers
 # =============================================================================
