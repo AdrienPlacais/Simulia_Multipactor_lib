@@ -15,7 +15,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/   commented out for Spark3DBatch
 lib64/
 parts/
 sdist/
