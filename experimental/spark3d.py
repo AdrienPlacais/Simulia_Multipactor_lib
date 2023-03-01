@@ -9,7 +9,7 @@ fork from J. Hillairet
 import os
 from subprocess import PIPE, Popen
 # import numpy as np
-# import pandas as pd
+import pandas as pd
 
 from helper import printc
 
@@ -110,6 +110,21 @@ class Spark3D():
         out.append(d_mode[mode])
         return ''.join(out)
 
+    def get_full_results(self) -> pd.DataFrame:
+        """Get the results resume."""
+        # TODO auto detect where the results are stored
+        res_dir = os.path.join(self.results_path, 'region1', 'signal1')
+        assert os.path.exists(res_dir), f"{res_dir} does not exist."
+
+        res = [None, None]
+        for i, file in enumerate(['power_results.txt', 'time_results.txt']):
+            file = os.path.join(res_dir, file)
+            if os.path.isfile(file):
+                res[i] = pd.read_csv(file, delimiter='\t', na_values='---')
+
+        power, time = res
+        return power, time
+
     # TODO: check dirs for Corona and Videos
     def _get_results_dir(self, mode: str, project: int = 1, model: int = 1,
                          confs: int = 1, em_conf: int = 1,
@@ -124,10 +139,11 @@ class Spark3D():
                   "Corona": [f"@CoConf{discharge_conf}"],
                   "Video Corona":  [f"@CoConf{discharge_conf}",
                                     f"@Video{video}"],
-        }
+                  }
         out.extend(d_mode[mode])
         path = os.path.join(*out)
         return path
+
 
 if __name__ == "__main__":
     # Absolute path of the project
@@ -146,4 +162,4 @@ if __name__ == "__main__":
               "discharge_conf": 1, "video": -1}
 
     spk.run(CONFIG, D_CONF)
-
+    power, time = spk.get_full_results()
