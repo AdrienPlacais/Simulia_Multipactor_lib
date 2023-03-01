@@ -39,6 +39,7 @@ def fit_all(str_model: str, d_data: dict, map_id: dict, key_part: str,
         val[f"{key_part} (model)"] = modelled
         if fit_parameters is None:
             print(f"Skipped {map_id[key]}")
+            val['alfa (model)'] = np.NaN
             continue
 
         # Keep only what really interests us
