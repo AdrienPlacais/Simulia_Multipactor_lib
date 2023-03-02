@@ -175,6 +175,13 @@ class Spark3D():
                     for _fp in [fp_xml, fp_field, fp_project]]
             cmd_input = f"--XMLfile={l_fp[0]} --importRF={l_fp[1]} "
             cmd_input += f"--projectName={l_fp[2]}"
+
+            # FIXME
+            if inter[0] == '.dsp':
+                raise NotImplementedError(
+                    f"Is {fp_field} a HFSS file? In this case, it is required"
+                    + " to also provide an 'HFSS_units' argument.")
+
             return l_fp[2], cmd_input
 
         raise IOError(f"Inconsistent input files {args}")
