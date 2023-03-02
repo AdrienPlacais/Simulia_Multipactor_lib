@@ -19,7 +19,9 @@ class Spark3D():
     SPARK_PATH = "/opt/cst/CST_Studio_Suite_2023/SPARK3D"
     BIN_PATH = os.path.join(SPARK_PATH, "./spark3d")
 
-    def __init__(self, project_path: str, file_name: str,
+    def __init__(self, project_path: str,
+                 *args: str,
+                 # file_name: str,
                  output_path: str = None) -> None:
         """
         Constructor.
@@ -40,8 +42,11 @@ class Spark3D():
 
         """
         self.project_path = project_path
+
+        file_name, base_command = self._handle_different_input_types(*args)
         self.file_name = file_name
         self.input = os.path.join(project_path, file_name)
+        self.base_command = base_command
 
         if output_path is None:
             tmp = os.path.splitext(file_name)[0]
@@ -83,6 +88,13 @@ class Spark3D():
                     print(line, end='')
             printc("Spark3D.run info:", "run finished with return code",
                    f"{proc.returncode}.")
+
+            # FIXME
+            if proc.returncode != 0:
+                printc("Spark3D.run warning:", "this return code means that",
+                       "an error ocurred during SPARK3D execution. Try to",
+                       "manually copy-paste the SPARK3D command to output",
+                       "more information.")
 
         except OSError as err:
             printc("Spark3D.run error:", err)
@@ -133,12 +145,46 @@ class Spark3D():
                                      usecols=(3, 4), unpack=True)
         return freq, power
 
+    def _handle_different_input_types(self, *args):
+        """
+        Handle the two types of input in a way that is transparent for user.
+
+        Case 1: one argument is given and must be a .spkx.
+        Case 2: two arguments are given and must be a .xml and a field map.
+        """
+        # TODO make every path absolute here
+        for _fp in args:
+            abs_fp = os.path.join(self.project_path, _fp)
+            assert os.path.isfile(abs_fp), \
+                f"Input file {abs_fp} does not exist."
+
+        filetypes = [os.path.splitext(arg)[-1] for arg in args]
+        if len(args) == 1 and filetypes == ['.spkx']:
+            _input = os.path.join(self.project_path, args[0])
+            cmd_input = f"--input={_input}"
+            return args[0], cmd_input
+
+        allowed_field_maps = ('.dsp', '.f3e', '.mfe')
+        inter = [ext for ext in filetypes if ext in allowed_field_maps]
+
+        if len(args) == 2 and '.xml' in filetypes and len(inter) == 1:
+            i_field, i_xml = filetypes.index(inter[0]), filetypes.index('.xml')
+            fp_field, fp_xml = args[i_field], args[i_xml]
+            fp_project = "my_project.spkx"
+            l_fp = [os.path.join(self.project_path, _fp)
+                    for _fp in [fp_xml, fp_field, fp_project]]
+            cmd_input = f"--XMLfile={l_fp[0]} --importRF={l_fp[1]} "
+            cmd_input += f"--projectName={l_fp[2]}"
+            return l_fp[2], cmd_input
+
+        raise IOError(f"Inconsistent input files {args}")
+
     def _check_paths_exist(self) -> None:
         """Verify if the required folders and files do exist."""
         for path in [self.project_path]:
             assert os.path.exists(path), f"{path} does not exist."
-        for file in [self.input]:
-            assert os.path.isfile(file), f"{file} does not exist."
+        # for file in [self.input]:
+            # assert os.path.isfile(file), f"{file} does not exist."
 
     def _get_cmd(self, configuration: str, d_conf: dict = None) -> str:
         """
@@ -162,7 +208,8 @@ class Spark3D():
         if d_conf is None:
             d_conf = {}
 
-        cmd = [self.BIN_PATH, f"--input={self.input}"]
+        # cmd = [self.BIN_PATH, f"--input={self.input}"]
+        cmd = [self.BIN_PATH, self.base_command]
 
         spkx_kwargs = {
             '--output': self.output_path,
@@ -278,20 +325,26 @@ class Spark3D():
 
 
 if __name__ == "__main__":
-    # Absolute path of the project
-    # PROJECT = "/home/placais/Documents/Simulation/work_spark3d/tesla"
-    # FILE = 'TESLA_2.spkx'
-    PROJECT = "/home/placais/Documents/Simulation/work_spark3d"
-    FILE = "coax_filter_correct_name.spkx"
-    # WARNING! No spaces, parenthesis are allowed
+    # WARNING! No special characters are allowed as they mess with bash
+    # examples of paths to avoid:
+    # spaces in: /Documents/spark3d workspace 2023/
+    # parenthesis in: ExportToSPARK3D(1).f3e
+
+    # PROJECT = "/home/placais/Documents/Simulation/work_spark3d"
+    # args = ("coax_filter_correct_name.spkx", )
+
+    PROJECT = "/home/placais/Documents/Simulation/work_spark3d/swell"
+    args = ("Project.xml", "field.f3e")
 
     # Run the Spark3D Simulation
-    spk = Spark3D(PROJECT, FILE)
+    spk = Spark3D(PROJECT, *args)
     # CONFIG = "--list"
     # CONFIG = "--validate"
     CONFIG = "--config"
     D_CONF = {"project": 1, "model": 1, "confs": 1, "em_conf": 1,
               "discharge_conf": 1, "video": -1}
 
+    # mesh file: should be .dsp, .f3e or .mfe
     spk.run(CONFIG, D_CONF)
-    my_power, my_time = spk.get_full_results()
+    if CONFIG == "--config":
+        my_power, my_time = spk.get_full_results()
