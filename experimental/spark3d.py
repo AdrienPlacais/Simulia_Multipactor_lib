@@ -19,10 +19,8 @@ class Spark3D():
     SPARK_PATH = "/opt/cst/CST_Studio_Suite_2023/SPARK3D"
     BIN_PATH = os.path.join(SPARK_PATH, "./spark3d")
 
-    def __init__(self, project_path: str,
-                 *args: str,
-                 # file_name: str,
-                 output_path: str = None) -> None:
+    def __init__(self, project_path: str, *args: str, output_path: str = None,
+                 **kwargs) -> None:
         """
         Constructor.
 
@@ -43,7 +41,8 @@ class Spark3D():
         """
         self.project_path = project_path
 
-        file_name, base_command = self._handle_different_input_types(*args)
+        file_name, base_command = self._handle_different_input_types(*args,
+                                                                     **kwargs)
         self.file_name = file_name
         self.input = os.path.join(project_path, file_name)
         self.base_command = base_command
@@ -145,53 +144,80 @@ class Spark3D():
                                      usecols=(3, 4), unpack=True)
         return freq, power
 
-    def _handle_different_input_types(self, *args):
+    def _handle_different_input_types(self, *args: str,
+                                      new_project_name: str = None,
+                                      unitsRF: str = None) -> (str, str):
         """
         Handle the two types of input in a way that is transparent for user.
 
         Case 1: one argument is given and must be a .spkx.
         Case 2: two arguments are given and must be a .xml and a field map.
-        """
-        # TODO make every path absolute here
-        for _fp in args:
-            abs_fp = os.path.join(self.project_path, _fp)
-            assert os.path.isfile(abs_fp), \
-                f"Input file {abs_fp} does not exist."
 
-        filetypes = [os.path.splitext(arg)[-1] for arg in args]
-        if len(args) == 1 and filetypes == ['.spkx']:
-            _input = os.path.join(self.project_path, args[0])
-            cmd_input = f"--input={_input}"
-            return args[0], cmd_input
+        Parameters
+        ----------
+        *args : (str, ) | (str, str, )
+            Relative path to a .spkx OR relative path to a .xml file and
+            relative path to field map file (.dsp, .f3e or .mfe).
+        new_project_name : str, optional
+            Name of the project constructed from .xml and field map file. .spkx
+            extension must be provided. The default is None (then changed to
+            'my_project.spkx')
+        unitsRF : {'m', 'mm', 'inches'}
+            Units of the file field map comes from HFSS (.dsp I think?). The
+            default is None.
+
+        Raises
+        ------
+        IOError
+            When the number of input file(s) and/or their type(s) are
+            inconsistent.
+
+        Returns
+        -------
+        (str, str)
+            The project name, the portion of command line that allows SPARK to
+            identify or construct the project.
+
+        """
+        paths = [os.path.join(self.project_path, _fp) for _fp in args]
+        for path in paths:
+            assert os.path.isfile(path), f"Input file {path} does not exist."
+
+        filetypes = [os.path.splitext(path)[-1] for path in paths]
+
+        if len(paths) == 1 and filetypes == ['.spkx']:
+            cmd_input = f"--input={paths[0]}"
+            return paths[0], cmd_input
 
         allowed_field_maps = ('.dsp', '.f3e', '.mfe')
         inter = [ext for ext in filetypes if ext in allowed_field_maps]
-
-        if len(args) == 2 and '.xml' in filetypes and len(inter) == 1:
+        if len(paths) == 2 and '.xml' in filetypes and len(inter) == 1:
             i_field, i_xml = filetypes.index(inter[0]), filetypes.index('.xml')
-            fp_field, fp_xml = args[i_field], args[i_xml]
-            fp_project = "my_project.spkx"
-            l_fp = [os.path.join(self.project_path, _fp)
-                    for _fp in [fp_xml, fp_field, fp_project]]
-            cmd_input = f"--XMLfile={l_fp[0]} --importRF={l_fp[1]} "
-            cmd_input += f"--projectName={l_fp[2]}"
+            fp_field, fp_xml = paths[i_field], paths[i_xml]
 
-            # FIXME
+            fp_project = os.path.join(self.project_path, new_project_name)
+            cmd_input = f"--XMLfile={fp_xml} --importRF={fp_field} "
+
             if inter[0] == '.dsp':
-                raise NotImplementedError(
-                    f"Is {fp_field} a HFSS file? In this case, it is required"
-                    + " to also provide an 'HFSS_units' argument.")
+                # TODO check how HFSS files work
+                assert unitsRF in ('m', 'mm', 'inches'), "The .dsp is a HFSS" \
+                        + " field map file, right? In this case you must" \
+                        + " provide a valid 'unitsRF' key."
+                cmd_input += f"unitsRF={unitsRF} "
 
-            return l_fp[2], cmd_input
+            if new_project_name is None:
+                new_project_name = "my_project.spkx"
+            cmd_input += f"--projectName={fp_project}"
+
+            return fp_project, cmd_input
 
         raise IOError(f"Inconsistent input files {args}")
 
+    # TODO not really necessary
     def _check_paths_exist(self) -> None:
         """Verify if the required folders and files do exist."""
         for path in [self.project_path]:
             assert os.path.exists(path), f"{path} does not exist."
-        # for file in [self.input]:
-            # assert os.path.isfile(file), f"{file} does not exist."
 
     def _get_cmd(self, configuration: str, d_conf: dict = None) -> str:
         """
@@ -333,18 +359,23 @@ class Spark3D():
 
 if __name__ == "__main__":
     # WARNING! No special characters are allowed as they mess with bash
-    # examples of paths to avoid:
-    # spaces in: /Documents/spark3d workspace 2023/
-    # parenthesis in: ExportToSPARK3D(1).f3e
+    # Examples of paths to avoid:
+    #   spaces in: /Documents/spark3d workspace 2023/
+    #   parenthesis in: ExportToSPARK3D(1).f3e
 
+    # First simple option: provide a .spkx file
     # PROJECT = "/home/placais/Documents/Simulation/work_spark3d"
     # args = ("coax_filter_correct_name.spkx", )
 
+    # Second option, more complex: provide and .xml and a field map.
+    #   .xml can be first generated by 'unzip project.spkz'
+    #   field map can be .f3e, .dsp or .mfe
     PROJECT = "/home/placais/Documents/Simulation/work_spark3d/swell"
     args = ("Project.xml", "field.f3e")
+    kwargs = {"new_project_name": "my_very_new_project.spkx"}
 
     # Run the Spark3D Simulation
-    spk = Spark3D(PROJECT, *args)
+    spk = Spark3D(PROJECT, *args, **kwargs)
     # CONFIG = "--list"
     # CONFIG = "--validate"
     CONFIG = "--config"
