@@ -4,45 +4,69 @@
 Created on Thu Mar  2 16:43:52 2023
 
 @author: placais
+
+TODO functions to edit the proper key
+TODO easily allow for Corona, Videos
 """
 import xml.etree.ElementTree as ET
 
 
-def _id(x):
-    return f"{x.find('Id').text}, {x.find('name').text}"
+class spark_xml():
+    """A class to handle the .xml files from SPARK3D."""
 
+    def __init__(self, file: str) -> None:
+        """
+        Constructor.
 
-def show_configs(file):
-    """Show the different configurations in the xml file provided."""
-    tree = ET.parse(file)
-    root = tree.getroot()
-    for proj in root.iter('Project'):
-        print(f"1, {proj.tag}")
+        Parameters
+        ----------
+        file : str
+            Full path to the .xml file.
 
-        for mod in proj.iter('Model'):
-            # Select proper Id, print Id and name
-            print(f"\t{_id(mod)}")
+        """
+        tree = ET.parse(file)
+        self.spark = tree.getroot()
 
-            for con in mod.iter('Configurations'):
-                print(f"\t\t{_id(con)}")
+        # Add a VideoMultipactorConfig key if needed, or change Multipactor to
+        # corona
+        self.keys = ["Project", "Model", "Configurations", "EMConfigGroup",
+                     "MultipactorConfig"]
 
-                for em_con in con.iter('EMConfigGroup'):
-                    print("\t"*3 + f"{_id(em_con)}")
+    def get_config(self, *args: int) -> ET.Element:
+        """
+        Return the Config corresponding to the inputs.
 
-                    for dis_con in em_con.iter('MultipactorConfig'):
-                        print("\t"*4 + f"{_id(dis_con)}")
+        Parameters
+        ----------
+        *args : int
+            Int corresponding to self.keys, in the same order.
 
+        Raises
+        ------
+        IOError
+            *args matched no existing configuration. If it matched several,
+            either the .xml is wrong, either this code is wrong!
 
-def get_config(file, D_CONF):
-    """Return the Element corresponding to the inputs."""
-    return None
+        Returns
+        -------
+        ET.Element
+            Configuration in the form of an ElementTree Element.
+
+        """
+        path = [f"{key}[{val}]" for key, val in zip(self.keys, args)]
+        elt = self.spark.findall('/'.join(path))
+        if len(elt) != 1:
+            raise IOError("More than one or no configuration was found.")
+        return elt[0]
 
 
 if __name__ == "__main__":
     file = "/home/placais/Documents/Simulation/work_spark3d/tesla/Project.xml"
-    show_configs(file)
-    project = 1
-    model = 1
-    confs = 1
-    em_conf = 1
-    discharge_conf = 1
+    xml = spark_xml(file)
+
+    # As already defined
+    D_CONF = {"project": 1, "model": 1, "confs": 1, "em_conf": 1,
+              "discharge_conf": 1, "video": -1}
+    # Need only values
+    conf = xml.get_config(*D_CONF.values())
+    print(conf)
