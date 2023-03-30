@@ -41,7 +41,7 @@ print_fit_parameters = False
 freq = 1.30145
 period = 1. / freq
 omega_0 = 2. * np.pi * freq
-fitting_range = 15. * period
+fitting_range = 20. * period
 
 # Load file
 base = "spark"
