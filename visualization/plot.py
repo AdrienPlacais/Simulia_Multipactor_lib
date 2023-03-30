@@ -6,7 +6,7 @@ Created on Mon Feb 27 13:14:58 2023
 @author: placais
 """
 
-# import numpy as np
+import numpy as np
 import matplotlib.pyplot as plt
 # from collections import OrderedDict
 
@@ -91,7 +91,8 @@ def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str,
 
 def plot_dict_of_floats(d_data: dict, key_ydata: str, *args,
                         title: str = None, x_label: str = None,
-                        y_label: str = None, yscale: str = None):
+                        y_label: str = None, yscale: str = None,
+                        save_data: bool = False, save_path: str = None):
     """
     Plot key_ydata as a function of first arg, for every other args.
     """
@@ -118,9 +119,14 @@ def plot_dict_of_floats(d_data: dict, key_ydata: str, *args,
     x_data = plot_data[1:, 0]   # first of args
     y_data = plot_data[1:, 1:]  # key_ydata
     z_data = plot_data[0, 1:]   # second of args
-    for z_dat in z_data:
-        for i in range(y_data.shape[1]):
-            axx.plot(x_data, y_data[:, i], label=f"{z_dat}")
+    for i in range(y_data.shape[1]):
+        axx.plot(x_data, y_data[:, i], label=f"{z_data[i]}", marker='o')
+
+        if save_data:
+            assert save_path is not None
+            save_me = np.column_stack((x_data, y_data[:, i]))
+            np.savetxt(save_path + f"param={z_data[i]}.txt",
+                       save_me)
     axx.legend()
 
     return fig, axx
@@ -173,6 +179,9 @@ def create_fig_if_not_exists(axnum: int, sharex=False, num=1, clean_fig=False):
 
     for i in axnum[1:]:
         axlist.append(fig.add_subplot(i, sharex=d_sharex[sharex]))
+    if sharex:
+        for ax in axlist[:-1]:
+            plt.setp(ax.get_xticklabels(), visible=False)
     return fig, axlist
 
 

@@ -163,16 +163,20 @@ def get_values(
 
         out[i] = d_data[_id][key_data]
 
-    # Reshape
+    # Reshape if necessary (will be skipped if only one parameter in *arg)
     new_shape = [len(val) for val in d_uniques.values()]
-    out = np.reshape(np.asarray(out, dtype=object), new_shape)
+    if len(out) != new_shape[0] and len(new_shape) > 1:
+        out = np.reshape(np.asarray(out, dtype=object), new_shape)
 
     # We add values of the parameters in the first column, row, for easier data
     # manipulation
     # FIXME there are more Pythonic ways to do this...
     if ins_param:
         if len(args) == 1:
-            out = np.column_stack((_lp[0], out))
+            new_out = np.full((new_shape[0] + 1, 2), np.NaN, dtype=object)
+            new_out[1:, 0] = _lp[0]
+            new_out[1:, 1] = out
+            out = new_out
         elif(len(args) == 2):
             new_out = np.full([x + 1 for x in new_shape], np.NaN, dtype=object)
             new_out[1:, 0] = _lp[0]
