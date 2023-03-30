@@ -148,7 +148,7 @@ def _fit_single(str_model: str, data: np.array, period: float,
     idx_end = np.where(data[:, 1])[0][-1]
     t_start = data[idx_end, 0] - fitting_range
     if t_start < 0.:
-        printc("exp_growth._fit_single_spark warning:", "fitting range larger",
+        printc("exp_growth._fit_single warning:", "fitting range larger",
                "than simulation time!")
     idx_start = np.argmin(np.abs(data[:, 0] - t_start))
     data_to_fit = np.column_stack((data[idx_start:idx_end + 1, 0],
