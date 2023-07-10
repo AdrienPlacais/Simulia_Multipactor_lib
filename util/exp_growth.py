@@ -47,12 +47,14 @@ def fit_all(str_model: str, d_data: dict, map_id: dict, key_part: str,
 
 
 def fit_all_spark(str_model: str, d_data: dict, key_part: str,
-                  fitting_range: float, running_mean: bool = True):
+                  fitting_range: float, period: float,
+                  running_mean: bool = True):
     """Perform the exponential growth fit over all set of parameters."""
     key_eacc = 'E_acc in MV per m'
     for key, val in d_data.items():
-        modelled, fit_parameters = _fit_single_spark(str_model, val[key_part],
-                                                     fitting_range)
+        modelled, fit_parameters = \
+            _fit_single_spark(str_model, val[key_part], fitting_range, period,
+                              e_acc=val[key_eacc])
 
         val[f"{key_part} (model)"] = modelled
         if fit_parameters is None:
@@ -78,7 +80,7 @@ def _select_model(str_model: str):
     #          N_0    alfa
     bounds = ([1e-10, -10.],
               [np.inf, 10.])
-    initial_values = [None, 0.]
+    initial_values = [None, -9.]
 
     return model, model_log, model_printer, n_args, bounds, initial_values
 
@@ -197,7 +199,8 @@ def _fit_single(str_model: str, data: np.array, period: float,
 
 
 def _fit_single_spark(str_model: str, data: np.array, fitting_range: float,
-                      print_fit_parameters: bool = False):
+                      period: float,
+                      print_fit_parameters: bool = False, e_acc: float = None):
     """
     Perform the exponential growth fitting on a single parameter.
 
@@ -210,6 +213,8 @@ def _fit_single_spark(str_model: str, data: np.array, fitting_range: float,
     fitting_range : float
         Time over which the exp growth is searched. Longer is better, but you
         do not want to start the fit before the exp growth starts.
+    period : float
+        Signal period.
     print_fit_parameters : bool, optional
         To tell if you want to output the fitting parameters when they are
         found. The default is False.
@@ -235,10 +240,24 @@ def _fit_single_spark(str_model: str, data: np.array, fitting_range: float,
         # return modelled, None
 
     idx_end = np.where(data[:, 1])[0][-1]
+
+    # For SWELL baked
+    if True:
+        # we want to avoid fitting on the end of the decay
+        idx_end = min(idx_end,
+                      np.argmin(np.abs(data[:, 1] - 10.))
+                      )
+        print(idx_end, e_acc)
+
     t_start = data[idx_end, 0] - fitting_range
-    if t_start < 0.:
-        printc("exp_growth._fit_single_spark warning:", "fitting range larger",
-               "than simulation time!")
+
+    t_lim = 5. * period
+    if t_start < t_lim:
+        printc("exp_growth._fit_single_spark warning:", f"E_acc={e_acc:.2e} ",
+                "fitting range too large w.r.t simulation time! I set it to a",
+                f"higher value {t_lim:2f}ns.")
+        t_start = t_lim
+
     idx_start = np.argmin(np.abs(data[:, 0] - t_start))
     data_to_fit = np.column_stack((data[idx_start:idx_end + 1, 0],
                                    np.log(data[idx_start:idx_end + 1, 1])))
@@ -253,6 +272,8 @@ def _fit_single_spark(str_model: str, data: np.array, fitting_range: float,
                            bounds=bounds, maxfev=5000)[0]
 
     except OptimizeWarning:
+        result = np.full((n_args), np.NaN)
+    except IndexError:
         result = np.full((n_args), np.NaN)
 
     # Fit parameters
