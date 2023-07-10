@@ -23,8 +23,9 @@ import numpy as np
 
 
 def get_parameter_sweep_auto_export(
-        folderpath: str, delimiter: str = '\t') -> dict:
-    """
+        folderpath: str, delimiter: str = '\t'
+) -> dict[int, dict[str, float | np.ndarray | dict[str, float | str]]]:
+    r"""
     Get parameter sweep data from a CST automatic Post-Processing ASCII export.
 
     In Template Based Post-Processing : General 1D > ASCII Export > what you
@@ -41,31 +42,55 @@ def get_parameter_sweep_auto_export(
     folderpath : str
         Path to the folder where the mmdd-xxxxxxx folders are located.
     delimiter : str, optional
-        Delimiter between columns
+        Delimiter between columns. The default is '\t'.
 
     Returns
     -------
-    d_data : dict
-        Holds all the exported data for every set of parameters.
+    data : dict[int, dict[str, float | np.ndarray | dict[str, float | str]]]
+        Holds all the exported data for every set of parameters. Keys are the
+        ID of each simulation (the seven-digits number in the corresponding
+        folder name). Values are dictionaries as returned by
+        _get_single_parameter_auto_export.
     """
-    d_data = {}
-    l_folders = os.listdir(folderpath)
-    l_keys = [folder.split('-')[-1] for folder in l_folders]
+    data = {}
+    folders = os.listdir(folderpath)
+    keys = [folder.split('-')[-1] for folder in folders]
 
-    for folder, key in zip(l_folders, l_keys):
+    for folder, key in zip(folders, keys):
         folder = os.path.join(folderpath, folder)
-        d_data[int(key)] = _get_single_parameter_auto_export(folder, delimiter)
-    return d_data
+        data[int(key)] = _get_single_parameter_auto_export(folder, delimiter)
+    return data
 
 
-def _map_param_to_id(d_data: dict, *args, sort: bool = False) -> dict:
-    """Associate ids (d_data key entries) to specific parameters."""
+def _map_param_to_id(data: dict, *parameters: str, sort: bool = False
+                     ) -> dict[int, list[float]]:
+    """
+    Associate ids (data key entries) to specific parameter values.
+
+    Parameters
+    ----------
+    data : dict
+        A full data dict as returned by get_parameter_sweep_auto_export.
+    *parameters: str
+        The parameters to be mapped.
+    sort : bool, optional
+        To tell if the output should be sorted by increasing parameter values.
+        The default is False.
+
+    Returns
+    -------
+    map_id : dict[int, list[float]]
+        A dictionary linking simulation ID to parameters values. The keys are
+        the ID of the simulations. The values are the values of the *parameters
+        corresponding to the simulation ID.
+
+    """
     map_id = {}
 
-    for _id in d_data.keys():
+    for _id in data.keys():
         params = []
-        for param in args:
-            val = d_data[_id]['Parameters'][param]
+        for param in parameters:
+            val = data[_id]['Parameters'][param]
             if isinstance(val, str):
                 val = ast.literal_eval(val)
             params.append(val)
@@ -78,47 +103,86 @@ def _map_param_to_id(d_data: dict, *args, sort: bool = False) -> dict:
                   sorted(map_id.items(),
                          key=lambda item: tuple(
                              [item[1][i]
-                              for i, _ in enumerate(args)])
+                              for i, _ in enumerate(parameters)])
                          )
                   }
     return map_id
 
 
-def full_map_param_to_id(d_data: dict, *args) -> (dict, dict):
-    """Also return corresponding param values."""
-    # We get the sorted mapping of data
-    map_id = _map_param_to_id(d_data, *args, sort=True)
-
-    # We get every unique value of parameters
-    d_uniques = {arg: list(dict.fromkeys([val[i]
-                                          for val in map_id.values()]))
-                 for i, arg in enumerate(args)}
-    return map_id, d_uniques
-
-
-def get_id(map_id: list, *args) -> int:
-    """Give correct id."""
-    for key, val in map_id.items():
-        if val == [arg for arg in args]:
-            return key
-    return -1
-
-
-def get_values(
-        d_data: dict, key_data: str, *args, to_numpy: bool = True,
-        warn_missing: bool = False, ins_param: bool = False) \
-        -> np.array:
+def full_map_param_to_id(data: dict, *parameters: str
+                         ) -> tuple[dict[int, list[float]],
+                                    dict[str, list[float]]]:
     """
-    Return a n-dim numpy array containing (key_)data sorted by args.
+    Link simulation ID to parameters values, get unique parameters values.
 
     Parameters
     ----------
-    d_data : dict
+    data : dict
+        A full data dict as returned by get_parameter_sweep_auto_export.
+    *parameters : str
+        The parameters under study.
+
+    Returns
+    -------
+    map_id : dict[int, list[float]]
+        A dictionary linking simulation ID to parameters values. The keys are
+        the ID of the simulations. The values are the values of the *parameters
+        corresponding to the simulation ID.
+    uniques : dict[str, list[float]]
+        Dictionary holding all unique values of each parameter. Keys are name
+        of the *parameters parameters. Values are a list of the unique values;
+        should be of length 1 for each parameter that did not evolve during
+        simulation.
+
+
+    """
+    map_id = _map_param_to_id(data, *parameters, sort=True)
+
+    uniques = {arg: list(dict.fromkeys([val[i] for val in map_id.values()]))
+               for i, arg in enumerate(parameters)}
+    return map_id, uniques
+
+
+def get_id(map_id: dict[int, list[float]], *parameters_vals: float) -> int:
+    """
+    Give ID of simulation that was realized with the set of `parameters_vals`.
+
+    Parameters
+    ----------
+    map_id : dict[int, list[float]]
+        A dictionary linking simulation ID to parameters values. The keys are
+        the ID of the simulations. The values are the values of the *parameters
+        corresponding to the simulation ID. As returned by _map_param_to_id.
+    *parameters_vals : float
+        Values of the parameters.
+
+    Returns
+    -------
+    simul_id : int
+        ID of the simulation realized with the set of parameters values
+        `parameters_vals`.
+
+    """
+    for simul_id, simul_param_vals in map_id.items():
+        if simul_param_vals == [val for val in parameters_vals]:
+            return simul_id
+    return -1
+
+
+def get_values(data: dict, key_data: str, *parameters: str,
+               to_numpy: bool = True, warn_missing: bool = False,
+               ins_param: bool = False) -> np.ndarray:
+    """
+    Return a n-dim numpy array containing (key_)data sorted by parameters.
+
+    Parameters
+    ----------
+    data : dict
         Dict holding all data, as returned by get_parameter_sweep_auto_export.
     key_data : str
         Key to the data you want (should be a filename in
         Export_Parametric/mmdd-xxxxxxx folders).
-    *args : str
+    *parameters : str
         Keys to against which parameter key_data should be sorted (should be in
         Parameters.txt).
     to_numpy : bool, optional
@@ -127,29 +191,27 @@ def get_values(
         Raise a warning if there is no data for some combinations of
         parameters. The default is False.
     ins_param : bool, optional
-        Tells if the value of the parameters defined by *args should be
+        Tells if the value of the parameters defined by *parameters should be
         INSerted in the first axis. The default is False.
 
     Raises
     ------
     NotImplementedError
-        Raised when the number of *args is too high.
+        Raised when the number of *parameters is too high.
 
     Returns
     -------
     out : np.ndarray
-        Array holding key_data, sorted by combination of parameters (*args).
+        Array holding key_data, sorted by combination of *parameters.
         If ins_param, first line of every axis holds parameter value.
         If not to_numpy, out is converted to a list.
     """
-    # We get the sorted mapping of data and the unique values for each param
-    map_id, d_uniques = full_map_param_to_id(d_data, *args)
+    map_id, uniques = full_map_param_to_id(data, *parameters)
 
     # Generate all combinations of parameters
-    _lp = [vals for vals in d_uniques.values()]
+    _lp = [vals for vals in uniques.values()]
     comb = [p for p in it.product(*_lp)]
 
-    # Create an empty array
     out = [np.NaN for i in range(len(comb))]
 
     # Look for data for every combination of parameters
@@ -161,10 +223,10 @@ def get_values(
                 print(f"Warning! No value found for the parameters {__c}.")
             continue
 
-        out[i] = d_data[_id][key_data]
+        out[i] = data[_id][key_data]
 
     # Reshape if necessary (will be skipped if only one parameter in *arg)
-    new_shape = [len(val) for val in d_uniques.values()]
+    new_shape = [len(val) for val in uniques.values()]
     if len(out) != new_shape[0] and len(new_shape) > 1:
         out = np.reshape(np.asarray(out, dtype=object), new_shape)
 
@@ -172,18 +234,18 @@ def get_values(
     # manipulation
     # FIXME there are more Pythonic ways to do this...
     if ins_param:
-        if len(args) == 1:
+        if len(parameters) == 1:
             new_out = np.full((new_shape[0] + 1, 2), np.NaN, dtype=object)
             new_out[1:, 0] = _lp[0]
             new_out[1:, 1] = out
             out = new_out
-        elif(len(args) == 2):
+        elif len(parameters) == 2:
             new_out = np.full([x + 1 for x in new_shape], np.NaN, dtype=object)
             new_out[1:, 0] = _lp[0]
             new_out[0, 1:] = _lp[1]
             new_out[1:, 1:] = out
             out = new_out
-        elif(len(args) == 3):
+        elif len(parameters) == 3:
             new_out = np.full([x + 1 for x in new_shape], np.NaN, dtype=object)
             new_out[1:, 0, 0] = _lp[0]
             new_out[0, 1:, 0] = _lp[1]
@@ -202,8 +264,26 @@ def get_values(
     return out
 
 
-def _get_single_parameter_auto_export(folderpath: str, delimiter: str) -> dict:
-    """Load all the data into a single mmdd-xxxxxxx folder."""
+def _get_single_parameter_auto_export(
+        folderpath: str, delimiter: str
+) -> dict[str, float | np.ndarray | dict[str, float | str]]:
+    """
+    Load all the data into a single mmdd-xxxxxxx folder.
+
+    Parameters
+    ----------
+    folderpath : str
+        mmdd-xxxxxx folder from which all files will be loaded.
+    delimiter : str
+        Delimiter between two columns.
+
+    Returns
+    -------
+    dic : dict[str, float | np.ndarray | dict[str, float | str]]
+        Dictionary holding all exported data. Keys are the name of the data,
+        values the corresponding value. The Parameters dict is also stored.
+
+    """
     dic = {}
 
     # Recursively load every file
@@ -232,19 +312,36 @@ def _get_single_parameter_auto_export(folderpath: str, delimiter: str) -> dict:
     return dic
 
 
-def _parameters_file_to_dict(filepath: str) -> dict:
-    """Special treatment for the 'Parameters.txt' file."""
-    d_parameters = {}
+def _parameters_file_to_dict(filepath: str) -> dict[str, float | str]:
+    """
+    Load the 'Parameters.txt' file.
+
+    Parameters
+    ----------
+    filepath : str
+        Path to the file.
+
+    Returns
+    -------
+    parameters : dict[str, float | str]
+        Holds the name of the Parameter as a key, and the corresponding value
+        as a value.
+        FIXME integer values are not detected.
+        FIXME simple expressions are not evaluated. A parameter defined as
+        '1/2' will be a string instead of 0.5 (float).
+
+    """
+    parameters = {}
     with open(filepath, 'r') as file:
         for line in file:
             line = line.split('=')
-            d_parameters[line[0]] = line[1].strip()
+            parameters[line[0]] = line[1].strip()
 
     # Convert strings into float if possible
-    for key, val in d_parameters.items():
+    for key, val in parameters.items():
         try:
-            d_parameters[key] = float(val)
+            parameters[key] = float(val)
         except ValueError:
             continue
 
-    return d_parameters
+    return parameters
