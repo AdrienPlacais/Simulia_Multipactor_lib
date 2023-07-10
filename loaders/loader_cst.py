@@ -382,3 +382,18 @@ def _insert_parameters_values(out: np.ndarray,
     raise NotImplementedError("Too much parameters.",
                               "Parameter value insertion not implemented for "
                               " more than three parameters.")
+
+
+# =============================================================================
+# More specific loaders
+# =============================================================================
+def particle_monitor(filepath: str) -> tuple[tuple[float | int]]:
+    """Load a single Particle Monitor file."""
+    n_header = 6
+
+    with open(filepath, 'r', encoding='utf-8') as file:
+        particles_info = tuple(tuple(line.split(';'))
+                               for i, line in enumerate(file)
+                               if i > n_header)
+
+    return particles_info
