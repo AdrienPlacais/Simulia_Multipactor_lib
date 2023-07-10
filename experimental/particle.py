@@ -103,10 +103,6 @@ class Particle:
         """Determine when and where the collision took place."""
         pass
 
-    def get_collision_energy(self) -> float:
-        """Determine the impact energy."""
-        pass
-
     def get_collision_angle(self) -> float:
         """Determine the impact incidence angle, w.r.t. the surface normal."""
         pass
@@ -115,6 +111,32 @@ class Particle:
     def emission_energy(self) -> float:
         """Compute emission energy in eV."""
         return momentum_to_eV(self.mom[0], self.mass, self.charge)
+
+    def collision_energy(self, interpolation: bool = True,
+                         ) -> float | None:
+        """
+        Determine the impact energy in eV.
+
+        Parameters
+        ----------
+        interpolation : bool, optional
+            If True, perform an interpolation of the last time steps to
+            increase the precision. The default is True.
+
+        Returns
+        -------
+        energy: float
+            The last known energy in eV.
+
+        Raises
+        ------
+        NotImplementedError : If interpolation is True.
+
+        """
+        if interpolation:
+            raise NotImplementedError("TODO: interpolation of on last time "
+                                      " steps for better precision.")
+        return momentum_to_eV(self.mom[-1], self.mass, self.charge)
 
 
 def _str_to_correct_types(line: tuple[str]) -> tuple[float | int]:

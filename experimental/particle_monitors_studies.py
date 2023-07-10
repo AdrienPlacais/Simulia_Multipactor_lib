@@ -12,6 +12,7 @@ from multipactor.visualization.plot import create_fig_if_not_exists
 
 
 def plot_emission_energies(particles: DictOfParticles) -> None:
+    """Plot the emission energies sorted by source id."""
     fig, axx = create_fig_if_not_exists(2, sharex=True, num=2)
     axx[1].set_xlabel("Emission energy [eV]")
     axx[0].set_ylabel("Seed electrons")
@@ -23,3 +24,16 @@ def plot_emission_energies(particles: DictOfParticles) -> None:
         counts, bins = np.histogram(emission_energies)
         axx[i].hist(bins[:-1], bins, weights=counts)
         axx[i].grid(True)
+
+
+def plot_collision_energies(particles: DictOfParticles) -> None:
+    """Plot all the collision energues."""
+    fig, axx = create_fig_if_not_exists(1, sharex=True, num=1)
+    axx[0].set_xlabel("Collision energy [eV]")
+    axx[0].set_ylabel("All electrons")
+
+    collision_energies = particles.collision_energies(
+        to_numpy=True, interpolation=False, remove_alive_at_end=True)
+    counts, bins = np.histogram(collision_energies)
+    axx[0].hist(bins[:-1], bins, weights=counts)
+    axx[0].grid(True)

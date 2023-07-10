@@ -36,6 +36,8 @@ class DictOfParticles(dict):
 
         super().__init__(dict_of_parts)
 
+        self.max_time = np.max([part.time[-1] for part in self.values()])
+
     @property
     def seed_electrons(self) -> dict[int, Particle]:
         """Return only seed electrons."""
@@ -51,8 +53,44 @@ class DictOfParticles(dict):
         """Get emission energies of all or only a subset of particles."""
         subset = self
         if source_id is not None:
-            subset = _filter_source_id(self, source_id)
+            subset = _filter_source_id(subset, source_id)
         out = [part.emission_energy for part in subset.values()]
+        if to_numpy:
+            return np.array(out)
+        return out
+
+    def collision_energies(self, source_id: int | None = None,
+                           to_numpy: bool = True, interpolation: bool = True,
+                           remove_alive_at_end: bool = True) -> None:
+        """
+        Get all collision energies in eV.
+
+        Parameters
+        ----------
+        source_id : int | None, optional
+            If set, we only take particles which source_id is `source_id`. The
+            default is None.
+        to_numpy : bool, optional
+            If True, output list is transformed to an array. The default is
+            True.
+        interpolation : bool, optional
+            If True, we interpolate over the last time steps to refine the
+            collision energy. Otherwise, we simply take the last known energy
+            of the particle. The default is True.
+        remove_alive_at_end : bool, optional
+            If True, we do not return the particles that were alived at the end
+            of the simulation, which did not make a collision. The default is
+            True.
+
+        """
+        subset = self
+        if source_id is not None:
+            subset = _filter_source_id(subset, source_id)
+        if remove_alive_at_end:
+            subset = _filter_out_alive_at_end(subset, self.max_time)
+
+        out = [part.collision_energy(interpolation)
+               for part in subset.values()]
         if to_numpy:
             return np.array(out)
         return out
@@ -72,3 +110,10 @@ def _filter_source_id(input_dict: dict[int, Particle], wanted_id
     """Filter Particles against the sourceID field."""
     return {pid: part for pid, part in input_dict.items()
             if part.source_id == wanted_id}
+
+
+def _filter_out_alive_at_end(input_dict: dict[int, Particle], max_time: float
+                             ) -> dict[int, Particle]:
+    """Filter out Particles that were alive at the end of simulation."""
+    return {pid: part for pid, part in input_dict.items()
+            if part.time[-1] < max_time}
