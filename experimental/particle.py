@@ -7,6 +7,10 @@ Created on Mon Jul 10 12:35:01 2023.
 """
 import numpy as np
 
+from multipactor.experimental.particle_monitors_converters import (
+    momentum_to_eV
+)
+
 
 class Particle:
     """Holds mass, charge, evolution of position."""
@@ -106,6 +110,11 @@ class Particle:
     def get_collision_angle(self) -> float:
         """Determine the impact incidence angle, w.r.t. the surface normal."""
         pass
+
+    @property
+    def emission_energy(self) -> float:
+        """Compute emission energy in eV."""
+        return momentum_to_eV(self.mom[0], self.mass, self.charge)
 
 
 def _str_to_correct_types(line: tuple[str]) -> tuple[float | int]:

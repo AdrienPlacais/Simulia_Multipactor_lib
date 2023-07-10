@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb 27 13:14:58 2023
+Created on Mon Feb 27 13:14:58 2023.
 
 @author: placais
 """
@@ -194,7 +194,7 @@ def _clean_fig(fignumlist):
 
 
 def _savefig(fig, filepath):
-    """Saves the figure."""
+    """Save the figure."""
     # fig.tight_layout()
     fig.savefig(filepath)
     print(f"plot._savefig info: Fig. saved in {filepath}")
