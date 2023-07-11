@@ -6,3 +6,4 @@ Created on Mon Jul 10 15:00:45 2023.
 @author: placais
 """
 clight = 299_792_458.
+qelec = 1.602e-19
