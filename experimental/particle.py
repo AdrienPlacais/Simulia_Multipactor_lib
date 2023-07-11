@@ -26,6 +26,9 @@ class Particle:
         self._momz: list[float]
         self.mom: np.ndarray
 
+        self.extrapolated_pos: np.ndarray | None = None
+        self.extrapolated_mom: np.ndarray | None = None
+
         self._masses: list[float] | np.ndarray
         self.mass: float
         self._charges: list[float] | np.ndarray
@@ -101,26 +104,26 @@ class Particle:
 
     def detect_collision(self) -> None:
         """Determine when and where the collision took place."""
-        pass
+        raise NotImplementedError
 
     def get_collision_angle(self) -> float:
         """Determine the impact incidence angle, w.r.t. the surface normal."""
-        pass
+        raise NotImplementedError
 
     @property
     def emission_energy(self) -> float:
         """Compute emission energy in eV."""
         return momentum_to_eV(self.mom[0], self.mass, self.charge)
 
-    def collision_energy(self, interpolation: bool = True,
+    def collision_energy(self, extrapolation: bool = True,
                          ) -> float | None:
         """
         Determine the impact energy in eV.
 
         Parameters
         ----------
-        interpolation : bool, optional
-            If True, perform an interpolation of the last time steps to
+        extrapolation : bool, optional
+            If True, perform an extrapolation of the last time steps to
             increase the precision. The default is True.
 
         Returns
@@ -130,13 +133,46 @@ class Particle:
 
         Raises
         ------
-        NotImplementedError : If interpolation is True.
+        NotImplementedError : If extrapolation is True.
 
         """
-        if interpolation:
-            raise NotImplementedError("TODO: interpolation of on last time "
+        if extrapolation:
+            raise NotImplementedError("TODO: extrapolation of on last time "
                                       " steps for better precision.")
         return momentum_to_eV(self.mom[-1], self.mass, self.charge)
+
+    def extrapolate_pos_and_mom_one_time_step_furtger(self) -> tuple[np.array,
+                                                                     np.array]:
+        """
+        Extrapolate position and momentum by one time-step.
+
+        CST PIC solves the motion with a leapfrog solver (source: Mohamad
+        Houssini from Keonys, private communication).
+        Several possibilities:
+            - `pos` corresponds to `time` and `mom` shifted by half time-steps
+            (most probable).
+            - `mom` corresponds to `time` and `pos` shifted by half time-steps
+            (also possible).
+            - `pos` or `mom` is interpolated so that both are expressed at
+            full `time` steps (what I will consider for now).
+
+        """
+        time_step = self.time[-1] - self.time[-2]
+
+        n_time_steps_used_for_fit = 2
+        fit_end = self.time[-1]
+
+        n_time_subdivisions = 1000
+        extrapolated_times = np.linspace(fit_end, fit_end + time_step,
+                                         n_time_subdivisions)
+
+        extrapolated_mom = _extrapolate_momentum(
+            self.time[-n_time_steps_used_for_fit:],
+            self.mom[-n_time_steps_used_for_fit, :],
+            extrapolated_times,
+            poly_fit_deg=2)
+
+        return None, extrapolated_mom
 
 
 def _str_to_correct_types(line: tuple[str]) -> tuple[float | int]:
@@ -165,3 +201,41 @@ def _get_constant(variables: list[float]) -> tuple[bool, float | None]:
 def _is_sorted(array: np.ndarray) -> bool:
     """Check that given array is ordered (increasing values)."""
     return (array == np.sort(array)).all()
+
+
+def _extrapolate_momentum(known_time: np.ndarray, known_mom: np.ndarray,
+                          desired_time: np.ndarray, poly_fit_deg: int = 2
+                          ) -> np.ndarray:
+    """
+    Extrapolate the momentum.
+
+    Parameters
+    ----------
+    known_time : np.ndarray
+        x-data used for extrapolation.
+    known_mom : np.ndarray
+        y_data used for extrapolation.
+    desired_time : np.ndarray
+        Time momentum should be extrapolated one.
+    poly_fit_deg : int, optional
+        Degree of the polynomial fit. The default is 2.
+
+    Returns
+    -------
+    desired_mom : np.ndarray
+        Momentum extrapolated on desired_time.
+
+    """
+    n_time_subdivisions = desired_time.shape[0]
+    desired_mom = np.zeros((n_time_subdivisions, 3))
+
+    polynom = np.polyfit(known_time, known_mom, poly_fit_deg)
+    polynom = np.flip(polynom, axis=0)
+
+    for time in range(n_time_subdivisions):
+        for axis in range(3):
+            for deg in range(poly_fit_deg + 1):
+                desired_mom[time, axis] += polynom[deg, axis] \
+                    * known_time[time]**deg
+
+    return desired_mom

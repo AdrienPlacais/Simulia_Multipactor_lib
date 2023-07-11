@@ -60,7 +60,7 @@ class DictOfParticles(dict):
         return out
 
     def collision_energies(self, source_id: int | None = None,
-                           to_numpy: bool = True, interpolation: bool = True,
+                           to_numpy: bool = True, extrapolation: bool = True,
                            remove_alive_at_end: bool = True) -> None:
         """
         Get all collision energies in eV.
@@ -73,8 +73,8 @@ class DictOfParticles(dict):
         to_numpy : bool, optional
             If True, output list is transformed to an array. The default is
             True.
-        interpolation : bool, optional
-            If True, we interpolate over the last time steps to refine the
+        extrapolation : bool, optional
+            If True, we extrapolate over the last time steps to refine the
             collision energy. Otherwise, we simply take the last known energy
             of the particle. The default is True.
         remove_alive_at_end : bool, optional
@@ -89,7 +89,7 @@ class DictOfParticles(dict):
         if remove_alive_at_end:
             subset = _filter_out_alive_at_end(subset, self.max_time)
 
-        out = [part.collision_energy(interpolation)
+        out = [part.collision_energy(extrapolation)
                for part in subset.values()]
         if to_numpy:
             return np.array(out)
