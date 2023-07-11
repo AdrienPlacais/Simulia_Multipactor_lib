@@ -387,12 +387,13 @@ def _insert_parameters_values(out: np.ndarray,
 # =============================================================================
 # More specific loaders
 # =============================================================================
-def particle_monitor(filepath: str) -> tuple[tuple[float | int]]:
+def particle_monitor(filepath: str, delimiter: str | None = None
+                     ) -> tuple[tuple[float | int]]:
     """Load a single Particle Monitor file."""
     n_header = 6
 
     with open(filepath, 'r', encoding='utf-8') as file:
-        particles_info = tuple(tuple(line.split(';'))
+        particles_info = tuple(tuple(line.split(delimiter))
                                for i, line in enumerate(file)
                                if i > n_header)
 

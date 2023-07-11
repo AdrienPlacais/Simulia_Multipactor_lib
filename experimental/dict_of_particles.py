@@ -15,14 +15,14 @@ from multipactor.loaders.loader_cst import particle_monitor
 class DictOfParticles(dict):
     """Holds all Particles, keys of dict are Particle IDs."""
 
-    def __init__(self, folder: str) -> None:
+    def __init__(self, folder: str, delimiter: str | None = None) -> None:
         """Create the object, ordered list of filepaths beeing provided."""
         dict_of_parts: dict(int, Particle) = {}
 
         filepaths = _absolute_file_paths(folder)
 
         for filepath in filepaths:
-            particles_info = particle_monitor(filepath)
+            particles_info = particle_monitor(filepath, delimiter=delimiter)
 
             for particle_info in particles_info:
                 particle_id = int(particle_info[10])
@@ -33,6 +33,7 @@ class DictOfParticles(dict):
 
         for particle in dict_of_parts.values():
             particle.finalize()
+            # particle.detect_collision()
 
         super().__init__(dict_of_parts)
 
