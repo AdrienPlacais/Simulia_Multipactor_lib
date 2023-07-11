@@ -7,8 +7,9 @@ Created on Mon Jul 10 12:35:01 2023.
 """
 import numpy as np
 
+from multipactor.constants import clight
 from multipactor.experimental.particle_monitors_converters import (
-    momentum_to_eV
+    momentum_to_eV, momentum_to_speed
 )
 
 
@@ -104,7 +105,7 @@ class Particle:
 
     def detect_collision(self) -> None:
         """Determine when and where the collision took place."""
-        raise NotImplementedError
+        self._extrapolate_pos_and_mom_one_time_step_further()
 
     def get_collision_angle(self) -> float:
         """Determine the impact incidence angle, w.r.t. the surface normal."""
@@ -113,7 +114,7 @@ class Particle:
     @property
     def emission_energy(self) -> float:
         """Compute emission energy in eV."""
-        return momentum_to_eV(self.mom[0], self.mass, self.charge)
+        return momentum_to_eV(self.mom[0], self.mass)
 
     def collision_energy(self, extrapolation: bool = True,
                          ) -> float | None:
@@ -139,10 +140,9 @@ class Particle:
         if extrapolation:
             raise NotImplementedError("TODO: extrapolation of on last time "
                                       " steps for better precision.")
-        return momentum_to_eV(self.mom[-1], self.mass, self.charge)
+        return momentum_to_eV(self.mom[-1], self.mass)
 
-    def extrapolate_pos_and_mom_one_time_step_furtger(self) -> tuple[np.array,
-                                                                     np.array]:
+    def _extrapolate_pos_and_mom_one_time_step_further(self) -> None:
         """
         Extrapolate position and momentum by one time-step.
 
@@ -162,9 +162,12 @@ class Particle:
         n_time_steps_used_for_fit = 2
         fit_end = self.time[-1]
 
-        n_time_subdivisions = 1000
+        n_time_subdivisions = 10
         extrapolated_times = np.linspace(fit_end, fit_end + time_step,
                                          n_time_subdivisions)
+
+        extrapolated_pos = _extrapolate_position(self.pos[-1], self.mom[-1],
+                                                 extrapolated_times, self.mass)
 
         extrapolated_mom = _extrapolate_momentum(
             self.time[-n_time_steps_used_for_fit:],
@@ -172,7 +175,9 @@ class Particle:
             extrapolated_times,
             poly_fit_deg=2)
 
-        return None, extrapolated_mom
+        self.extrapolated_times = extrapolated_times
+        self.extrapolated_pos = extrapolated_pos
+        self.extrapolated_mom = extrapolated_mom
 
 
 def _str_to_correct_types(line: tuple[str]) -> tuple[float | int]:
@@ -201,6 +206,18 @@ def _get_constant(variables: list[float]) -> tuple[bool, float | None]:
 def _is_sorted(array: np.ndarray) -> bool:
     """Check that given array is ordered (increasing values)."""
     return (array == np.sort(array)).all()
+
+
+def _extrapolate_position(last_pos: np.ndarray, last_mom: np.ndarray,
+                          desired_time: np.ndarray, mass: float) -> np.ndarray:
+    """Use the last known momentum to extrapolate the position."""
+    n_time_subdivisions = desired_time.shape[0]
+    desired_pos = np.full((n_time_subdivisions, 3), last_pos)
+    last_speed = momentum_to_speed(last_mom, mass)[0]
+
+    for time in range(n_time_subdivisions):
+        desired_pos[time, :] += last_speed * desired_time[time]
+    return desired_pos
 
 
 def _extrapolate_momentum(known_time: np.ndarray, known_mom: np.ndarray,
