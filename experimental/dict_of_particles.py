@@ -33,7 +33,7 @@ class DictOfParticles(dict):
 
         for particle in dict_of_parts.values():
             particle.finalize()
-            # particle.detect_collision()
+            particle.detect_collision()
 
         super().__init__(dict_of_parts)
 
