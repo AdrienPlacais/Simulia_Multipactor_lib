@@ -8,7 +8,7 @@ Created on Mon Jul 10 12:35:01 2023.
 import numpy as np
 
 from multipactor.constants import clight, qelem
-from multipactor.experimental.particle_monitors_converters import (
+from multipactor.particle_monitor.converters import (
     adim_momentum_to_eV, adim_momentum_to_speed_mm_per_ns
 )
 

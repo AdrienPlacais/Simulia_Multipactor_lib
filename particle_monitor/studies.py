@@ -8,14 +8,14 @@ Created on Mon Jul 10 15:55:49 2023.
 from typing import Any
 import numpy as np
 
-from multipactor.experimental.dict_of_particles import DictOfParticles
+from multipactor.particle_monitor.particle_monitor import ParticleMonitor
 from multipactor.visualization.plot import create_fig_if_not_exists
 
 HISTOGRAMS_BINS = 1000
 HISTOGRAM_RANGES = (0, 1e4)
 
 
-def plot_emission_energies(particles: DictOfParticles) -> None:
+def plot_emission_energies(particles: ParticleMonitor) -> None:
     """Plot the emission energies sorted by source id."""
     fig, axx = create_fig_if_not_exists(2, sharex=True, num=2)
     axx[1].set_xlabel("Emission energy [eV]")
@@ -31,7 +31,7 @@ def plot_emission_energies(particles: DictOfParticles) -> None:
         axx[i].grid(True)
 
 
-def plot_collision_energies(particles: DictOfParticles) -> None:
+def plot_collision_energies(particles: ParticleMonitor) -> None:
     """Plot all the collision energies."""
     fig, axx = create_fig_if_not_exists(1, sharex=True, num=1)
     axx[0].set_xlabel("Collision energy [eV]")
@@ -45,7 +45,7 @@ def plot_collision_energies(particles: DictOfParticles) -> None:
     axx[0].grid(True)
 
 
-def plot_trajectories(particles: DictOfParticles, particle_id: list[int],
+def plot_trajectories(particles: ParticleMonitor, particle_id: list[int],
                       structure: Any = None) -> None:
     """Plot some of the trajectories."""
     fig, axx = create_fig_if_not_exists(range(221, 224), num=3)

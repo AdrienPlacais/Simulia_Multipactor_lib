@@ -8,11 +8,11 @@ Created on Mon Jul 10 12:36:42 2023.
 import os
 import numpy as np
 
-from multipactor.experimental.particle import Particle
+from multipactor.particle_monitor.particle import Particle
 from multipactor.loaders.loader_cst import particle_monitor
 
 
-class DictOfParticles(dict):
+class ParticleMonitor(dict):
     """Holds all Particles, keys of dict are Particle IDs."""
 
     def __init__(self, folder: str, delimiter: str | None = None) -> None:
