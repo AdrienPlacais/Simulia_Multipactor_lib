@@ -10,7 +10,7 @@ import numpy as np
 from multipactor.constants import clight, qelec
 
 
-def adim_momentum_to_speed_m_per_s(mom: np.ndarray, mass: float) -> np.ndarray:
+def adim_momentum_to_speed_m_per_s(mom: np.ndarray) -> np.ndarray:
     """
     Convert adim momentum to speed in m/s.
 
@@ -32,10 +32,9 @@ def adim_momentum_to_speed_m_per_s(mom: np.ndarray, mass: float) -> np.ndarray:
     return speed_in_m_per_s
 
 
-def adim_momentum_to_speed_mm_per_ns(mom: np.ndarray, mass: float
-                                     ) -> np.ndarray:
+def adim_momentum_to_speed_mm_per_ns(mom: np.ndarray) -> np.ndarray:
     """Convert adim momentum to speed in mm/ns."""
-    speed_in_m_per_s = adim_momentum_to_speed_m_per_s(mom, mass)
+    speed_in_m_per_s = adim_momentum_to_speed_m_per_s(mom)
     return speed_in_m_per_s * 1e-6
 
 
@@ -43,7 +42,7 @@ def adim_momentum_to_eV(mom: np.ndarray, mass: float) -> np.ndarray:
     """Convert adim momentum to energy in eV."""
     if len(mom.shape) == 1:
         mom = np.expand_dims(mom, 0)
-    speed_in_m_per_s = adim_momentum_to_speed_m_per_s(mom, mass)
+    speed_in_m_per_s = adim_momentum_to_speed_m_per_s(mom)
     energy_in_J = 0.5 * mass * np.linalg.norm(speed_in_m_per_s)**2
     energy_in_eV = energy_in_J / qelec
     return energy_in_eV

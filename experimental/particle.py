@@ -171,8 +171,7 @@ class Particle:
 
         self.extrapolated_pos = _extrapolate_position(self.pos[-1],
                                                       self.mom[-1],
-                                                      self.extrapolated_times,
-                                                      self.mass)
+                                                      self.extrapolated_times)
 
         n_time_steps_for_polynom_fitting = 3
         poly_fit_deg = 2
@@ -222,7 +221,7 @@ def _is_sorted(array: np.ndarray) -> bool:
 
 
 def _extrapolate_position(last_pos: np.ndarray, last_mom: np.ndarray,
-                          desired_time: np.ndarray, mass: float) -> np.ndarray:
+                          desired_time: np.ndarray) -> np.ndarray:
     """
     Extrapolate the position using the last known momentum.
 
@@ -238,8 +237,6 @@ def _extrapolate_position(last_pos: np.ndarray, last_mom: np.ndarray,
         Last known momentum.
     desired_time : np.ndarray
         Time on which position should be extrapolated. Should not be too long.
-    mass : float
-        Mass of the particle.
 
     Returns
     -------
@@ -250,7 +247,7 @@ def _extrapolate_position(last_pos: np.ndarray, last_mom: np.ndarray,
     """
     n_time_subdivisions = desired_time.shape[0]
     desired_pos = np.full((n_time_subdivisions, 3), last_pos)
-    last_speed = adim_momentum_to_speed_m_per_s(last_mom, mass)[0]
+    last_speed = adim_momentum_to_speed_m_per_s(last_mom)[0]
 
     for time in range(n_time_subdivisions):
         desired_pos[time, :] += last_speed * desired_time[time]
