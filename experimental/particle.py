@@ -7,6 +7,7 @@ Created on Mon Jul 10 12:35:01 2023.
 """
 import numpy as np
 
+from multipactor.constants import clight, qelem
 from multipactor.experimental.particle_monitors_converters import (
     adim_momentum_to_eV, adim_momentum_to_speed_m_per_s
 )
@@ -31,6 +32,7 @@ class Particle:
 
         self._masses: list[float] | np.ndarray
         self.mass: float
+        self.mass_eV: float
         self._charges: list[float] | np.ndarray
         self.charge: float
         self.macro_charge: list[float] | np.ndarray
@@ -80,6 +82,7 @@ class Particle:
         if not isconstant:
             raise IOError("Variation of mass during simulation.")
         self.mass = constant
+        self.mass_eV = constant * clight**2 / qelem
 
         isconstant, constant = _get_constant(self._charges)
         if not isconstant:
@@ -113,7 +116,7 @@ class Particle:
     @property
     def emission_energy(self) -> float:
         """Compute emission energy in eV."""
-        return adim_momentum_to_eV(self.mom[0], self.mass)
+        return adim_momentum_to_eV(self.mom[0], self.mass_eV)
 
     def collision_energy(self, extrapolation: bool = True,
                          ) -> float | None:
@@ -139,7 +142,7 @@ class Particle:
         if extrapolation:
             raise NotImplementedError("TODO: extrapolation of on last time "
                                       " steps for better precision.")
-        return adim_momentum_to_eV(self.mom[-1], self.mass)
+        return adim_momentum_to_eV(self.mom[-1], self.mass_eV)
 
     def _extrapolate_pos_and_mom_one_time_step_further(self) -> None:
         """
