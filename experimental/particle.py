@@ -7,9 +7,8 @@ Created on Mon Jul 10 12:35:01 2023.
 """
 import numpy as np
 
-from multipactor.constants import clight
 from multipactor.experimental.particle_monitors_converters import (
-    momentum_to_eV, momentum_to_speed
+    adim_momentum_to_eV, adim_momentum_to_speed_m_per_s
 )
 
 
@@ -114,7 +113,7 @@ class Particle:
     @property
     def emission_energy(self) -> float:
         """Compute emission energy in eV."""
-        return momentum_to_eV(self.mom[0], self.mass)
+        return adim_momentum_to_eV(self.mom[0], self.mass)
 
     def collision_energy(self, extrapolation: bool = True,
                          ) -> float | None:
@@ -140,7 +139,7 @@ class Particle:
         if extrapolation:
             raise NotImplementedError("TODO: extrapolation of on last time "
                                       " steps for better precision.")
-        return momentum_to_eV(self.mom[-1], self.mass)
+        return adim_momentum_to_eV(self.mom[-1], self.mass)
 
     def _extrapolate_pos_and_mom_one_time_step_further(self) -> None:
         """
@@ -251,7 +250,7 @@ def _extrapolate_position(last_pos: np.ndarray, last_mom: np.ndarray,
     """
     n_time_subdivisions = desired_time.shape[0]
     desired_pos = np.full((n_time_subdivisions, 3), last_pos)
-    last_speed = momentum_to_speed(last_mom, mass)[0]
+    last_speed = adim_momentum_to_speed_m_per_s(last_mom, mass)[0]
 
     for time in range(n_time_subdivisions):
         desired_pos[time, :] += last_speed * desired_time[time]

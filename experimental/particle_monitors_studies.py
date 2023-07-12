@@ -57,8 +57,8 @@ def plot_trajectories(particles: DictOfParticles, particle_id: list[int],
         'xz': lambda pos: pos[:, [0, 2]],
     }
     for i, (projection_name, projection) in enumerate(projections.items()):
-        axx[i].set_xlabel(projection_name[0])
-        axx[i].set_ylabel(projection_name[1])
+        axx[i].set_xlabel(projection_name[0] + " [m]")
+        axx[i].set_ylabel(projection_name[1] + " [m]")
         axx[i].set_aspect('equal', adjustable='box')
 
         for part in particles_to_plot.values():
