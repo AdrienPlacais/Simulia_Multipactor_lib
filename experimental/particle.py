@@ -157,27 +157,41 @@ class Particle:
             full `time` steps (what I will consider for now).
 
         """
-        time_step = self.time[-1] - self.time[-2]
+        n_extrapolated_points = 10
+        self.extrapolated_times = np.full(n_extrapolated_points, np.NaN)
+        self.extrapolated_pos = np.full((n_extrapolated_points, 3), np.NaN)
+        self.extrapolated_mom = np.full((n_extrapolated_points, 3), np.NaN)
 
-        n_time_steps_used_for_fit = 2
+        if self.time.shape[0] <= 1:
+            return
+
         fit_end = self.time[-1]
+        time_step = self.time[-1] - self.time[-2]
+        self.extrapolated_times = np.linspace(fit_end, fit_end + time_step,
+                                              n_extrapolated_points)
 
-        n_time_subdivisions = 10
-        extrapolated_times = np.linspace(fit_end, fit_end + time_step,
-                                         n_time_subdivisions)
+        self.extrapolated_pos = _extrapolate_position(self.pos[-1],
+                                                      self.mom[-1],
+                                                      self.extrapolated_times,
+                                                      self.mass)
 
-        extrapolated_pos = _extrapolate_position(self.pos[-1], self.mom[-1],
-                                                 extrapolated_times, self.mass)
+        n_time_steps_for_polynom_fitting = 3
+        poly_fit_deg = 2
 
-        extrapolated_mom = _extrapolate_momentum(
-            self.time[-n_time_steps_used_for_fit:],
-            self.mom[-n_time_steps_used_for_fit, :],
-            extrapolated_times,
-            poly_fit_deg=2)
+        if poly_fit_deg >= n_time_steps_for_polynom_fitting:
+            raise IOError(f"You need at least {poly_fit_deg + 1} momentum and "
+                          "time step(s) to extrapolate momentum with a degree "
+                          f"{poly_fit_deg} polynom.")
 
-        self.extrapolated_times = extrapolated_times
-        self.extrapolated_pos = extrapolated_pos
-        self.extrapolated_mom = extrapolated_mom
+        if n_time_steps_for_polynom_fitting > self.time.shape[0]:
+            return
+
+        known_time = self.time[-n_time_steps_for_polynom_fitting:]
+        known_mom = self.mom[-n_time_steps_for_polynom_fitting:, :]
+        self.extrapolated_mom = _extrapolate_momentum(known_time,
+                                                      known_mom,
+                                                      self.extrapolated_times,
+                                                      poly_fit_deg)
 
 
 def _str_to_correct_types(line: tuple[str]) -> tuple[float | int]:
@@ -210,7 +224,31 @@ def _is_sorted(array: np.ndarray) -> bool:
 
 def _extrapolate_position(last_pos: np.ndarray, last_mom: np.ndarray,
                           desired_time: np.ndarray, mass: float) -> np.ndarray:
-    """Use the last known momentum to extrapolate the position."""
+    """
+    Extrapolate the position using the last known momentum.
+
+    This is a first-order approximation. We consider that the momentum is
+    constant over `desired_time`. Not adapted to extrapolation on long time
+    spans.
+
+    Parameters
+    ----------
+    last_pos : np.ndarray
+        Last known position.
+    last_mom : np.ndarray
+        Last known momentum.
+    desired_time : np.ndarray
+        Time on which position should be extrapolated. Should not be too long.
+    mass : float
+        Mass of the particle.
+
+    Returns
+    -------
+    desired_pos : np.ndarray
+        Extrapolated position starting from `last_pos`, over `desired_time`
+        with the constant momentum `last_mom`.
+
+    """
     n_time_subdivisions = desired_time.shape[0]
     desired_pos = np.full((n_time_subdivisions, 3), last_pos)
     last_speed = momentum_to_speed(last_mom, mass)[0]
@@ -221,7 +259,7 @@ def _extrapolate_position(last_pos: np.ndarray, last_mom: np.ndarray,
 
 
 def _extrapolate_momentum(known_time: np.ndarray, known_mom: np.ndarray,
-                          desired_time: np.ndarray, poly_fit_deg: int = 2
+                          desired_time: np.ndarray, poly_fit_deg: int
                           ) -> np.ndarray:
     """
     Extrapolate the momentum.
@@ -234,8 +272,8 @@ def _extrapolate_momentum(known_time: np.ndarray, known_mom: np.ndarray,
         y_data used for extrapolation.
     desired_time : np.ndarray
         Time momentum should be extrapolated one.
-    poly_fit_deg : int, optional
-        Degree of the polynomial fit. The default is 2.
+    poly_fit_deg : int
+        Degree of the polynomial fit.
 
     Returns
     -------
@@ -253,6 +291,6 @@ def _extrapolate_momentum(known_time: np.ndarray, known_mom: np.ndarray,
         for axis in range(3):
             for deg in range(poly_fit_deg + 1):
                 desired_mom[time, axis] += polynom[deg, axis] \
-                    * known_time[time]**deg
+                    * desired_time[time]**deg
 
     return desired_mom
