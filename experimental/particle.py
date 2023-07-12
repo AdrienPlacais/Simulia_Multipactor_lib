@@ -14,7 +14,7 @@ from multipactor.experimental.particle_monitors_converters import (
 
 
 class Particle:
-    """Holds mass, charge, evolution of position (in mm) with time (ns)."""
+    """Holds evolution of position (in mm) and adim momentum with time (ns)."""
 
     def __init__(self, *line: str) -> None:
         """Init from a line of a position_monitor file."""
@@ -276,7 +276,7 @@ def _extrapolate_momentum(known_time: np.ndarray, known_mom: np.ndarray,
     known_mom : np.ndarray
         y_data used for extrapolation.
     desired_time : np.ndarray
-        Time momentum should be extrapolated one.
+        Time momentum should be extrapolated on.
     poly_fit_deg : int
         Degree of the polynomial fit.
 
