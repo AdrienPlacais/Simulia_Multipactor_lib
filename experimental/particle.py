@@ -9,12 +9,12 @@ import numpy as np
 
 from multipactor.constants import clight, qelem
 from multipactor.experimental.particle_monitors_converters import (
-    adim_momentum_to_eV, adim_momentum_to_speed_m_per_s
+    adim_momentum_to_eV, adim_momentum_to_speed_mm_per_ns
 )
 
 
 class Particle:
-    """Holds mass, charge, evolution of position."""
+    """Holds mass, charge, evolution of position (in mm) with time (ns)."""
 
     def __init__(self, *line: str) -> None:
         """Init from a line of a position_monitor file."""
@@ -73,6 +73,7 @@ class Particle:
         """Post treat Particles for consistency checks, better data types."""
         self._check_constanteness_of_some_attributes()
         self._some_values_to_array()
+        self._switch_to_mm_ns_units()
         if not _is_sorted(self.time):
             self._sort_by_increasing_time_values()
 
@@ -95,6 +96,11 @@ class Particle:
         self.mom = np.column_stack((self._momx, self._momy, self._momz))
         self.macro_charge = np.array(self.macro_charge)
         self.time = np.array(self.time)
+
+    def _switch_to_mm_ns_units(self) -> None:
+        """Change the system units to limit rounding errors."""
+        self.pos *= 1e3     # mm
+        self.time *= 1e9    # ns
 
     def _sort_by_increasing_time_values(self) -> None:
         """Sort arrays by increasing time values."""
@@ -250,7 +256,7 @@ def _extrapolate_position(last_pos: np.ndarray, last_mom: np.ndarray,
     """
     n_time_subdivisions = desired_time.shape[0]
     desired_pos = np.full((n_time_subdivisions, 3), last_pos)
-    last_speed = adim_momentum_to_speed_m_per_s(last_mom)[0]
+    last_speed = adim_momentum_to_speed_mm_per_ns(last_mom)[0]
 
     for time in range(n_time_subdivisions):
         desired_pos[time, :] += last_speed * desired_time[time]
