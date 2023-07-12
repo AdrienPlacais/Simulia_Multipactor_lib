@@ -100,7 +100,8 @@ class Particle:
     def _switch_to_mm_ns_units(self) -> None:
         """Change the system units to limit rounding errors."""
         self.pos *= 1e3     # mm
-        self.time *= 1e9    # ns
+        self.time *= 1e18   # ns
+        # I do not know why, but time is in s * 1e-18 (aka nanonanoseconds)
 
     def _sort_by_increasing_time_values(self) -> None:
         """Sort arrays by increasing time values."""
@@ -178,9 +179,8 @@ class Particle:
         self.extrapolated_times = np.linspace(fit_end, fit_end + time_step,
                                               n_extrapolated_points)
 
-        self.extrapolated_pos = _extrapolate_position(self.pos[-1],
-                                                      self.mom[-1],
-                                                      self.extrapolated_times)
+        self.extrapolated_pos = _extrapolate_position(
+            self.pos[-1], self.mom[-1], self.extrapolated_times - fit_end)
 
         n_time_steps_for_polynom_fitting = 3
         poly_fit_deg = 2

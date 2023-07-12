@@ -11,6 +11,9 @@ import numpy as np
 from multipactor.experimental.dict_of_particles import DictOfParticles
 from multipactor.visualization.plot import create_fig_if_not_exists
 
+HISTOGRAMS_BINS = 1000
+HISTOGRAM_RANGES = (0, 1e4)
+
 
 def plot_emission_energies(particles: DictOfParticles) -> None:
     """Plot the emission energies sorted by source id."""
@@ -22,7 +25,8 @@ def plot_emission_energies(particles: DictOfParticles) -> None:
     for i in range(2):
         emission_energies = particles.emission_energies(source_id=i,
                                                         to_numpy=True)
-        counts, bins = np.histogram(emission_energies)
+        counts, bins = np.histogram(emission_energies, bins=HISTOGRAMS_BINS,
+                                    range=HISTOGRAM_RANGES)
         axx[i].hist(bins[:-1], bins, weights=counts)
         axx[i].grid(True)
 
@@ -35,7 +39,8 @@ def plot_collision_energies(particles: DictOfParticles) -> None:
 
     collision_energies = particles.collision_energies(
         to_numpy=True, extrapolation=False, remove_alive_at_end=True)
-    counts, bins = np.histogram(collision_energies)
+    counts, bins = np.histogram(collision_energies, bins=HISTOGRAMS_BINS,
+                                range=HISTOGRAM_RANGES)
     axx[0].hist(bins[:-1], bins, weights=counts)
     axx[0].grid(True)
 
