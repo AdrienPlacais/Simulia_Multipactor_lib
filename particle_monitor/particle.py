@@ -54,7 +54,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         ``mom``, etc.
     particle_id : int
         Unique id for the particle.
-    source_id : int
+    source_id : {0, 1}
         Gives information on how the particle was created.
     extrapolated_times : np.ndarray | None
         Times at which position and momentum are extrapolated.

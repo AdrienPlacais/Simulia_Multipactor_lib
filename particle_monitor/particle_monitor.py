@@ -69,7 +69,7 @@ class ParticleMonitor(dict):
 
     @property
     def emitted_electrons(self) -> dict[int, Particle]:
-        """Return only seed electrons."""
+        """Return only emitted electrons."""
         return _filter_source_id(self, 1)
 
     def emission_energies(self, source_id: int | None = None,
