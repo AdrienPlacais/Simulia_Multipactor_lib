@@ -1,10 +1,10 @@
 # About this package
 This package is a set of utils oriented towards multipacting analysis.
 In particular:
- - load particle sweeps and position monitor data from CST Microwave Studio;
- - load results from SPARK3D;
- - post-treat electron vs time results from these tools: multipactor trend, multipactor order.
- - post-treat position monitor data: energy of incoming electrons, impact angle (TODO).
+ - Load particle sweeps and position monitor data from CST Microwave Studio.
+ - Load results from SPARK3D.
+ - Post-treat electron vs time results from these tools: multipactor trend, multipactor order.
+ - Post-treat position monitor data: energy of incoming electrons, impact angle (TODO).
 
 # Installing this package
 You will need a recent version of Python (>3.7).
