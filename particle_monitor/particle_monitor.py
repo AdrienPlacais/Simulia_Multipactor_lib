@@ -4,6 +4,11 @@
 Created on Mon Jul 10 12:36:42 2023.
 
 @author: placais
+
+In this module we define :class:`ParticleMonitor`, a dictionary-based  object
+that holds :class:`Particle` objects. Keys of the dictionary are the particle
+id of the :class:`Particle`.
+
 """
 import os
 import numpy as np
@@ -13,10 +18,28 @@ from multipactor.loaders.loader_cst import particle_monitor
 
 
 class ParticleMonitor(dict):
-    """Holds all Particles, keys of dict are Particle IDs."""
+    """
+    Holds all :class:`Particle` objects as values, particle id as keys.
+
+    Attributes
+    ----------
+    max_time : float
+        Time at which the simulation ended.
+
+    """
 
     def __init__(self, folder: str, delimiter: str | None = None) -> None:
-        """Create the object, ordered list of filepaths beeing provided."""
+        """Create the object, ordered list of filepaths beeing provided.
+
+        Parameters
+        ----------
+        folder : str
+            Folder where all the CST ParticleMonitor files are stored.
+        delimiter : str | None, optional
+            Delimiter used to separate columns in the CST ParticleMonitor
+            files. The default is None.
+
+        """
         dict_of_parts: dict(int, Particle) = {}
 
         filepaths = _absolute_file_paths(folder)
@@ -79,9 +102,8 @@ class ParticleMonitor(dict):
             collision energy. Otherwise, we simply take the last known energy
             of the particle. The default is True.
         remove_alive_at_end : bool, optional
-            If True, we do not return the particles that were alived at the end
-            of the simulation, which did not make a collision. The default is
-            True.
+            To remove particles alive at the end of the simulation (did not
+            impact a wall). The default is True.
 
         """
         subset = self

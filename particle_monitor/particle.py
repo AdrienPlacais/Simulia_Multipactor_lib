@@ -4,6 +4,10 @@
 Created on Mon Jul 10 12:35:01 2023.
 
 @author: placais
+
+In this module we define :class:`Particle`. This object is created by
+sequentially reading CST ParticleMonitor files.
+
 """
 import numpy as np
 
@@ -13,8 +17,49 @@ from multipactor.particle_monitor.converters import (
 )
 
 
-class Particle:
-    """Holds evolution of position (in mm) and adim momentum with time (ns)."""
+class Particle:  # pylint: disable=too-many-instance-attributes
+    """Holds evolution of position (in mm) and adim momentum with time (ns).
+
+    Attributes
+    ----------
+    _posx, _posy, _posz : list[float]
+        Position in m at each time step along each direction.
+    pos : np.ndarray
+        Position in mm along the three directions stored in a single array.
+    _momx _momy, _momz : list[float]
+        Adimensional momentum at each time step along each direction.
+    mom : np.ndarray
+        Adimensional momentum along three directions stored in a single array.
+    extrapolated_pos : np.ndarray | None
+        Position in mm, extrapolated to refine the position of collision.
+    extrapolated_mom : np.ndarray | None
+        Adimensional momentum, extrapolated to refine the momentum of
+        collision.
+    _masses : list[float] | np.ndarray
+        Mass of particle at each time step. An error is raised if it changes
+        between two files.
+    mass : float
+        Mass of the particle in kg.
+    mass_eV : float
+        Mass of the particle in eV.
+    _charges : list[float] | np.ndarray
+        Charge of particle at each time step. An error is raised if it changes
+        between two files.
+    charge : float
+        Charge of the particle.
+    macro_charge : list[float] | np.ndarray
+        Charge of the macro-particle.
+    time : list[float] | np.ndarray
+        Holds the time steps in ns corresponding to every value of ``pos``,
+        ``mom``, etc.
+    particle_id : int
+        Unique id for the particle.
+    source_id : int
+        Gives information on how the particle was created.
+    extrapolated_times : np.ndarray | None
+        Times at which position and momentum are extrapolated.
+
+    """
 
     def __init__(self, *line: str) -> None:
         """Init from a line of a position_monitor file."""
@@ -29,10 +74,11 @@ class Particle:
 
         self.extrapolated_pos: np.ndarray | None = None
         self.extrapolated_mom: np.ndarray | None = None
+        self.extrapolated_times: np.ndarray | None = None
 
         self._masses: list[float] | np.ndarray
         self.mass: float
-        self.mass_eV: float
+        self.mass_eV: float  # pylint: disable=invalid-name
         self._charges: list[float] | np.ndarray
         self.charge: float
         self.macro_charge: list[float] | np.ndarray
@@ -98,7 +144,15 @@ class Particle:
         self.time = np.array(self.time)
 
     def _switch_to_mm_ns_units(self) -> None:
-        """Change the system units to limit rounding errors."""
+        """
+        Change the system units to limit rounding errors.
+
+        .. warning::
+            In CST Particle Monitor files, the time is given in seconds *
+            1e-18 (aka nano-nanoseconds).  Tested with CST units for time in
+            nanoseconds.
+
+        """
         self.pos *= 1e3     # mm
         self.time *= 1e18   # ns
         # I do not know why, but time is in s * 1e-18 (aka nanonanoseconds)
@@ -158,12 +212,12 @@ class Particle:
         CST PIC solves the motion with a leapfrog solver (source: Mohamad
         Houssini from Keonys, private communication).
         Several possibilities:
-            - `pos` corresponds to `time` and `mom` shifted by half time-steps
-            (most probable).
-            - `mom` corresponds to `time` and `pos` shifted by half time-steps
-            (also possible).
-            - `pos` or `mom` is interpolated so that both are expressed at
-            full `time` steps (what I will consider for now).
+        - ``pos`` corresponds to ``time`` and ``mom`` shifted by half
+        time-steps (most probable).
+        - ``mom`` corresponds to ``time`` and ``pos`` shifted by half
+        time-steps (also possible).
+        - ``pos`` or ``mom`` is interpolated so that both are expressed at
+        full ``time`` steps (what I will consider for now).
 
         """
         n_extrapolated_points = 10
