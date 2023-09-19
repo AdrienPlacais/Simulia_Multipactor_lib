@@ -21,6 +21,7 @@ extensions = [
     "myst_parser",
     "sphinx.ext.todo",          # allow use of TODO
     # "sphinx.ext.viewcode",
+    # "sphinxcontrib.fulltoc",
 ]
 
 autodoc_default_options = {

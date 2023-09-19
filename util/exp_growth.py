@@ -5,14 +5,22 @@ Created on Mon Jan 16 17:32:09 2023.
 
 @author: placais
 
-Module to store the exponential growth models, perform fit.
-Currently, only exponential growth model is implemented:
-    N(t) = N_0 * exp(alfa * t)
+Module to store the exponential growth models, perform fit.  Currently, only
+exponential growth model is implemented:
+
+.. math::
+    N(t) = N_0 \\mathrm{e}^{\\alpha t}
 
 Other approaches that have been tried:
-    N(t) = N_0 * (1 + K * cos(omega_0 * t + phi)) * exp(alfa * t)
-    N(t) = N_0 * (1 + K * cos(omega_0 * t / MPperiod + phi)) * exp(alfa * t)
+
+.. math::
+    N(t) = N_0 (1 + K \\cos{(\\omega_0 t + \\phi_0)}) \\mathrm{e}^{\\alpha t}
+
+    N(t) = N_0 (1 + K \\cos{(\\omega_0 t / T_{MP} + \\phi_0)})
+    \\mathrm{e}^{\\alpha t}
+
 I dropped it as with too much unkowns, any model can fit anything.
+
 """
 
 import warnings
@@ -28,11 +36,14 @@ warnings.simplefilter("error", OptimizeWarning)
 # =============================================================================
 # Called by user
 # =============================================================================
-def fit_all(str_model: str, d_data: dict, map_id: dict, key_part: str,
+def fit_all(str_model: str,
+            data: dict,
+            map_id: dict,
+            key_part: str,
             period: float,
             fitting_range: float, running_mean: bool = True):
     """Perform the exponential growth fit over all set of parameters."""
-    for key, val in d_data.items():
+    for key, val in data.items():
         modelled, fit_parameters = _fit_single(str_model, val[key_part],
                                                period, fitting_range)
 
@@ -46,12 +57,12 @@ def fit_all(str_model: str, d_data: dict, map_id: dict, key_part: str,
         val["alfa (model)"] = fit_parameters[1]
 
 
-def fit_all_spark(str_model: str, d_data: dict, key_part: str,
+def fit_all_spark(str_model: str, data: dict, key_part: str,
                   fitting_range: float, period: float,
                   running_mean: bool = True):
     """Perform the exponential growth fit over all set of parameters."""
     key_eacc = 'E_acc in MV per m'
-    for key, val in d_data.items():
+    for key, val in data.items():
         modelled, fit_parameters = \
             _fit_single_spark(str_model, val[key_part], fitting_range, period,
                               e_acc=val[key_eacc])
@@ -135,7 +146,8 @@ def _fit_single(str_model: str, data: np.array, period: float,
         Holds time in first column, modelled number of electrons in second.
     fit_parameters : tuple or None
         Holds all exp growth model parameters, as well as the time at which the
-        fit starts. If no MP, fit_parameters is None
+        fit starts. If no MP, fit_parameters is None.
+
     """
     model, model_log, model_printer, n_args, bounds, initial_values \
         = _select_model(str_model)
@@ -225,7 +237,8 @@ def _fit_single_spark(str_model: str, data: np.array, fitting_range: float,
         Holds time in first column, modelled number of electrons in second.
     fit_parameters : tuple or None
         Holds all exp growth model parameters, as well as the time at which the
-        fit starts. If no MP, fit_parameters is None
+        fit starts. If no MP, fit_parameters is None.
+
     """
     model, model_log, model_printer, n_args, bounds, initial_values \
         = _select_model(str_model)
@@ -254,8 +267,8 @@ def _fit_single_spark(str_model: str, data: np.array, fitting_range: float,
     t_lim = 5. * period
     if t_start < t_lim:
         printc("exp_growth._fit_single_spark warning:", f"E_acc={e_acc:.2e} ",
-                "fitting range too large w.r.t simulation time! I set it to a",
-                f"higher value {t_lim:2f}ns.")
+               "fitting range too large w.r.t simulation time! I set it to a",
+               f"higher value {t_lim:2f}ns.")
         t_start = t_lim
 
     idx_start = np.argmin(np.abs(data[:, 0] - t_start))

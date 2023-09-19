@@ -4,11 +4,15 @@
 Created on Mon Feb 27 13:14:58 2023.
 
 @author: placais
+
+In this module we store some generic helper functions for plotting.
+
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
-# from collections import OrderedDict
+from matplotlib.figure import Figure
+from matplotlib.axes._axes import Axes
 
 import multipactor.loaders.loader_cst as lcst
 
@@ -22,42 +26,47 @@ plt.rcParams["figure.figsize"] = (19.2, 11.24)
 plt.rcParams["figure.dpi"] = 100
 
 
-def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str,
-                        title: str = None, x_label: str = None,
-                        y_label: str = None, yscale: str = None,
-                        l_plot_kwargs: list = None):
+def plot_dict_of_arrays(data: dict,
+                        map_id: dict,
+                        key_data: str,
+                        title: str | None = None,
+                        x_label: str | None = None,
+                        y_label: str | None = None,
+                        yscale: str | None = None,
+                        l_plot_kwargs: dict | list[dict] | None = None
+                        ) -> tuple[Figure, list[Axes]]:
     """
     Plot 2D data for every set of parameters.
 
     Parameters
     ----------
-    d_data : dict
+    data : dict
         Data as returned by loader_cst.get_parameter_sweep_auto_export.
     map_id : dict
-        Links every d_data key to parameter values, as returned by
+        Links every data key to parameter values, as returned by
         loader_cst.full_map_param_to_id.
     key_data : str
         Key to the 2D data that you want to plot.
-    title : str, optional
+    title : str | None, optional
         Plot title. The default is None.
-    x_label : str, optional
+    x_label : str | None, optional
         x axis label. The default is None.
-    y_label : str, optional
+    y_label : str | None, optional
         y axis label. The default is None.
-    yscale : str, optional
+    yscale : str | None, optional
         Key for set_yscale method. The default is None.
-    l_plot_kwargs : dict or list of dict, optional
+    l_plot_kwargs : dict | list[dict] | None, optional
         kwargs for the ax.plot method.
         If it is a dict, the same kwargs are used for every plot.
-        If it is a list of dicts, it's length must match the length of d_data
+        If it is a list of dicts, it's length must match the length of data
         and map_id.
 
     Returns
     -------
-    fig : matplotlib.figure.Figure
+    fig : Figure
         Figure plotted.
-    axx : matplotlib.axes.Axes
-        Plotted axe.
+    axx : list[Axes]
+        Plotted ax.
 
     """
     fig, axx = create_fig_if_not_exists(1, sharex=True, num=1)
@@ -82,19 +91,25 @@ def plot_dict_of_arrays(d_data: dict, map_id: dict, key_data: str,
         l_plot_kwargs = [l_plot_kwargs for _id in map_id.keys()]
 
     for (_id, val), kwargs in zip(map_id.items(), l_plot_kwargs):
-        axx.plot(d_data[_id][key_data][:, 0], d_data[_id][key_data][:, 1],
+        axx.plot(data[_id][key_data][:, 0], data[_id][key_data][:, 1],
                  label=val, **kwargs)
     axx.legend()
 
     return fig, axx
 
 
-def plot_dict_of_floats(d_data: dict, key_ydata: str, *args,
-                        title: str = None, x_label: str = None,
-                        y_label: str = None, yscale: str = None,
-                        save_data: bool = False, save_path: str = None):
+def plot_dict_of_floats(data: dict,
+                        key_ydata: str,
+                        *args,
+                        title: str | None = None,
+                        x_label: str | None = None,
+                        y_label: str | None = None,
+                        yscale: str | None = None,
+                        save_data: bool = False,
+                        save_path: str | None = None
+                        ) -> tuple[Figure, list[Axes]]:
     """
-    Plot key_ydata as a function of first arg, for every other args.
+    Plot ``key_ydata`` as a function of first arg, for every other args.
     """
     if len(args) > 2:
         raise NotImplementedError('Not implemented')
@@ -113,7 +128,7 @@ def plot_dict_of_floats(d_data: dict, key_ydata: str, *args,
     if yscale is not None:
         axx.set_yscale(yscale)
 
-    plot_data = lcst.get_values(d_data, key_ydata, *args, to_numpy=True,
+    plot_data = lcst.get_values(data, key_ydata, *args, to_numpy=True,
                                 ins_param=True)
 
     x_data = plot_data[1:, 0]   # first of args
@@ -125,8 +140,7 @@ def plot_dict_of_floats(d_data: dict, key_ydata: str, *args,
         if save_data:
             assert save_path is not None
             save_me = np.column_stack((x_data, y_data[:, i]))
-            np.savetxt(save_path + f"param={z_data[i]}.txt",
-                       save_me)
+            np.savetxt(save_path + f"param={z_data[i]}.txt", save_me)
     axx.legend()
 
     return fig, axx
@@ -135,15 +149,19 @@ def plot_dict_of_floats(d_data: dict, key_ydata: str, *args,
 # =============================================================================
 # Generic plot helpers
 # =============================================================================
-def create_fig_if_not_exists(axnum: int, sharex=False, num=1, clean_fig=False):
+def create_fig_if_not_exists(axnum: int | list[int],
+                             sharex: bool = False,
+                             num: int = 1,
+                             clean_fig: bool = False
+                             ) -> tuple[Figure, list[Axes]]:
     """
     Check if figures were already created, create it if not.
 
     Parameters
     ----------
-    axnum : int or list of int
-        Axes indexes as understood by fig.add_subplot or number of desired
-        axes.
+    axnum : int | list[int]
+        Axes indexes as understood by :func:`fig.add_subplot` or number of
+        desired axes.
     sharex : boolean, optional
         If x axis should be shared. The default is False.
     num : int, optional
@@ -154,10 +172,11 @@ def create_fig_if_not_exists(axnum: int, sharex=False, num=1, clean_fig=False):
 
     Return
     ------
-    fig : matplotlib.figure
+    fig : Figure
         Figure holding axes.
-    axlist : list of matplotlib.Axes.axes
+    axlist : list[Axes]
         Axes of Figure.
+
     """
     if isinstance(axnum, int):
         # We make a one-column, axnum rows figure
@@ -185,7 +204,7 @@ def create_fig_if_not_exists(axnum: int, sharex=False, num=1, clean_fig=False):
     return fig, axlist
 
 
-def _clean_fig(fignumlist):
+def _clean_fig(fignumlist: list[int]) -> None:
     """Clean axis of Figs in fignumlist."""
     for fignum in fignumlist:
         fig = plt.figure(fignum)
@@ -193,7 +212,7 @@ def _clean_fig(fignumlist):
             axx.cla()
 
 
-def _savefig(fig, filepath):
+def _savefig(fig: Figure, filepath: str) -> None:
     """Save the figure."""
     # fig.tight_layout()
     fig.savefig(filepath)

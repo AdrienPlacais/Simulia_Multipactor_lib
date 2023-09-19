@@ -4,6 +4,12 @@
 Created on Mon Feb 27 09:23:41 2023.
 
 @author: placais
+
+This script showcases how multipactor can be analyzed from SPARK3D files. For
+files manually exported (Right-click on ``Multipactor results``,
+``Export to CSV``), use :func:`get_population_evolution``.
+For files automatically exported by SPARK3D, use :func:`get_time_results`.
+
 """
 import os
 import random as rand
@@ -61,7 +67,7 @@ filetype = os.path.splitext(filepath)[-1]
 get = d_get_pop[filetype]
 
 # Load data
-d_data, parameters = get(filepath, e_acc=e_acc)
+data, parameters = get(filepath, e_acc=e_acc)
 
 del filetype, d_get_pop, get
 # =============================================================================
@@ -78,7 +84,7 @@ key_eacc = 'E_acc in MV per m'
 # =============================================================================
 # Exp growth fit
 # =============================================================================
-mp_exp.fit_all_spark(str_model='classic', d_data=d_data, key_part=key_part,
+mp_exp.fit_all_spark(str_model='classic', data=data, key_part=key_part,
                      fitting_range=fitting_range)
 
 # =============================================================================
@@ -88,15 +94,15 @@ if plot_some_pop_evolutions:
     # Plot five Electrons vs Time maximum
     n_plots = min(5, len(e_acc))
 
-    d_data_sample = {}
+    data_sample = {}
     map_id_sample = {}
-    for i in rand.sample(list(d_data.keys()), n_plots):
-        d_data_sample[i] = d_data[i]
+    for i in rand.sample(list(data.keys()), n_plots):
+        data_sample[i] = data[i]
         map_id_sample[i] = map_id[i]
 
     kwargs = {'x_label': "Time [ns]", 'y_label': "Electrons", 'yscale': 'log',
               'title': f'Labels correspond to: {None}'}
-    _, axx = mp_plt.plot_dict_of_arrays(d_data_sample, map_id_sample, key_part,
+    _, axx = mp_plt.plot_dict_of_arrays(data_sample, map_id_sample, key_part,
                                         **kwargs)
     # We want to plot the modelled exp growth with dashed thicker line and the
     # same color as the reference
@@ -105,7 +111,7 @@ if plot_some_pop_evolutions:
                       'lw': 4,
                       'c': line.get_color()
                       } for line in lines]
-    _, _ = mp_plt.plot_dict_of_arrays(d_data_sample, map_id_sample, key_model,
+    _, _ = mp_plt.plot_dict_of_arrays(data_sample, map_id_sample, key_model,
                                       **kwargs, l_plot_kwargs=l_plot_kwargs)
 
 
@@ -116,7 +122,7 @@ if plot_exp_growth_factors:
     keys_param_alfa = (key_eacc, )
     fig, ax = mp_plt.create_fig_if_not_exists(1, num=2)
     ax = ax[0]
-    alfas = [d_data[i + 1][key_alfa] for i in range(len(e_acc))]
+    alfas = [data[i + 1][key_alfa] for i in range(len(e_acc))]
     ax.plot(e_acc, alfas, label=label)
     ax.grid(True)
     ax.set_xlabel(r"$E_{acc}$ [MV/m]")

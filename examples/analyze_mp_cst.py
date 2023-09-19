@@ -4,6 +4,10 @@
 Created on Mon Feb 27 09:23:41 2023.
 
 @author: placais
+
+This script showcases how CST data can be analyzed. Data must comes from the
+``Export Parametric`` option of CST.
+
 """
 import os.path
 import random as rand
@@ -55,22 +59,23 @@ key_part = 'Particle vs. Time'
 key_alfa = 'alfa (model)'
 key_model = f"{key_part} (model)"
 
-d_str = {key_eacc: r"$E_{acc}$ [V/m]",
-         key_size_cell: "Max. size of meshcell [mm]",
-         key_freq: "Frequency [GHz]",
-         key_alfa: r"$\alpha$ [1/ns]",
-         key_npart: r"Init. number of electrons"
-         }
+key_to_markdown_label = {key_eacc: r"$E_{acc}$ [V/m]",
+                         key_size_cell: "Max. size of meshcell [mm]",
+                         key_freq: "Frequency [GHz]",
+                         key_alfa: r"$\alpha$ [1/ns]",
+                         key_npart: r"Init. number of electrons"
+                         }
 
-labels = [d_str[key] for key in keys_param]
+labels = [key_to_markdown_label[key] for key in keys_param]
 
 # Load all data from all simulations
-d_data = lcst.get_parameter_sweep_auto_export(filepath)
-for key in d_data.keys():
-    d_data[key]['Parameters']['N_0'] = np.round(d_data[key]['Parameters']['N_0'], 0)
+data = lcst.get_parameter_sweep_auto_export(filepath)
+for key in data.keys():
+    data[key]['Parameters']['N_0'] = np.round(data[key]['Parameters']['N_0'],
+                                              0)
 
 # Parameters we are interested into
-map_id, d_uniques = lcst.full_map_param_to_id(d_data, *keys_param)
+map_id, d_uniques = lcst.full_map_param_to_id(data, *keys_param)
 if len(d_uniques[key_freq]) != 1:
     print(f"""analyze_mp warning: more than one frequency detected.
           Only considering f={d_uniques[key_freq][0]}""")
@@ -84,7 +89,7 @@ fitting_range = 5. * period
 # =============================================================================
 # Exp growth fit
 # =============================================================================
-mp_exp.fit_all(str_model='classic', d_data=d_data, map_id=map_id,
+mp_exp.fit_all(str_model='classic', data=data, map_id=map_id,
                key_part=key_part, period=period, fitting_range=fitting_range)
 
 # =============================================================================
@@ -94,15 +99,15 @@ if plot_some_pop_evolutions:
     # Plot five Electrons vs Time maximum
     n_plots = min(5, len(map_id))
 
-    d_data_sample = {}
+    data_sample = {}
     map_id_sample = {}
     for i in rand.sample(list(map_id.keys()), n_plots):
-        d_data_sample[i] = d_data[i]
+        data_sample[i] = data[i]
         map_id_sample[i] = map_id[i]
 
     kwargs = {'x_label': "Time [ns]", 'y_label': "Electrons", 'yscale': 'log',
               'title': f'Labels correspond to: {labels}'}
-    _, axx = mp_plt.plot_dict_of_arrays(d_data_sample, map_id_sample, key_part,
+    _, axx = mp_plt.plot_dict_of_arrays(data_sample, map_id_sample, key_part,
                                         **kwargs)
     # We want to plot the modelled exp growth with dashed thicker line and the
     # same color as the reference
@@ -111,7 +116,7 @@ if plot_some_pop_evolutions:
                       'lw': 4,
                       'c': line.get_color()
                       } for line in lines]
-    _, _ = mp_plt.plot_dict_of_arrays(d_data_sample, map_id_sample, key_model,
+    _, _ = mp_plt.plot_dict_of_arrays(data_sample, map_id_sample, key_model,
                                       **kwargs, l_plot_kwargs=l_plot_kwargs)
 
 
@@ -121,13 +126,13 @@ if plot_some_pop_evolutions:
 if plot_exp_growth_factors:
     keys_param = (key_eacc, key_npart)
 
-    labels = [d_str[key] for key in keys_param]
+    labels = [key_to_markdown_label[key] for key in keys_param]
     kwargs = {
-        'x_label': d_str[key_eacc],
-        'y_label': d_str[key_alfa],
+        'x_label': key_to_markdown_label[key_eacc],
+        'y_label': key_to_markdown_label[key_alfa],
         }
-    save_path = os.path.join(filepath, '../saved_data',
+    save_path = os.path.join(filepath, '../savedata',
                              f'exp_growth_{material}_sizecell_')
 
-    _, _ = mp_plt.plot_dict_of_floats(d_data, key_alfa, *keys_param,
+    _, _ = mp_plt.plot_dict_of_floats(data, key_alfa, *keys_param,
                                       save_data=savedat, save_path=save_path)
