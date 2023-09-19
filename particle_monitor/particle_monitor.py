@@ -9,6 +9,9 @@ In this module we define :class:`ParticleMonitor`, a dictionary-based  object
 that holds :class:`Particle` objects. Keys of the dictionary are the particle
 id of the :class:`Particle`.
 
+.. todo::
+    Raise error when folder is not found.
+
 """
 import os
 import numpy as np
