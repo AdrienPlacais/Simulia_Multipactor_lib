@@ -86,77 +86,6 @@ def get_points(mesh: mesh.Mesh) -> np.ndarray:
 
 
 # =============================================================================
-# Collision detection
-# =============================================================================
-def compute_centroids(truc: mesh.Mesh) -> np.array:
-    """
-    Compute centre of every triangular mesh cell.
-
-    Parameters
-    ----------
-    truc : mesh.Mesh
-        A random object.
-
-    Returns
-    -------
-    cent : np.ndarray
-        (N, 3) array containing the coordinates of every cell center.
-
-    """
-    points = truc.points
-    cent = np.column_stack((np.mean(points[:, ::3], axis=1),
-                            np.mean(points[:, 1::3], axis=1),
-                            np.mean(points[:, 2::3], axis=1),
-                            ))
-    return cent
-
-
-def distance_to_centroids(trajectory: np.ndarray, centroids: np.ndarray
-                          ) -> np.ndarray:
-    """
-    Get distance at every time step between particle and every mesh.
-
-    Parameters
-    ----------
-    trajectory : np.ndarray
-        (M, 3) array holding position of a particle at several time steps.
-    centroids : np.ndarray
-        (N, 3) array containing the coordinates of every cell center.
-
-    Returns
-    -------
-    distance_matrix : np.ndarray
-        (N, M) array holding the distance between particle and every centroid
-        at every time step.
-
-    """
-    n_cells = centroids.shape[0]
-    n_time_steps = trajectory.shape[0]
-    distance_matrix = np.zeros((n_cells, n_time_steps))
-
-    for i, cell_center in enumerate(centroids):
-        for j, position in enumerate(trajectory):
-            distance_matrix[i, j] = np.linalg.norm(cell_center - position)
-    return distance_matrix
-
-
-def get_collision(trajectory: np.ndarray, truc: mesh.Mesh
-                  ) -> tuple[np.ndarray, int, int]:
-    """Detect the collision between trajectory and ``truc``."""
-    centroids = compute_centroids(truc)
-    distances = distance_to_centroids(trajectory, centroids)
-
-    cell_idx, time_idx = np.unravel_index(np.argmin(distances),
-                                          shape=distances.shape)
-    min_distance = distances[cell_idx, time_idx]
-
-    print(f"Collision on cell number {cell_idx} (centroid "
-          f"{centroids[cell_idx]})\nat time idx {time_idx} (pos "
-          f"{trajectory[time_idx]}).\nCorresp distance is {min_distance}.")
-    return min_distance, cell_idx, time_idx
-
-
-# =============================================================================
 # Plotting
 # =============================================================================
 def create_3d_fig() -> tuple[Figure, Axes]:
@@ -199,7 +128,7 @@ def equal_scale(truc: mesh.Mesh, axes: Axes) -> None:
 
 
 # =============================================================================
-# Try something
+# Collision detection
 # =============================================================================
 def ray_triangle_intersection(ray_near: np.ndarray,
                               ray_dir: np.ndarray,
@@ -304,10 +233,6 @@ if __name__ == '__main__':
     trajectory = generate_linear_trajectory(np.array([0., 0., 0.]),
                                             np.array([0.7, -0.32, 0.4]))
     plot_lines(trajectory, axes, **{'c': 'r'})
-
-    # min_distance, cell_idx, time_idx = get_collision(trajectory, cube)
-    # plot_points(centroids[cell_idx], axes, **{'c': 'k', 's': 100})
-    # plot_points(trajectory[time_idx], axes, **{'c': 'k', 's': 100})
 
     ray_near = trajectory[0]
     ray_dir = trajectory[-1] - trajectory[0]
