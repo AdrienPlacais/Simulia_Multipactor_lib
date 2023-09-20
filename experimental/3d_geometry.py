@@ -112,14 +112,26 @@ def equal_scale(truc: mesh.Mesh, axes: Axes) -> None:
 # =============================================================================
 # Collision detection
 # =============================================================================
-def generate_random_ray() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def generate_random_ray(truc: mesh.Mesh,
+                        max_distance: float | None = None,
+                        seed: int | None = None,
+                        ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Generate a random ray that can cross (or not) the cube."""
-    ray_origin = np.random.rand(3) * 1.1 - 0.55
-    ray_direction = np.random.rand(3) - 0.5
+    rng = np.random.default_rng(seed=seed)
+    # not clean...
+    max_, min_ = 1.1 * truc.max_, 1.1 * truc.min_
+
+    ray_origin = np.zeros(3)
+    # ray_origin = rng.random(3) * (max_ - min_) + min_
+    ray_direction = rng.random(3)
     ray_direction /= np.linalg.norm(ray_direction)
+
+    if max_distance is None:
+        # not clean
+        max_distance = .8 * (np.mean(max_) - np.mean(min_))
     trajectory = np.vstack((ray_origin,
-                            ray_origin + 2 * ray_direction))
-    return ray_origin, ray_direction, trajectory
+                            ray_origin + max_distance * ray_direction))
+    return ray_origin, ray_direction, trajectory, max_distance
 
 
 def ray_triangle_intersection(ray_origin: np.ndarray,
@@ -128,6 +140,7 @@ def ray_triangle_intersection(ray_origin: np.ndarray,
                               vertex_2: np.ndarray,
                               vertex_3: np.ndarray,
                               eps: float = 1e-6,
+                              max_distance: float = 1.,
                               ) -> tuple[bool, np.ndarray | None]:
     """
     Determine if ``ray_origin`` intersects the cell.
@@ -185,7 +198,7 @@ stltool.py#L47
         return False, None
 
     t_coord = edge_2.dot(qvec) * inv_triple_product
-    if t_coord < eps:
+    if t_coord < eps or t_coord > max_distance:
         # Line intersection but no ray intersection
         return False, None
 
@@ -194,7 +207,8 @@ stltool.py#L47
 
 def ray_mesh_intersections(ray_origin: np.ndarray,
                            ray_direction: np.ndarray,
-                           truc: mesh.Mesh
+                           truc: mesh.Mesh,
+                           max_distance: float,
                            ) -> tuple[list[bool], list[float | None]]:
     """Get all intersections between ray and complete mesh."""
     collisions, distances = [], []
@@ -204,7 +218,9 @@ def ray_mesh_intersections(ray_origin: np.ndarray,
             ray_direction,
             cell_v0,
             cell_v1,
-            cell_v2)
+            cell_v2,
+            max_distance=max_distance,
+        )
         collisions.append(collision), distances.append(distance)
     return collisions, distances
 
@@ -226,13 +242,15 @@ if __name__ == '__main__':
                                         'alpha': .3,
                                         })
 
-    ray_origin, ray_direction, trajectory = generate_random_ray()
+    ray_origin, ray_direction, trajectory, max_distance = generate_random_ray(
+        my_mesh, seed=None)
     plot_lines(trajectory, axes, **{'c': 'r'})
     plot_points(trajectory, axes, **{'c': 'r', 's': 50})
 
     collisions, distances = ray_mesh_intersections(ray_origin,
                                                    ray_direction,
-                                                   my_mesh)
+                                                   my_mesh,
+                                                   max_distance)
 
     impacted_cells = my_mesh.vectors[collisions]
     print(f"Number of impacted cells: {len(impacted_cells)}")
