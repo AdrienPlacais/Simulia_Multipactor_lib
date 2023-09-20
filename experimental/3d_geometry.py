@@ -65,33 +65,15 @@ def half_cube_data_to_cube(data: np.ndarray) -> mesh.Mesh:
 
 
 # =============================================================================
-# Trajectory for my case
-# =============================================================================
-def generate_linear_trajectory(start: np.ndarray, stop: np.ndarray
-                               ) -> np.ndarray:
-    """Create points representing a linear trajectory."""
-    n_points = 101
-    trajectory = np.column_stack((
-        np.linspace(start[0], stop[0], n_points),
-        np.linspace(start[1], stop[1], n_points),
-        np.linspace(start[2], stop[2], n_points)))
-    return trajectory
-
-
-def get_points(mesh: mesh.Mesh) -> np.ndarray:
-    """Extract points from mesh, remove doublons."""
-    points = mesh.points()
-    points = points.reshape([-1, 3])
-    return np.unique(points, axis=0)
-
-
-# =============================================================================
 # Plotting
 # =============================================================================
 def create_3d_fig() -> tuple[Figure, Axes]:
     """Create the 3d plot."""
     fig = plt.figure(1)
     axes = fig.add_subplot(projection='3d')
+    axes.set_xlabel(r"$x$")
+    axes.set_ylabel(r"$y$")
+    axes.set_zlabel(r"$z$")
     return fig, axes
 
 
@@ -130,117 +112,141 @@ def equal_scale(truc: mesh.Mesh, axes: Axes) -> None:
 # =============================================================================
 # Collision detection
 # =============================================================================
-def ray_triangle_intersection(ray_near: np.ndarray,
-                              ray_dir: np.ndarray,
-                              v123: tuple[float, float, float],
-                              eps: float = 0.000001,
+def generate_random_ray() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Generate a random ray that can cross (or not) the cube."""
+    ray_origin = np.random.rand(3) * 1.1 - 0.55
+    ray_direction = np.random.rand(3) - 0.5
+    ray_direction /= np.linalg.norm(ray_direction)
+    trajectory = np.vstack((ray_origin,
+                            ray_origin + 2 * ray_direction))
+    return ray_origin, ray_direction, trajectory
+
+
+def ray_triangle_intersection(ray_origin: np.ndarray,
+                              ray_direction: np.ndarray,
+                              vertex_1: np.ndarray,
+                              vertex_2: np.ndarray,
+                              vertex_3: np.ndarray,
+                              eps: float = 1e-6,
                               ) -> tuple[bool, np.ndarray | None]:
     """
-    Determine if ``ray_near`` intersects the cell.
+    Determine if ``ray_origin`` intersects the cell.
 
-    Based on Möller–Trumbore intersection algorithm.
-    Based on http://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
-    Stolen from ``printrun``: https://github.com/kliment/Printrun/blob/master/printrun/stltool.py#L47
+    Based on `Möller–Trumbore intersection algorithm`_. Stolen and adapted from
+    `printrun`_ library.
+
+    .. _Möller–Trumbore intersection algorithm: http://en.wikipedia.org/wiki/\
+M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+    .. _printrun: https://github.com/kliment/Printrun/blob/master/printrun/\
+stltool.py#L47
 
     Parameters
     ----------
-    ray_near : np.ndarrray
-        (3) array containing the coordinates of the ray origin.
-    ray_dir : np.ndarray
-        (3) array containing the direction of the ray.
-    v123 : tuple[np.ndarray, np.ndarray, np.ndarray]
-        Three points defining the triangular edge.
+    ray_origin : (3,) np.ndarrray
+        Contains the coordinates of the ray origin.
+    ray_direction : (3,) np.ndarray
+        Contains the direction of the ray.
+    vertex_1, vertex_2, vertex_3 : np.ndarray
+        Three vertices of the triangular mesh cell.
     eps : float
-        Tolerance, optional. The default is 0.000001.
+        Tolerance, optional. The default is 1e-6.
 
     Returns
     -------
     bool
         If there is an intersection between the ray and the edge.
-    t : np.ndarray | None
-        Position of the intersection if there is one.
-        Or distance from the ray's origin to the intersectionP.
+    t_coord : np.ndarray | None
+        Distance from the ray's origin to the intersection point.
 
     """
-    v1, v2, v3 = v123
-    edge1 = v2 - v1
-    edge2 = v3 - v1
+    edge_1 = vertex_2 - vertex_1
+    edge_2 = vertex_3 - vertex_1
 
-    cross_product = np.cross(ray_dir, edge2)
-    det = edge1.dot(cross_product)
+    cell_normal = np.cross(ray_direction, edge_2)
+    triple_product = edge_1.dot(cell_normal)
 
-    if abs(det) < eps:
-        # Ray parallel to triangle
+    if abs(triple_product) < eps:
+        # Ray parallel to triangle plane
         return False, None
 
-    inv_det = 1. / det
-    tvec = ray_near - v1
-    u = tvec.dot(cross_product) * inv_det
-    if u < 0. or u > 1.:
+    # We are looking for u_coord and v_coord (u and v in Wikipedia), the
+    # coordinates of the ray intersection with the plane of the triangle
+    inv_triple_product = 1. / triple_product
+    tvec = ray_origin - vertex_1
+    u_coord = tvec.dot(cell_normal) * inv_triple_product
+    if u_coord < 0. or u_coord > 1.:
+        # Intersection point is in the plane but not in the triangle
         return False, None
 
-    qvec = np.cross(tvec, edge1)
-    v = ray_dir.dot(qvec) * inv_det
-    if v < 0. or u + v > 1.:
+    qvec = np.cross(tvec, edge_1)
+    v_coord = ray_direction.dot(qvec) * inv_triple_product
+    if v_coord < 0. or u_coord + v_coord > 1.:
+        # Intersection point is in the plane but not in the triangle
         return False, None
 
-    # At this point we can compute t to find out where the intersection point
-    # is on the line
-    t = edge2.dot(qvec) * inv_det
-
-    # Line intersection but no ray intersection
-    if t < eps:
+    t_coord = edge_2.dot(qvec) * inv_triple_product
+    if t_coord < eps:
+        # Line intersection but no ray intersection
         return False, None
 
-    return True, t
+    return True, t_coord
 
 
-def ray_mesh_intersections(ray_near: np.ndarray,
-                           ray_dir: np.ndarray,
+def ray_mesh_intersections(ray_origin: np.ndarray,
+                           ray_direction: np.ndarray,
                            truc: mesh.Mesh
                            ) -> tuple[list[bool], list[float | None]]:
     """Get all intersections between ray and complete mesh."""
     collisions, distances = [], []
-    for cell in truc.vectors:
-        v123 = (cell[:, 0], cell[:, 1], cell[:, 2])
-        collision, distance = ray_triangle_intersection(ray_near,
-                                                        ray_dir,
-                                                        v123)
+    for cell_v0, cell_v1, cell_v2 in zip(truc.v0, truc.v1, truc.v2):
+        collision, distance = ray_triangle_intersection(
+            ray_origin,
+            ray_direction,
+            cell_v0,
+            cell_v1,
+            cell_v2)
         collisions.append(collision), distances.append(distance)
     return collisions, distances
 
-# my_mesh = mesh.Mesh.from_file('tesla.stl')
-
-# fig = plt.figure()
-# axes = fig.add_subplot(projection='3d')
-# axes.add_collection3d(mplot3d.art3d.Poly3DCollection(my_mesh.vectors))
-
-# scale = my_mesh.points.flatten()
-# axes.auto_scale_xyz(scale, scale, scale)
-# plt.show()
-
 
 if __name__ == '__main__':
+    debug = True
     fig, axes = create_3d_fig()
 
     data = generate_data_for_half_cube()
     cube = half_cube_data_to_cube(data)
-    plot_mesh(cube.vectors, axes, **{'edgecolors': 'k',
-                                     'facecolors': 'g',
-                                     'alpha': .5,
-                                     })
+    my_mesh = cube
 
-    trajectory = generate_linear_trajectory(np.array([0., 0., 0.]),
-                                            np.array([0.7, -0.32, 0.4]))
+    if not debug:
+        my_mesh = mesh.Mesh.from_file('tesla.stl')
+
+    plot_mesh(my_mesh.vectors, axes, **{'edgecolors': 'k',
+                                        'linewidths': 0.1,
+                                        'facecolors': 'g',
+                                        'alpha': .3,
+                                        })
+
+    ray_origin, ray_direction, trajectory = generate_random_ray()
     plot_lines(trajectory, axes, **{'c': 'r'})
+    plot_points(trajectory, axes, **{'c': 'r', 's': 50})
 
-    ray_near = trajectory[0]
-    ray_dir = trajectory[-1] - trajectory[0]
-    collisions, distances = ray_mesh_intersections(ray_near, ray_dir, cube)
+    collisions, distances = ray_mesh_intersections(ray_origin,
+                                                   ray_direction,
+                                                   my_mesh)
 
-    impacted_cells = cube.vectors[collisions]
+    impacted_cells = my_mesh.vectors[collisions]
+    print(f"Number of impacted cells: {len(impacted_cells)}")
     plot_mesh(impacted_cells, axes, **{'facecolors': 'b',
-                                       'alpha': 0.8,
+                                       'edgecolors': 'k',
+                                       'alpha': 0.7,
                                        })
 
-    equal_scale(cube, axes)
+    if len(impacted_cells) > 0:
+        impact_points = np.array([ray_origin + distance * ray_direction
+                                  for distance in distances
+                                  if distance is not None])
+        plot_points(impact_points, axes, **{'c': 'k',
+                                            's': 100,
+                                            'marker': 's'})
+
+    equal_scale(my_mesh, axes)
