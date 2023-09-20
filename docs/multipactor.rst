@@ -1,6 +1,11 @@
 multipactor package
 ===================
 
+.. automodule:: multipactor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -18,18 +23,7 @@ Subpackages
 Submodules
 ----------
 
-multipactor.constants module
-----------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: multipactor.constants
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: multipactor
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   multipactor.constants

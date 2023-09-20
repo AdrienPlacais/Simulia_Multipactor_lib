@@ -1,6 +1,11 @@
 multipactor.lib package
 =======================
 
+.. automodule:: multipactor.lib
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -8,11 +13,3 @@ Subpackages
    :maxdepth: 4
 
    multipactor.lib.spark3dbatch
-
-Module contents
----------------
-
-.. automodule:: multipactor.lib
-   :members:
-   :undoc-members:
-   :show-inheritance:
