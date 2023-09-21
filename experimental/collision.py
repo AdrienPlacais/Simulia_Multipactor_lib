@@ -13,13 +13,12 @@ import numpy as np
 from stl import mesh
 
 
-def vectorized_part_mesh_intersections(
-    part_origins: np.ndarray,
-    part_directions: np.ndarray,
-    truc: mesh.Mesh,
-    max_distances: np.ndarray | None = None,
-    eps: float = 1e-6,
-) -> tuple[np.ndarray, np.ndarray]:
+def vectorized_part_mesh_intersections(origins: np.ndarray,
+                                       directions: np.ndarray,
+                                       truc: mesh.Mesh,
+                                       distances: np.ndarray | None = None,
+                                       eps: float = 1e-6,
+                                       ) -> tuple[np.ndarray, np.ndarray]:
     """
     Get all intersections between particles and complete mesh.
 
@@ -34,31 +33,31 @@ stltool.py#L47
     .. _@V0XNIHILI: https://gist.github.com/V0XNIHILI/\
 87c986441d8debc9cd0e9396580e85f4
 
-
     Parameters
     ----------
-    part_origins : np.ndarray(n, 3)
+    origins : np.ndarray(n, 3)
         Holds the origins of the ``n`` particles.
-    part_directions : np.ndarray(n, 3)
+    directions : np.ndarray(n, 3)
         Holds the directions of the ``n`` particles.
     truc : mesh.Mesh
         An object with ``m`` triangular cells.
-    max_distances : np.ndarray(n)
+    distances : np.ndarray(n)
         Max distance crossed by every particle.
     eps : float, optional
         Tolerance, optional. The default is 1e-6.
 
     Returns
     -------
-    np.ndarray<bool>(n, m)
+    collisions : np.ndarray[bool](n, m)
         Indicates where there was collisions.
-    np.ndarray(n, m)
-        Indicates distances between collisions and ``part_origins``.
+    distances_to_collision : np.ndarray(n, m)
+        Indicates distances between collisions and ``origins``. Should roughly
+        match ``distances``.
 
     """
     vertices_1, vertices_2, vertices_3 = truc.v0, truc.v1, truc.v2
 
-    n_part = len(part_origins)
+    n_part = len(origins)
     m_mesh = len(vertices_1)
     output_shape = (n_part, m_mesh)
 
@@ -69,7 +68,7 @@ stltool.py#L47
     edges_1 = vertices_2 - vertices_1
     edges_2 = vertices_3 - vertices_1
 
-    for i, (orig, direction) in enumerate(zip(part_origins, part_directions)):
+    for i, (orig, direction) in enumerate(zip(origins, directions)):
         # (m,)
         collisions = np.full((m_mesh), True)
         distances = np.zeros((m_mesh))
@@ -104,8 +103,7 @@ stltool.py#L47
         collisions[no_collision_idx] = False
         distances[no_collision_idx] = np.NaN
 
-        collision_idx = np.invert(no_collision_idx)
-        distances[collision_idx] = distance[collision_idx]
+        distances[collisions] = distance[collisions]
 
         all_collisions[i] = collisions
         all_distances[i] = distances
