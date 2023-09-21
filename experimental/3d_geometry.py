@@ -8,101 +8,92 @@ Created on Wed Jul 12 17:40:54 2023.
 This script is a first attempt to load ``.stl`` files.
 
 """
-import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-from matplotlib.axes._axes import Axes
-
-from stl import mesh
+import numpy as np
 from mpl_toolkits import mplot3d
+from mpl_toolkits.mplot3d.axes3d import Axes3D
+from multipactor.experimental.collision import (
+    ray_mesh_intersections, vectorized_part_mesh_intersections)
+from numpy.random._generator import Generator
+from stl import mesh
 
 
 # =============================================================================
 # Cube generation
 # =============================================================================
-def generate_data_for_half_cube() -> np.ndarray:
+def _generate_data_for__half_cube() -> np.ndarray:
     """Generate data for cube."""
     # Draw a cube
     data = np.zeros(6, dtype=mesh.Mesh.dtype)
 
     # Top
-    data['vectors'][0] = np.array([[0, 1, 1],
-                                   [1, 0, 1],
-                                   [0, 0, 1]])
-    data['vectors'][1] = np.array([[1, 0, 1],
-                                   [0, 1, 1],
-                                   [1, 1, 1]])
+    data["vectors"][0] = np.array([[0, 1, 1], [1, 0, 1], [0, 0, 1]])
+    data["vectors"][1] = np.array([[1, 0, 1], [0, 1, 1], [1, 1, 1]])
     # Front face
-    data['vectors'][2] = np.array([[1, 0, 0],
-                                   [1, 0, 1],
-                                   [1, 1, 0]])
-    data['vectors'][3] = np.array([[1, 1, 1],
-                                   [1, 0, 1],
-                                   [1, 1, 0]])
+    data["vectors"][2] = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0]])
+    data["vectors"][3] = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 0]])
     # Left face
-    data['vectors'][4] = np.array([[0, 0, 0],
-                                   [1, 0, 0],
-                                   [1, 0, 1]])
-    data['vectors'][5] = np.array([[0, 0, 0],
-                                   [0, 0, 1],
-                                   [1, 0, 1]])
-    data['vectors'] -= .5
+    data["vectors"][4] = np.array([[0, 0, 0], [1, 0, 0], [1, 0, 1]])
+    data["vectors"][5] = np.array([[0, 0, 0], [0, 0, 1], [1, 0, 1]])
+    data["vectors"] -= 0.5
+
     return data
 
 
-def half_cube_data_to_cube(data: np.ndarray) -> mesh.Mesh:
+def _half_cube_data_to_cube(data: np.ndarray) -> mesh.Mesh:
     """Generate the real cube."""
     cube_back = mesh.Mesh(data.copy())
     cube_front = mesh.Mesh(data.copy())
-    cube_back.rotate([0.5, 0.0, 0.0], np.pi * .5)
-    cube_back.rotate([0.0, 0.5, 0.0], np.pi * .5)
-    cube_back.rotate([0.5, 0.0, 0.0], np.pi * .5)
+    cube_back.rotate([0.5, 0.0, 0.0], np.pi * 0.5)
+    cube_back.rotate([0.0, 0.5, 0.0], np.pi * 0.5)
+    cube_back.rotate([0.5, 0.0, 0.0], np.pi * 0.5)
 
-    cube = mesh.Mesh(np.concatenate([cube_back.data.copy(),
-                                     cube_front.data.copy(),
-                                     ]))
+    cube = mesh.Mesh(
+        np.concatenate([
+            cube_back.data.copy(),
+            cube_front.data.copy(),
+        ]))
+
     return cube
 
 
 # =============================================================================
 # Plotting
 # =============================================================================
-def create_3d_fig() -> tuple[Figure, Axes]:
+def _create_3d_fig() -> Axes3D:
     """Create the 3d plot."""
     fig = plt.figure(1)
-    axes = fig.add_subplot(projection='3d')
+    axes: Axes3D = fig.add_subplot(projection="3d")
     axes.set_xlabel(r"$x$")
     axes.set_ylabel(r"$y$")
     axes.set_zlabel(r"$z$")
-    return fig, axes
+
+    return axes
 
 
-def plot_mesh(to_plot: np.array, axes: Axes, **kwargs) -> None:
+def _plot_mesh(to_plot: np.ndarray, axes: Axes3D, **kwargs) -> None:
     """Plot the mesh with proper scaling."""
     collection = mplot3d.art3d.Poly3DCollection(to_plot, **kwargs)
     axes.add_collection3d(collection)
     plt.show()
 
 
-def plot_points(points: np.ndarray,
-                axes: Axes,
-                **kwargs) -> None:
+def _plot_points(points: np.ndarray, axes: Axes3D, **kwargs) -> None:
     """Plot the given points."""
+
     if points.ndim == 1:
         points = np.expand_dims(points, 0)
     axes.scatter(points[:, 0], points[:, 1], points[:, 2], **kwargs)
     plt.show()
 
 
-def plot_lines(points: np.ndarray,
-               axes: Axes,
-               **kwargs) -> None:
+def _plot_lines(points: np.ndarray, axes: Axes3D, **kwargs) -> None:
     """Plot the given points."""
     axes.plot(points[:, 0], points[:, 1], points[:, 2], **kwargs)
     plt.show()
 
 
-def equal_scale(truc: mesh.Mesh, axes: Axes) -> None:
+def _equal_scale(truc: mesh.Mesh, axes: Axes3D) -> None:
     """Revert back to equal scaling."""
     scale = truc.points.flatten()
     axes.auto_scale_xyz(scale, scale, scale)
@@ -110,12 +101,40 @@ def equal_scale(truc: mesh.Mesh, axes: Axes) -> None:
 
 
 # =============================================================================
-# Collision detection
+# Generate fake rays/particles for debug
 # =============================================================================
-def generate_random_ray(truc: mesh.Mesh,
-                        max_distance: float | None = None,
-                        seed: int | None = None,
-                        ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _generate_random_parts(
+    truc: mesh.Mesh,
+    n_part: int = 11,
+    max_distance: float | None = None,
+    seed: int | None = None,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Generate a random set of particles that can cross (or not) the cube."""
+    rng: Generator = np.random.default_rng(seed=seed)
+    # not clean...
+    max_, min_ = 1.1 * truc.max_, 1.1 * truc.min_
+
+    part_origin = np.zeros((n_part, 3))
+    # part_origin = rng.random(3) * (max_ - min_) + min_
+    part_direction = rng.random((n_part, 3))
+    part_direction /= np.linalg.norm(part_direction, axis=1)
+
+    if max_distance is None:
+        # not clean
+        max_distance = 0.8 * (np.mean(max_) - np.mean(min_))
+
+    # Two (n_part, 3) to single (n_part, 2, 3)
+    trajectories = np.stack(
+        (part_origin, part_origin + max_distance * part_direction), axis=1)
+
+    return part_origin, part_direction, trajectories, max_distance
+
+
+def _generate_random_ray(
+    truc: mesh.Mesh,
+    max_distance: float | None = None,
+    seed: int | None = None,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Generate a random ray that can cross (or not) the cube."""
     rng = np.random.default_rng(seed=seed)
     # not clean...
@@ -128,143 +147,120 @@ def generate_random_ray(truc: mesh.Mesh,
 
     if max_distance is None:
         # not clean
-        max_distance = .8 * (np.mean(max_) - np.mean(min_))
-    trajectory = np.vstack((ray_origin,
-                            ray_origin + max_distance * ray_direction))
+        max_distance = 0.8 * (np.mean(max_) - np.mean(min_))
+    trajectory = np.vstack(
+        (ray_origin, ray_origin + max_distance * ray_direction))
+
     return ray_origin, ray_direction, trajectory, max_distance
 
 
-def ray_triangle_intersection(ray_origin: np.ndarray,
-                              ray_direction: np.ndarray,
-                              vertex_1: np.ndarray,
-                              vertex_2: np.ndarray,
-                              vertex_3: np.ndarray,
-                              eps: float = 1e-6,
-                              max_distance: float = 1.,
-                              ) -> tuple[bool, np.ndarray | None]:
-    """
-    Determine if ``ray_origin`` intersects the cell.
+def _test_single_ray(truc: mesh.Mesh, axes: Axes3D) -> None:
+    """Generate a ray and see if it impacts the given mesh."""
+    ray_origin, ray_direction, trajectory, max_distance = _generate_random_ray(
+        truc, seed=None)
+    _plot_lines(trajectory, axes, **{"c": "r"})
+    _plot_points(trajectory, axes, **{"c": "r", "s": 50})
 
-    Based on `Möller–Trumbore intersection algorithm`_. Stolen and adapted from
-    `printrun`_ library.
+    collisions, distances = ray_mesh_intersections(ray_origin, ray_direction,
+                                                   truc, max_distance)
 
-    .. _Möller–Trumbore intersection algorithm: http://en.wikipedia.org/wiki/\
-M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
-    .. _printrun: https://github.com/kliment/Printrun/blob/master/printrun/\
-stltool.py#L47
+    impacted_cells = truc.vectors[collisions]
+    print(f"Number of impacted cells: {len(impacted_cells)}")
+    _plot_mesh(
+        impacted_cells,
+        axes,
+        **{
+            "facecolors": "b",
+            "edgecolors": "k",
+            "alpha": 0.7,
+        },
+    )
 
-    Parameters
-    ----------
-    ray_origin : (3,) np.ndarrray
-        Contains the coordinates of the ray origin.
-    ray_direction : (3,) np.ndarray
-        Contains the direction of the ray.
-    vertex_1, vertex_2, vertex_3 : np.ndarray
-        Three vertices of the triangular mesh cell.
-    eps : float
-        Tolerance, optional. The default is 1e-6.
-
-    Returns
-    -------
-    bool
-        If there is an intersection between the ray and the edge.
-    t_coord : np.ndarray | None
-        Distance from the ray's origin to the intersection point.
-
-    """
-    edge_1 = vertex_2 - vertex_1
-    edge_2 = vertex_3 - vertex_1
-
-    cell_normal = np.cross(ray_direction, edge_2)
-    triple_product = edge_1.dot(cell_normal)
-
-    if abs(triple_product) < eps:
-        # Ray parallel to triangle plane
-        return False, None
-
-    # We are looking for u_coord and v_coord (u and v in Wikipedia), the
-    # coordinates of the ray intersection with the plane of the triangle
-    inv_triple_product = 1. / triple_product
-    tvec = ray_origin - vertex_1
-    u_coord = tvec.dot(cell_normal) * inv_triple_product
-    if u_coord < 0. or u_coord > 1.:
-        # Intersection point is in the plane but not in the triangle
-        return False, None
-
-    qvec = np.cross(tvec, edge_1)
-    v_coord = ray_direction.dot(qvec) * inv_triple_product
-    if v_coord < 0. or u_coord + v_coord > 1.:
-        # Intersection point is in the plane but not in the triangle
-        return False, None
-
-    t_coord = edge_2.dot(qvec) * inv_triple_product
-    if t_coord < eps or t_coord > max_distance:
-        # Line intersection but no ray intersection
-        return False, None
-
-    return True, t_coord
+    if len(impacted_cells) > 0:
+        impact_points = np.array([
+            ray_origin + distance * ray_direction for distance in distances
+            if distance is not None
+        ])
+        _plot_points(impact_points, axes, **{
+            "c": "k",
+            "s": 100,
+            "marker": "s"
+        })
 
 
-def ray_mesh_intersections(ray_origin: np.ndarray,
-                           ray_direction: np.ndarray,
-                           truc: mesh.Mesh,
-                           max_distance: float,
-                           ) -> tuple[list[bool], list[float | None]]:
-    """Get all intersections between ray and complete mesh."""
-    collisions, distances = [], []
-    for cell_v0, cell_v1, cell_v2 in zip(truc.v0, truc.v1, truc.v2):
-        collision, distance = ray_triangle_intersection(
-            ray_origin,
-            ray_direction,
-            cell_v0,
-            cell_v1,
-            cell_v2,
-            max_distance=max_distance,
+def _test_vectorized_parts(truc: mesh.Mesh, axes: Axes3D) -> None:
+    """Generate several particles and test it with vect function."""
+    args = _generate_random_parts(truc, n_part=2, seed=None)
+    part_origins, part_directions, trajectories, max_distances = args
+
+    for traj in trajectories:
+        _plot_lines(traj, axes, **{"c": "r"})
+        _plot_points(traj, axes, **{"c": "r", "s": 50})
+
+    collisions, distances = vectorized_part_mesh_intersections(
+        part_origins, part_directions, truc, max_distances=max_distances)
+
+    for i, (
+            this_part_impact,
+            this_part_dist,
+            this_part_orig,
+            this_part_dir,
+    ) in enumerate(zip(collisions, distances, part_origins, part_directions)):
+        impacted_cells = truc.vectors[this_part_impact]
+        print(f"Particle {i} impacted {len(impacted_cells)} cells.")
+        _plot_mesh(
+            impacted_cells,
+            axes,
+            **{
+                "facecolors": "b",
+                "edgecolors": "k",
+                "alpha": 0.7,
+            },
         )
-        collisions.append(collision), distances.append(distance)
-    return collisions, distances
+
+        if len(impacted_cells) > 0:
+            impact_points = np.array([
+                this_part_orig + distance * this_part_dir
+                for distance in this_part_dist if distance is not None
+            ])
+            _plot_points(impact_points, axes, **{
+                "c": "k",
+                "s": 100,
+                "marker": "s"
+            })
 
 
-if __name__ == '__main__':
+# =============================================================================
+# Main script
+# =============================================================================
+
+if __name__ == "__main__":
     debug = True
-    fig, axes = create_3d_fig()
+    vectorize = False
+    axes = _create_3d_fig()
 
-    data = generate_data_for_half_cube()
-    cube = half_cube_data_to_cube(data)
+    data = _generate_data_for__half_cube()
+    cube = _half_cube_data_to_cube(data)
     my_mesh = cube
 
     if not debug:
-        my_mesh = mesh.Mesh.from_file('tesla.stl')
+        my_mesh = mesh.Mesh.from_file("tesla.stl")
 
-    plot_mesh(my_mesh.vectors, axes, **{'edgecolors': 'k',
-                                        'linewidths': 0.1,
-                                        'facecolors': 'g',
-                                        'alpha': .3,
-                                        })
+    _plot_mesh(
+        my_mesh.vectors,
+        axes,
+        **{
+            "edgecolors": "k",
+            "linewidths": 0.1,
+            "facecolors": "g",
+            "alpha": 0.3,
+        },
+    )
 
-    ray_origin, ray_direction, trajectory, max_distance = generate_random_ray(
-        my_mesh, seed=None)
-    plot_lines(trajectory, axes, **{'c': 'r'})
-    plot_points(trajectory, axes, **{'c': 'r', 's': 50})
+    if not vectorize:
+        _test_single_ray(my_mesh, axes)
 
-    collisions, distances = ray_mesh_intersections(ray_origin,
-                                                   ray_direction,
-                                                   my_mesh,
-                                                   max_distance)
+    else:
+        _test_vectorized_parts(my_mesh, axes)
 
-    impacted_cells = my_mesh.vectors[collisions]
-    print(f"Number of impacted cells: {len(impacted_cells)}")
-    plot_mesh(impacted_cells, axes, **{'facecolors': 'b',
-                                       'edgecolors': 'k',
-                                       'alpha': 0.7,
-                                       })
-
-    if len(impacted_cells) > 0:
-        impact_points = np.array([ray_origin + distance * ray_direction
-                                  for distance in distances
-                                  if distance is not None])
-        plot_points(impact_points, axes, **{'c': 'k',
-                                            's': 100,
-                                            'marker': 's'})
-
-    equal_scale(my_mesh, axes)
+    _equal_scale(my_mesh, axes)
