@@ -15,7 +15,7 @@ from numpy.random._generator import Generator
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 from multipactor.experimental.collision import (
-    ray_mesh_intersections, vectorized_part_mesh_intersections)
+    vectorized_part_mesh_intersections)
 from stl import mesh
 
 
@@ -129,65 +129,6 @@ def _generate_random_parts(
     return origins, directions, trajectories, distances
 
 
-def _generate_random_ray(
-    truc: mesh.Mesh,
-    max_distance: float | None = None,
-    seed: int | None = None,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
-    """Generate a random ray that can cross (or not) the cube."""
-    rng = np.random.default_rng(seed=seed)
-    # not clean...
-    max_, min_ = 1.1 * truc.max_, 1.1 * truc.min_
-
-    ray_origin = np.zeros(3)
-    # ray_origin = rng.random(3) * (max_ - min_) + min_
-    ray_direction: np.ndarray[np.float64] = rng.random(3)
-    ray_direction /= np.linalg.norm(ray_direction)
-
-    if max_distance is None:
-        # not clean
-        max_distance = 0.8 * (np.mean(max_) - np.mean(min_))
-    assert max_distance is not None
-    trajectory = np.vstack(
-        (ray_origin, ray_origin + max_distance * ray_direction))
-
-    return ray_origin, ray_direction, trajectory, max_distance
-
-
-def _test_single_ray(truc: mesh.Mesh, axes: Axes3D) -> None:
-    """Generate a ray and see if it impacts the given mesh."""
-    ray_origin, ray_direction, trajectory, max_distance = _generate_random_ray(
-        truc, seed=None)
-    _plot_lines(trajectory, axes, **{"c": "r"})
-    _plot_points(trajectory, axes, **{"c": "r", "s": 50})
-
-    collisions, distances = ray_mesh_intersections(ray_origin, ray_direction,
-                                                   truc, max_distance)
-
-    impacted_cells = truc.vectors[collisions]
-    print(f"Number of impacted cells: {len(impacted_cells)}")
-    _plot_mesh(
-        impacted_cells,
-        axes,
-        **{
-            "facecolors": "b",
-            "edgecolors": "k",
-            "alpha": 0.7,
-        },
-    )
-
-    if len(impacted_cells) > 0:
-        impact_points = np.array([
-            ray_origin + distance * ray_direction for distance in distances
-            if distance is not None
-        ])
-        _plot_points(impact_points, axes, **{
-            "c": "k",
-            "s": 100,
-            "marker": "s"
-        })
-
-
 def _test_vectorized_parts(truc: mesh.Mesh, axes: Axes3D, n_part: int) -> None:
     """Generate several particles and test it with vect function."""
     args: tuple[np.ndarray[np.float64], np.ndarray[np.float64],
@@ -229,7 +170,6 @@ def _test_vectorized_parts(truc: mesh.Mesh, axes: Axes3D, n_part: int) -> None:
 if __name__ == "__main__":
     debug = False
 
-    vectorize = True
     axes = _create_3d_fig()
 
     data = _generate_data_for_half_cube()
@@ -245,11 +185,6 @@ if __name__ == "__main__":
                                          "alpha": 0.3,
                                          },
                )
-
-    if not vectorize:
-        _test_single_ray(my_mesh, axes)
-
-    else:
-        _test_vectorized_parts(my_mesh, axes, n_part=5)
+    _test_vectorized_parts(my_mesh, axes, n_part=5)
 
     _equal_scale(my_mesh, axes)
