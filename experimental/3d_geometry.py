@@ -63,7 +63,8 @@ def _half_cube_data_to_cube(data: np.ndarray) -> mesh.Mesh:
 def _create_3d_fig() -> Axes3D:
     """Create the 3d plot."""
     fig = plt.figure(1)
-    axes: Axes3D = fig.add_subplot(projection="3d")
+    axes: Axes3D = fig.add_subplot(projection="3d",
+                                   proj_type="ortho")
     axes.set_xlabel(r"$x$")
     axes.set_ylabel(r"$y$")
     axes.set_zlabel(r"$z$")
@@ -110,13 +111,15 @@ def _generate_random_parts(
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Generate a random set of particles that can cross (or not) the cube."""
     rng: Generator = np.random.default_rng(seed=seed)
-    # not clean...
     max_, min_ = 1.1 * truc.max_, 1.1 * truc.min_
-
     origins = rng.random((n_part, 3)) * (max_ - min_) + min_
     directions = rng.random((n_part, 3))
     norm = np.linalg.norm(directions, axis=1)
     directions /= norm[:, np.newaxis]
+
+    # force something different
+    # origins = np.zeros((n_part, 3))
+    # directions = np.array([[0., np.sqrt(2.) / 2., np.sqrt(2.) / 2.],])
 
     if max_distance is None:
         max_distance = 0.8 * (np.mean(max_) - np.mean(min_))
@@ -131,17 +134,18 @@ def _generate_random_parts(
 
 def _test_vectorized_parts(truc: mesh.Mesh, axes: Axes3D, n_part: int) -> None:
     """Generate several particles and test it with vect function."""
-    args: tuple[np.ndarray[np.float64], np.ndarray[np.float64],
-                np.ndarray[np.float64], np.ndarray[np.float64]] \
-        = _generate_random_parts(truc, n_part=n_part, seed=None)
+    args = _generate_random_parts(truc, n_part=n_part, seed=None)
     origins, directions, trajectories, distances = args
 
     for traj in trajectories:
         _plot_lines(traj, axes, **{"c": "r"})
         _plot_points(traj, axes, **{"c": "r", "s": 50})
 
-    collisions, distances_to_collision = vectorized_part_mesh_intersections(
-        origins, directions, truc, distances=distances)
+    args = vectorized_part_mesh_intersections(origins, directions, truc,
+                                              distances=distances)
+    collisions, distances_to_collision, impact_angles = args
+    impact_angles = np.rad2deg(impact_angles)
+    print(f"{impact_angles = }")
 
     for i, (collision, dist_to_coll, origin, direction) in enumerate(
             zip(collisions, distances_to_collision, origins, directions)):
@@ -168,7 +172,7 @@ def _test_vectorized_parts(truc: mesh.Mesh, axes: Axes3D, n_part: int) -> None:
 # =============================================================================
 
 if __name__ == "__main__":
-    debug = False
+    debug = True
 
     axes = _create_3d_fig()
 
@@ -185,6 +189,6 @@ if __name__ == "__main__":
                                          "alpha": 0.3,
                                          },
                )
-    _test_vectorized_parts(my_mesh, axes, n_part=5)
+    _test_vectorized_parts(my_mesh, axes, n_part=1)
 
     _equal_scale(my_mesh, axes)

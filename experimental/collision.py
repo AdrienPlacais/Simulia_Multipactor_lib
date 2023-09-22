@@ -13,18 +13,18 @@ import numpy as np
 from stl import mesh
 
 
-def vectorized_part_mesh_intersections(origins: np.ndarray,
-                                       directions: np.ndarray,
-                                       truc: mesh.Mesh,
-                                       distances: np.ndarray | None = None,
-                                       eps: float = 1e-6,
-                                       ) -> tuple[np.ndarray, np.ndarray]:
+def vectorized_part_mesh_intersections(
+        origins: np.ndarray,
+        directions: np.ndarray,
+        truc: mesh.Mesh,
+        distances: np.ndarray | None = None,
+        eps: float = 1e-6,
+        ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Get all intersections between particles and complete mesh.
 
     Based on `Möller–Trumbore intersection algorithm`_. Stolen and adapted from
     `printrun`_ library. Parallel implementation taken from `@V0XNIHILI`_.
-V0XNIHILI
 
     .. _Möller–Trumbore intersection algorithm: http://en.wikipedia.org/wiki/\
 M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
@@ -63,6 +63,7 @@ stltool.py#L47
 
     all_collisions = np.full(output_shape, True)
     all_distances = np.zeros(output_shape)
+    all_impact_angles = np.full(output_shape, np.NaN)
 
     # Shape (m, 3)
     edges_1 = vertices_2 - vertices_1
@@ -72,7 +73,7 @@ stltool.py#L47
         # (m,)
         collisions = np.full((m_mesh), True)
         distances = np.zeros((m_mesh))
-        # triple_products = edges_1.dot(normals)
+        impact_angles = np.full((m_mesh), np.NaN)
 
         # Check if intersection line/plane or if they are just parallel
         pvec = np.cross(direction, edges_2)
@@ -108,4 +109,16 @@ stltool.py#L47
         all_collisions[i] = collisions
         all_distances[i] = distances
 
-    return all_collisions, all_distances
+        # Try to compute angle
+        normals = np.cross(edges_1, edges_2, axis=1)
+        adjacents = normals.dot(direction)
+        opposites = np.linalg.norm(
+            adjacents[:, np.newaxis] * normals - direction,
+            axis=1
+        )
+        impact_angles[collisions] = np.abs(np.arctan(
+            opposites[collisions] / adjacents[collisions]
+        ))
+        all_impact_angles[i] = impact_angles
+
+    return all_collisions, all_distances, all_impact_angles
