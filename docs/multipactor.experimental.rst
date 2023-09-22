@@ -13,3 +13,4 @@ Submodules
    :maxdepth: 4
 
    multipactor.experimental.3d_geometry
+   multipactor.experimental.collision
