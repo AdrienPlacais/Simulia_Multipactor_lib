@@ -1,0 +1,3 @@
+wr75.cst filter=lfs diff=lfs merge=lfs -text
+wr75_pic.cst filter=lfs diff=lfs merge=lfs -text
+wr75.stl filter=lfs diff=lfs merge=lfs -text
