@@ -59,3 +59,7 @@ target/
 
 # Perso
 *.swp
+
+# Tracked with git lfs
+*.stl
+*.cst
