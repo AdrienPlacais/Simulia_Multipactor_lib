@@ -14,8 +14,10 @@ from typing import Any
 
 import numpy as np
 from matplotlib.figure import Figure
+from stl import mesh
 
 from multipactor.particle_monitor.particle_monitor import ParticleMonitor
+from multipactor.particle_monitor.collision import part_mesh_intersections
 from multipactor.visualization.plot import create_fig_if_not_exists
 
 
@@ -42,10 +44,10 @@ def plot_emission_energies(particles: ParticleMonitor,
         The figure that was created.
 
     """
-    fig, axx = create_fig_if_not_exists(2, sharex=True, num=2)
-    axx[1].set_xlabel("Emission energy [eV]")
-    axx[0].set_ylabel("Seed electrons")
-    axx[1].set_ylabel("Emitted electrons")
+    fig, axes = create_fig_if_not_exists(2, sharex=True, num=1)
+    axes[1].set_xlabel("Emission energy [eV]")
+    axes[0].set_ylabel("Seed electrons")
+    axes[1].set_ylabel("Emitted electrons")
 
     for i in range(2):
         emission_energies = particles.emission_energies(source_id=i,
@@ -53,8 +55,8 @@ def plot_emission_energies(particles: ParticleMonitor,
         counts, bins = np.histogram(emission_energies,
                                     bins=bins,
                                     range=hist_range)
-        axx[i].hist(bins[:-1], bins, weights=counts)
-        axx[i].grid(True)
+        axes[i].hist(bins[:-1], bins, weights=counts)
+        axes[i].grid(True)
     return fig
 
 
@@ -81,9 +83,9 @@ def plot_collision_energies(particles: ParticleMonitor,
         The figure that was created.
 
     """
-    fig, axx = create_fig_if_not_exists(1, sharex=True, num=1)
-    axx[0].set_xlabel("Collision energy [eV]")
-    axx[0].set_ylabel("All electrons")
+    fig, axes = create_fig_if_not_exists(1, sharex=True, num=2)
+    axes[0].set_xlabel("Collision energy [eV]")
+    axes[0].set_ylabel("All electrons")
 
     collision_energies = particles.collision_energies(to_numpy=True,
                                                       extrapolation=False,
@@ -92,11 +94,43 @@ def plot_collision_energies(particles: ParticleMonitor,
     counts, bins = np.histogram(collision_energies,
                                 bins=bins,
                                 range=hist_range)
-    axx[0].hist(bins[:-1], bins, weights=counts)
-    axx[0].grid(True)
+    axes[0].hist(bins[:-1], bins, weights=counts)
+    axes[0].grid(True)
     return fig
 
 
+def plot_impact_angles(particles: ParticleMonitor,
+                       structure: mesh.Mesh,
+                       bins: int = 100,
+                       hist_range: tuple[float, float] = (0., 90.),
+                       ) -> Figure:
+    """Compute and plot a particles impact angle histogram."""
+    fig, axes = create_fig_if_not_exists(1, num=3, clean_fig=True)
+    axes[0].set_xlabel(r"Impact angle $\theta$ [deg]")
+    axes[0].set_ylabel("Distribution all electrons")
+
+    last_known_position = particles.last_known_position(
+        to_numpy=True,
+        remove_alive_at_end=True)
+    last_known_direction = particles.last_known_direction(
+        to_numpy=True,
+        normalize=True,
+        remove_alive_at_end=True)
+
+    _, _, impact_angles = part_mesh_intersections(
+        origins=last_known_position,
+        directions=last_known_direction,
+        truc=structure)
+
+    counts, bins = np.histogram(np.rad2deg(impact_angles),
+                                bins=bins,
+                                range=hist_range)
+    axes[0].hist(bins[:-1], bins, weights=counts)
+    axes[0].grid(True)
+    return fig
+
+
+# Do the same function but in 3D
 def plot_trajectories(particles: ParticleMonitor,
                       particle_id: list[int],
                       structure: Any = None) -> Figure:
@@ -123,7 +157,7 @@ def plot_trajectories(particles: ParticleMonitor,
     NotImplementedError : ``structure`` different from None is not supported.
 
     """
-    fig, axx = create_fig_if_not_exists(range(221, 224), num=3)
+    fig, axes = create_fig_if_not_exists(range(221, 224), num=4)
 
     if structure is not None:
         raise NotImplementedError("Plot of structure not implemented yet.")
@@ -137,17 +171,43 @@ def plot_trajectories(particles: ParticleMonitor,
         'xz': lambda pos: pos[:, [0, 2]],
     }
     for i, (projection_name, projection) in enumerate(projections.items()):
-        axx[i].set_xlabel(projection_name[0] + " [mm]")
-        axx[i].set_ylabel(projection_name[1] + " [mm]")
-        axx[i].set_aspect('equal', adjustable='box')
+        axes[i].set_xlabel(projection_name[0] + " [mm]")
+        axes[i].set_ylabel(projection_name[1] + " [mm]")
+        axes[i].set_aspect('equal', adjustable='box')
 
         for part in particles_to_plot.values():
             projected_pos = projection(part.pos)
-            line, = axx[i].plot(projected_pos[:, 0], projected_pos[:, 1],
+            line, = axes[i].plot(projected_pos[:, 0], projected_pos[:, 1],
                                 marker='o')
 
             if part.extrapolated_pos is not None:
                 projected_pos = projection(part.extrapolated_pos)
-                axx[i].plot(projected_pos[:, 0], projected_pos[:, 1], ls='--',
+                axes[i].plot(projected_pos[:, 0], projected_pos[:, 1], ls='--',
                             c=line.get_color())
     return fig
+
+
+def plot_impact_density_distribution(particles: ParticleMonitor,
+                                     structure: mesh.Mesh) -> Figure:
+    fig, axes = create_fig_if_not_exists(1, num=5, **{'projection': '3d',
+                                                      'proj_type': 'ortho'})
+    axes.set_xlabel(r"$x$")
+    axes.set_ylabel(r"$y$")
+    axes.set_zlabel(r"$z$")
+
+    last_known_position = particles.last_known_position(
+        to_numpy=True,
+        remove_alive_at_end=True)
+    last_known_direction = particles.last_known_direction(
+        to_numpy=True,
+        normalize=True,
+        remove_alive_at_end=True)
+
+    # collisions has shape (n, m)
+    collisions, _, _ = part_mesh_intersections(
+        origins=last_known_position,
+        directions=last_known_direction,
+        truc=structure)
+    collisions_per_cell = collisions.sum(axis=0)
+    collision_density = collisions_per_cell / structure.areas
+    collision_density /= np.max(collision_density)

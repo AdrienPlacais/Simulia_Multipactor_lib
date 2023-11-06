@@ -152,7 +152,8 @@ def plot_dict_of_floats(data: dict,
 def create_fig_if_not_exists(axnum: int | list[int],
                              sharex: bool = False,
                              num: int = 1,
-                             clean_fig: bool = False
+                             clean_fig: bool = False,
+                             **kwargs,
                              ) -> tuple[Figure, list[Axes]]:
     """
     Check if figures were already created, create it if not.
@@ -169,6 +170,8 @@ def create_fig_if_not_exists(axnum: int | list[int],
     clean_fig : bool, optional
         To tell if the Figure should be cleaned from previous plots. The
         default is False.
+    **kwargs : dict
+        Dict passed to :func:`add_subplot`.
 
     Return
     ------
@@ -190,14 +193,14 @@ def create_fig_if_not_exists(axnum: int | list[int],
             _clean_fig([num])
         return fig, axlist
 
-    fig = plt.figure(num)
+    fig = plt.figure(num, **kwargs)
     axlist = []
-    axlist.append(fig.add_subplot(axnum[0]))
+    axlist.append(fig.add_subplot(axnum[0], **kwargs))
 
     d_sharex = {True: axlist[0], False: None}
 
     for i in axnum[1:]:
-        axlist.append(fig.add_subplot(i, sharex=d_sharex[sharex]))
+        axlist.append(fig.add_subplot(i, sharex=d_sharex[sharex], **kwargs))
     if sharex:
         for ax in axlist[:-1]:
             plt.setp(ax.get_xticklabels(), visible=False)

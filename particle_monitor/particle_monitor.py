@@ -95,8 +95,8 @@ class ParticleMonitor(dict):
         Parameters
         ----------
         source_id : int | None, optional
-            If set, we only take particles which source_id is `source_id`. The
-            default is None.
+            If set, we only take particles which source_id is ``source_id``.
+            The default is None.
         to_numpy : bool, optional
             If True, output list is transformed to an array. The default is
             True.
@@ -121,6 +121,98 @@ class ParticleMonitor(dict):
             return np.array(out)
         return out
 
+    def last_known_position(
+            self,
+            source_id: int | None = None,
+            to_numpy: bool = True,
+            remove_alive_at_end: bool = True
+            ) -> list[np.ndarray[np.float64]] | np.ndarray[np.float64]:
+        """
+        Get the last recorded position of every particle.
+
+        Parameters
+        ----------
+        source_id : int | None, optional
+            If set, we only take particles which source_id is ``source_id``.
+            The default is None.
+        to_numpy : bool, optional
+            If True, output list is transformed to an array. The default is
+            True.
+        remove_alive_at_end : bool, optional
+            To remove particles alive at the end of the simulation (did not
+            impact a wall). The default is True.
+
+        Returns
+        -------
+        out : list[np.ndarray[np.float64]] | np.ndarray[np.float64]
+            Last known position in mm of every particle.
+
+        """
+        subset = self
+        if source_id is not None:
+            subset = _filter_source_id(subset, source_id)
+        if remove_alive_at_end:
+            subset = _filter_out_alive_at_end(subset, self.max_time)
+
+        out = [part.pos[-1] for part in subset.values()]
+        if to_numpy:
+            return np.array(out)
+        return out
+
+    def last_known_direction(
+            self,
+            source_id: int | None = None,
+            to_numpy: bool = True,
+            normalize: bool = True,
+            remove_alive_at_end: bool = True
+            ) -> list[np.ndarray[np.float64]] | np.ndarray[np.float64]:
+        """
+        Get the last recorded direction of every particle.
+
+        .. todo::
+            Why did I choose to compute position difference rather than just
+            taking the momentum array when not normalizing???
+
+        Parameters
+        ----------
+        source_id : int | None, optional
+            If set, we only take particles which source_id is ``source_id``.
+            The default is None.
+        to_numpy : bool, optional
+            If True, output list is transformed to an array. The default is
+            True.
+        normalize : bool, optional
+            To normalize the direction vector. The default is True.
+        remove_alive_at_end : bool, optional
+            To remove particles alive at the end of the simulation (did not
+            impact a wall). The default is True.
+
+        Returns
+        -------
+        out : list[np.ndarray[np.float64]] | np.ndarray[np.float64]
+            Last known moment vector of every particle.
+
+        """
+        subset = self
+        if source_id is not None:
+            subset = _filter_source_id(subset, source_id)
+        if remove_alive_at_end:
+            subset = _filter_out_alive_at_end(subset, self.max_time)
+
+        subset = _filter_out_part_with_one_time_step(subset)
+
+        out = [
+            part.pos[-1] - part.pos[-2]
+            for part in subset.values()
+            if len(part.pos) > 1]
+
+        if normalize:
+            out = [mom / np.linalg.norm(mom) for mom in out]
+
+        if to_numpy:
+            return np.array(out)
+        return out
+
 
 def _absolute_file_paths(directory: str) -> list[str]:
     """Get all filepaths in absolute from dir, remove unwanted files."""
@@ -131,15 +223,28 @@ def _absolute_file_paths(directory: str) -> list[str]:
             yield os.path.abspath(os.path.join(dirpath, f))
 
 
-def _filter_source_id(input_dict: dict[int, Particle], wanted_id
+def _filter_source_id(input_dict: dict[int, Particle],
+                      wanted_id: int,
                       ) -> dict[int, Particle]:
     """Filter Particles against the sourceID field."""
     return {pid: part for pid, part in input_dict.items()
             if part.source_id == wanted_id}
 
 
-def _filter_out_alive_at_end(input_dict: dict[int, Particle], max_time: float
+def _filter_out_alive_at_end(input_dict: dict[int, Particle],
+                             max_time: float
                              ) -> dict[int, Particle]:
     """Filter out Particles that were alive at the end of simulation."""
     return {pid: part for pid, part in input_dict.items()
             if part.time[-1] < max_time}
+
+
+def _filter_out_part_with_one_time_step(input_dict: dict[int, Particle]
+                                        ) -> dict[int, Particle]:
+    """Remove particle with only one known position.
+
+    This is useful when the time resolution is low.
+
+    """
+    return {pid: part for pid, part in input_dict.items()
+            if len(part.time) > 1}
