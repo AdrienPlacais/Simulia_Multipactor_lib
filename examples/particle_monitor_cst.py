@@ -18,20 +18,30 @@ from multipactor.particle_monitor.studies import (
     plot_trajectories,
     plot_impact_angles,
 )
-plt.close('all')
 
-# folder, delimiter = "data/1eV_electrons", None
-# folder, delimiter = "data/quick_mp", ';'
-folder, delimiter = "cst/Particle_Monitor/tesla_no_mp", None
-my_particles = ParticleMonitor(folder, delimiter=delimiter)
+# study_case = 'tesla'
+study_case = 'WR75'
 
-stl_file = "cst/Particle_Monitor/tesla.stl"
-my_mesh = mesh.Mesh.from_file(stl_file)
+if study_case == 'tesla':
+    folder, delimiter = "cst/Particle_Monitor/tesla_no_mp", None
+    stl_file = "cst/Particle_Monitor/tesla.stl"
 
-plot_emission_energies(my_particles, bins=1000, hist_range=(0., 1e3))
-plot_collision_energies(my_particles, bins=1000, hist_range=(0., 1e4))
+elif study_case == 'WR75':
+    folder, delimiter = "cst/WR75_reduced/Export/3d", None
+    stl_file = "cst/WR75_reduced/wr75.stl"
 
-pid_to_plot = [i for i in range(100)]
-plot_trajectories(my_particles, pid_to_plot)
+else:
+    raise IOError(f"{study_case = } not defined.")
 
-plot_impact_angles(my_particles, my_mesh)
+if __name__ == '__main__':
+    plt.close('all')
+    my_particles = ParticleMonitor(folder, delimiter=delimiter)
+    my_mesh = mesh.Mesh.from_file(stl_file)
+
+    plot_emission_energies(my_particles, bins=1000, hist_range=(0., 1e3))
+    plot_collision_energies(my_particles, bins=1000, hist_range=(0., 1e4))
+
+    pid_to_plot = [i for i in range(100)]
+    plot_trajectories(my_particles, pid_to_plot)
+
+    plot_impact_angles(my_particles, my_mesh)

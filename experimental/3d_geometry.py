@@ -14,8 +14,8 @@ from numpy.random._generator import Generator
 
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d.axes3d import Axes3D
-from multipactor.experimental.collision import (
-    vectorized_part_mesh_intersections)
+from multipactor.particle_monitor.collision import (
+    part_mesh_intersections)
 from stl import mesh
 
 
@@ -63,8 +63,7 @@ def _half_cube_data_to_cube(data: np.ndarray) -> mesh.Mesh:
 def _create_3d_fig() -> Axes3D:
     """Create the 3d plot."""
     fig = plt.figure(1)
-    axes: Axes3D = fig.add_subplot(projection="3d",
-                                   proj_type="ortho")
+    axes: Axes3D = fig.add_subplot(projection="3d", proj_type="ortho")
     axes.set_xlabel(r"$x$")
     axes.set_ylabel(r"$y$")
     axes.set_zlabel(r"$z$")
@@ -132,7 +131,7 @@ def _generate_random_parts(
     return origins, directions, trajectories, distances
 
 
-def _test_vectorized_parts(truc: mesh.Mesh, axes: Axes3D, n_part: int) -> None:
+def _test_parts(truc: mesh.Mesh, axes: Axes3D, n_part: int) -> None:
     """Generate several particles and test it with vect function."""
     args = _generate_random_parts(truc, n_part=n_part, seed=None)
     origins, directions, trajectories, distances = args
@@ -141,8 +140,7 @@ def _test_vectorized_parts(truc: mesh.Mesh, axes: Axes3D, n_part: int) -> None:
         _plot_lines(traj, axes, **{"c": "r"})
         _plot_points(traj, axes, **{"c": "r", "s": 50})
 
-    args = vectorized_part_mesh_intersections(origins, directions, truc,
-                                              distances=distances)
+    args = part_mesh_intersections(origins, directions, truc)
     collisions, distances_to_collision, impact_angles = args
     impact_angles = np.rad2deg(impact_angles)
     print(f"{impact_angles = }")
@@ -170,7 +168,6 @@ def _test_vectorized_parts(truc: mesh.Mesh, axes: Axes3D, n_part: int) -> None:
 # =============================================================================
 # Main script
 # =============================================================================
-
 if __name__ == "__main__":
     debug = True
 
@@ -189,6 +186,6 @@ if __name__ == "__main__":
                                          "alpha": 0.3,
                                          },
                )
-    _test_vectorized_parts(my_mesh, axes, n_part=1)
+    _test_parts(my_mesh, axes, n_part=4)
 
     _equal_scale(my_mesh, axes)
