@@ -59,6 +59,7 @@ target/
 
 # Perso
 *.swp
+examples/.ipynb_checkpoints/*
 
 # Tracked with git lfs
 *.stl
