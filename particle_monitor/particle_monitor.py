@@ -14,6 +14,7 @@ id of the :class:`Particle`.
 
 """
 import os
+from typing import overload
 import numpy as np
 
 from multipactor.particle_monitor.particle import Particle
@@ -43,7 +44,7 @@ class ParticleMonitor(dict):
             files. The default is None.
 
         """
-        dict_of_parts: dict(int, Particle) = {}
+        dict_of_parts: dict[int, Particle] = {}
 
         filepaths = _absolute_file_paths(folder)
 
@@ -121,6 +122,20 @@ class ParticleMonitor(dict):
             return np.array(out)
         return out
 
+    @overload
+    def last_known_position(self,
+                            source_id: int | None = None,
+                            to_numpy: bool = True,
+                            remove_alive_at_end: bool = True
+                            ) -> np.ndarray[np.float64]: ...
+
+    @overload
+    def last_known_position(self,
+                            source_id: int | None = None,
+                            to_numpy: bool = True,
+                            remove_alive_at_end: bool = False
+                            ) -> list[np.ndarray[np.float64]]: ...
+
     def last_known_position(
             self,
             source_id: int | None = None,
@@ -158,6 +173,22 @@ class ParticleMonitor(dict):
         if to_numpy:
             return np.array(out)
         return out
+
+    @overload
+    def last_known_direction(self,
+                             source_id: int | None = None,
+                             to_numpy: bool = True,
+                             normalize: bool = True,
+                             remove_alive_at_end: bool = True
+                             ) -> np.ndarray[np.float64]: ...
+
+    @overload
+    def last_known_direction(self,
+                             source_id: int | None = None,
+                             to_numpy: bool = False,
+                             normalize: bool = True,
+                             remove_alive_at_end: bool = True
+                             ) -> list[np.ndarray[np.float64]]: ...
 
     def last_known_direction(
             self,
