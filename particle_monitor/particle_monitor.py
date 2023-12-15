@@ -13,8 +13,11 @@ id of the :class:`Particle`.
     Raise error when folder is not found.
 
 """
+from collections.abc import Generator
 import os
+from pathlib import Path
 from typing import overload
+
 import numpy as np
 
 from multipactor.particle_monitor.particle import Particle
@@ -32,7 +35,9 @@ class ParticleMonitor(dict):
 
     """
 
-    def __init__(self, folder: str, delimiter: str | None = None) -> None:
+    def __init__(self,
+                 folder: str | Path,
+                 delimiter: str | None = None) -> None:
         """Create the object, ordered list of filepaths beeing provided.
 
         Parameters
@@ -256,13 +261,33 @@ class ParticleMonitor(dict):
         return out
 
 
-def _absolute_file_paths(directory: str) -> list[str]:
+@overload
+def _absolute_file_paths(directory: str) -> Generator[str, str, None]: ...
+
+
+@overload
+def _absolute_file_paths(directory: Path) -> Generator[Path, Path, None]: ...
+
+
+def _absolute_file_paths(
+        directory: str | Path
+) -> Generator[str, str, None] | Generator[Path, Path, None]:
     """Get all filepaths in absolute from dir, remove unwanted files."""
-    for dirpath, _, filenames in os.walk(directory):
-        for f in filenames:
-            if os.path.splitext(f)[1] in ['.swp']:
-                continue
-            yield os.path.abspath(os.path.join(dirpath, f))
+    if isinstance(directory, str):
+        for dirpath, _, filenames in os.walk(directory):
+            for f in filenames:
+                if os.path.splitext(f)[1] in ['.swp']:
+                    continue
+                yield os.path.abspath(os.path.join(dirpath, f))
+
+    else:
+        for dirpath, _, filenames in os.walk(directory):
+            for dirpath, _, filenames in os.walk(directory):
+                for f in filenames:
+                    f = Path(f)
+                    if f.suffix in ('.swp', ):
+                        continue
+                    yield Path(dirpath, f)
 
 
 def _filter_source_id(input_dict: dict[int, Particle],

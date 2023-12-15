@@ -11,7 +11,7 @@ Created on Sat Sep 23 13:40:42 2023.
     histogram impacts
 
 """
-import os.path
+from pathlib import Path
 
 import numpy as np
 
@@ -24,7 +24,7 @@ vedo.close()
 plt = vedo.Plotter()
 
 
-def plot_mesh(path: str,
+def plot_mesh(stl_file: Path,
               alpha: float = .3) -> Mesh:
     mesh = Mesh(stl_file, alpha=alpha)
     return mesh
@@ -48,11 +48,11 @@ def add_shadows(shadow_positions: tuple[float, float, float],
     return
 
 
-basepath = "../examples/cst/WR75_reduced/"
-stl_file = os.path.join(basepath, "wr75.stl")
+basepath = Path("../examples/cst/WR75_reduced/")
+stl_file = Path(basepath, "wr75.stl")
 plt += plot_mesh(stl_file)
 
-folder, delimiter = os.path.join(basepath, "Export/3d"), None
+folder, delimiter = Path(basepath, "Export/3d"), None
 my_particle_monitor = ParticleMonitor(folder, delimiter=delimiter)
 
 for i in range(1, 100):

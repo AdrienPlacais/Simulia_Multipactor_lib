@@ -8,6 +8,8 @@ Created on Tue Apr 11 20:40:31 2023.
 This script showcases how the Particle Monitor files from CST can be studied.
 
 """
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 from stl import mesh
 
@@ -23,12 +25,12 @@ from multipactor.particle_monitor.studies import (
 study_case = 'WR75'
 
 if study_case == 'tesla':
-    folder, delimiter = "cst/Particle_Monitor/tesla_no_mp", None
-    stl_file = "cst/Particle_Monitor/tesla.stl"
+    folder, delimiter = Path("cst", "Particle_Monitor", "tesla_no_mp"), None
+    stl_file = Path("cst", "Particle_Monitor", "tesla.stl")
 
 elif study_case == 'WR75':
-    folder, delimiter = "cst/WR75_reduced/Export/3d", None
-    stl_file = "cst/WR75_reduced/wr75.stl"
+    folder, delimiter = Path("cst", "WR75_reduced", "Export", "3d"), None
+    stl_file = Path("cst", "WR75_reduced", "wr75.stl")
 
 else:
     raise IOError(f"{study_case = } not defined.")
