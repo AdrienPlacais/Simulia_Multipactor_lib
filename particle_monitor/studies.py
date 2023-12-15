@@ -178,12 +178,12 @@ def plot_trajectories(particles: ParticleMonitor,
         for part in particles_to_plot.values():
             projected_pos = projection(part.pos)
             line, = axes[i].plot(projected_pos[:, 0], projected_pos[:, 1],
-                                marker='o')
+                                 marker='o')
 
             if part.extrapolated_pos is not None:
                 projected_pos = projection(part.extrapolated_pos)
                 axes[i].plot(projected_pos[:, 0], projected_pos[:, 1], ls='--',
-                            c=line.get_color())
+                             c=line.get_color())
     return fig
 
 
