@@ -18,7 +18,7 @@ def part_mesh_intersections(
         directions: np.ndarray,
         structure: mesh.Mesh,
         eps: float = 1e-6,
-        ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Get all intersections between particles and complete mesh.
 
