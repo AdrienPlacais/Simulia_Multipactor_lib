@@ -76,6 +76,22 @@ class ParticleMonitor(dict):
         """Return only emitted electrons."""
         return _filter_source_id(self, 1)
 
+    def __str__(self) -> str:
+        """Resume information on the simulation."""
+        n_total_particles = len(self.keys())
+        n_seed_electrons = len(self.seed_electrons.keys())
+        n_emitted_electrons = len(self.emitted_electrons.keys())
+        n_collisions = len(
+            _filter_out_alive_at_end(self, self.max_time).keys())
+        n_alive_at_end = len(
+            _filter_out_dead_at_end(self, self.max_time).keys())
+        out = f"This simulation involved {n_total_particles} electrons."
+        out += f"\n\t{n_seed_electrons} where seed electrons."
+        out += f"\n\t{n_emitted_electrons} where emitted electrons."
+        out += f"\n\t{n_alive_at_end} where still alive at end of simulation."
+        out += f"\n\tThere was {n_collisions} collisions."
+        return out
+
     def emission_energies(self, source_id: int | None = None,
                           to_numpy: bool = True) -> list[float]:
         """Get emission energies of all or only a subset of particles."""
@@ -230,8 +246,6 @@ class ParticleMonitor(dict):
         if remove_alive_at_end:
             subset = _filter_out_alive_at_end(subset, self.max_time)
 
-        subset = _filter_out_part_with_one_time_step(subset)
-
         out = [part.mom[-1] for part in subset.values()]
 
         if normalize:
@@ -259,12 +273,24 @@ def _filter_source_id(input_dict: dict[int, Particle],
             if part.source_id == wanted_id}
 
 
+def _filter_out_dead_at_end(input_dict: dict[int, Particle],
+                            max_time: float,
+                            tol: float = 1e-6,
+                            ) -> dict[int, Particle]:
+    """Filter out Particles that collisioned during simulation."""
+    particles_alive_at_end = {pid: part for pid, part in input_dict.items()
+                              if abs(part.time[-1] - max_time) < tol}
+    return particles_alive_at_end
+
+
 def _filter_out_alive_at_end(input_dict: dict[int, Particle],
                              max_time: float
                              ) -> dict[int, Particle]:
     """Filter out Particles that were alive at the end of simulation."""
-    return {pid: part for pid, part in input_dict.items()
-            if part.time[-1] < max_time}
+    particles_that_collisioned_during_simulation = {
+        pid: part for pid, part in input_dict.items()
+        if part.time[-1] < max_time}
+    return particles_that_collisioned_during_simulation
 
 
 def _filter_out_part_with_one_time_step(input_dict: dict[int, Particle]
