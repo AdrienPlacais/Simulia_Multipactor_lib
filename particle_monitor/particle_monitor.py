@@ -201,10 +201,7 @@ class ParticleMonitor(dict):
 
         subset = _filter_out_part_with_one_time_step(subset)
 
-        out = [
-            part.pos[-1] - part.pos[-2]
-            for part in subset.values()
-            if len(part.pos) > 1]
+        out = [part.mom[-1] for part in subset.values()]
 
         if normalize:
             out = [mom / np.linalg.norm(mom) for mom in out]
