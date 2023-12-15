@@ -141,7 +141,7 @@ class ParticleMonitor(dict):
             source_id: int | None = None,
             to_numpy: bool = True,
             remove_alive_at_end: bool = True
-            ) -> list[np.ndarray[np.float64]] | np.ndarray[np.float64]:
+    ) -> list[np.ndarray[np.float64]] | np.ndarray[np.float64]:
         """
         Get the last recorded position of every particle.
 
@@ -196,7 +196,7 @@ class ParticleMonitor(dict):
             to_numpy: bool = True,
             normalize: bool = True,
             remove_alive_at_end: bool = True
-            ) -> list[np.ndarray[np.float64]] | np.ndarray[np.float64]:
+    ) -> list[np.ndarray[np.float64]] | np.ndarray[np.float64]:
         """
         Get the last recorded direction of every particle.
 
