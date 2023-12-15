@@ -60,6 +60,7 @@ target/
 # Perso
 *.swp
 examples/.ipynb_checkpoints/*
+examples/cst/WR75_reduced/wr75_pic/*
 
 # Tracked with git lfs
 *.stl
