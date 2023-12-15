@@ -120,7 +120,7 @@ def plot_impact_angles(particles: ParticleMonitor,
     _, _, impact_angles = part_mesh_intersections(
         origins=last_known_position,
         directions=last_known_direction,
-        truc=structure)
+        structure=structure)
 
     counts, bins = np.histogram(np.rad2deg(impact_angles),
                                 bins=bins,
@@ -207,7 +207,7 @@ def plot_impact_density_distribution(particles: ParticleMonitor,
     collisions, _, _ = part_mesh_intersections(
         origins=last_known_position,
         directions=last_known_direction,
-        truc=structure)
+        structure=structure)
     collisions_per_cell = collisions.sum(axis=0)
     collision_density = collisions_per_cell / structure.areas
     collision_density /= np.max(collision_density)

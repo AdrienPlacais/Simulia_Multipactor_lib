@@ -16,7 +16,7 @@ from stl import mesh
 def part_mesh_intersections(
         origins: np.ndarray,
         directions: np.ndarray,
-        truc: mesh.Mesh,
+        structure: mesh.Mesh,
         eps: float = 1e-6,
         ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -38,7 +38,7 @@ stltool.py#L47
         Holds the origins of the ``n`` particles.
     directions : np.ndarray(n, 3)
         Holds the directions of the ``n`` particles.
-    truc : mesh.Mesh
+    structure : mesh.Mesh
         An object with ``m`` triangular cells.
     eps : float, optional
         Tolerance, optional. The default is 1e-6.
@@ -54,7 +54,7 @@ stltool.py#L47
         was no collision).
 
     """
-    vertices_1, vertices_2, vertices_3 = truc.v0, truc.v1, truc.v2
+    vertices_1, vertices_2, vertices_3 = structure.v0, structure.v1, structure.v2
 
     n_part = len(origins)
     m_mesh = len(vertices_1)
@@ -109,8 +109,8 @@ stltool.py#L47
         all_distances[i] = distances
 
         # To compute angle
-        adjacents = truc.normals[collisions].dot(direction)
-        opposites = np.linalg.norm(np.cross(truc.normals[collisions],
+        adjacents = structure.normals[collisions].dot(direction)
+        opposites = np.linalg.norm(np.cross(structure.normals[collisions],
                                             direction))
         tan_theta = opposites / adjacents
         impact_angles[collisions] = np.abs(np.arctan(tan_theta))
