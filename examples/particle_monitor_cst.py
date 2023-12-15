@@ -38,8 +38,8 @@ if __name__ == '__main__':
     my_particles = ParticleMonitor(folder, delimiter=delimiter)
     my_mesh = mesh.Mesh.from_file(stl_file)
 
-    plot_emission_energies(my_particles, bins=1000, hist_range=(0., 1e3))
-    plot_collision_energies(my_particles, bins=1000, hist_range=(0., 1e4))
+    plot_emission_energies(my_particles, bins=1000, hist_range=(0., 1e2))
+    plot_collision_energies(my_particles, bins=1000, hist_range=(0., 2e2))
 
     pid_to_plot = [i for i in range(100)]
     plot_trajectories(my_particles, pid_to_plot)
