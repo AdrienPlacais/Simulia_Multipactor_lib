@@ -54,7 +54,9 @@ stltool.py#L47
         was no collision).
 
     """
-    vertices_1, vertices_2, vertices_3 = structure.v0, structure.v1, structure.v2
+    vertices_1 = structure.v0
+    vertices_2 = structure.v1
+    vertices_3 = structure.v2
 
     n_part = len(origins)
     m_mesh = len(vertices_1)
