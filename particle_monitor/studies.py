@@ -10,6 +10,7 @@ collision energy or the trajectories of the particles stored in a
 ``ParticleMonitor``.
 
 """
+from collections import Counter
 from typing import Any
 
 import numpy as np
@@ -103,8 +104,29 @@ def plot_impact_angles(particles: ParticleMonitor,
                        structure: mesh.Mesh,
                        bins: int = 100,
                        hist_range: tuple[float, float] = (0., 90.),
+                       check_collisions: bool = True,
                        ) -> Figure:
-    """Compute and plot a particles impact angle histogram."""
+    """Compute and plot a particles impact angle histogram.
+
+    Parameters
+    ----------
+    particles : ParticleMonitor
+        particles
+    structure : mesh.Mesh
+        structure
+    bins : int
+        bins
+    hist_range : tuple[float, float]
+        hist_range
+    check_collisions : bool, optional
+        Check how many particles intersected the mesh, and how many particles
+        intersected the mesh several times. The default is False.
+
+    Returns
+    -------
+    Figure
+
+    """
     fig, axes = create_fig_if_not_exists(1, num=3, clean_fig=True)
     axes[0].set_xlabel(r"Impact angle $\theta$ [deg]")
     axes[0].set_ylabel("Distribution all electrons")
@@ -117,10 +139,19 @@ def plot_impact_angles(particles: ParticleMonitor,
         normalize=True,
         remove_alive_at_end=True)
 
-    _, _, impact_angles = part_mesh_intersections(
+    collisions, _, impact_angles = part_mesh_intersections(
         origins=last_known_position,
         directions=last_known_direction,
         structure=structure)
+
+    if check_collisions:
+        n_intersections_per_particle = [
+            np.where(this_part_collisions)[0].shape[0]
+            for this_part_collisions in collisions
+        ]
+        counts_intersect = Counter(n_intersections_per_particle)
+        print("Number of collisions detected: number of particles with this "
+              f"number of collisions\n{counts_intersect}")
 
     counts, bins = np.histogram(np.rad2deg(impact_angles),
                                 bins=bins,
