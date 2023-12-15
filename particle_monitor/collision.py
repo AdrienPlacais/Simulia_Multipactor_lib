@@ -32,6 +32,9 @@ stltool.py#L47
     .. _@V0XNIHILI: https://gist.github.com/V0XNIHILI/\
 87c986441d8debc9cd0e9396580e85f4
 
+    .. todo::
+        explain why so many particles do not find their collision vertice
+
     Parameters
     ----------
     origins : np.ndarray(n, 3)
