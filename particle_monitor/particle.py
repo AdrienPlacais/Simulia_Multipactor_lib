@@ -167,10 +167,6 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.macro_charge = self.macro_charge[idx]
         self.time = self.time[idx]
 
-    def detect_collision(self) -> None:
-        """Determine when and where the collision took place."""
-        self._extrapolate_pos_and_mom_one_time_step_further()
-
     def get_collision_angle(self) -> float:
         """Determine the impact incidence angle, w.r.t. the surface normal."""
         raise NotImplementedError
@@ -206,7 +202,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
                                       " steps for better precision.")
         return adim_momentum_to_eV(self.mom[-1], self.mass_eV)
 
-    def _extrapolate_pos_and_mom_one_time_step_further(self) -> None:
+    def extrapolate_pos_and_mom_one_time_step_further(self) -> None:
         """
         Extrapolate position and momentum by one time-step.
 
@@ -221,7 +217,9 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         full ``time`` steps (what I will consider for now).
 
         """
-        n_extrapolated_points = 10
+        n_extrapolated_points = 2
+        n_extrapolated_time_steps = 10
+
         self.extrapolated_times = np.full(n_extrapolated_points, np.NaN)
         self.extrapolated_pos = np.full((n_extrapolated_points, 3), np.NaN)
         self.extrapolated_mom = np.full((n_extrapolated_points, 3), np.NaN)
@@ -231,7 +229,9 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
         fit_end = self.time[-1]
         time_step = self.time[-1] - self.time[-2]
-        self.extrapolated_times = np.linspace(fit_end, fit_end + time_step,
+        extrapolated_time_end = fit_end + n_extrapolated_time_steps * time_step
+        self.extrapolated_times = np.linspace(fit_end,
+                                              extrapolated_time_end,
                                               n_extrapolated_points)
 
         self.extrapolated_pos = _extrapolate_position(
@@ -290,7 +290,8 @@ def _is_sorted(array: np.ndarray) -> bool:
     return (array == np.sort(array)).all()
 
 
-def _extrapolate_position(last_pos: np.ndarray, last_mom: np.ndarray,
+def _extrapolate_position(last_pos: np.ndarray,
+                          last_mom: np.ndarray,
                           desired_time: np.ndarray) -> np.ndarray:
     """
     Extrapolate the position using the last known momentum.

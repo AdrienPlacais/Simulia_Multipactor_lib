@@ -65,7 +65,7 @@ class ParticleMonitor(dict):
 
         for particle in dict_of_parts.values():
             particle.finalize()
-            particle.detect_collision()
+            particle.extrapolate_pos_and_mom_one_time_step_further()
 
         super().__init__(dict_of_parts)
 
