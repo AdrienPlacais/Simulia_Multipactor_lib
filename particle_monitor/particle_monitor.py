@@ -88,10 +88,8 @@ class ParticleMonitor(dict):
         n_total_particles = len(self.keys())
         n_seed_electrons = len(self.seed_electrons.keys())
         n_emitted_electrons = len(self.emitted_electrons.keys())
-        n_collisions = len(
-            _filter_out_alive_at_end(self, self.max_time).keys())
-        n_alive_at_end = len(
-            _filter_out_dead_at_end(self, self.max_time).keys())
+        n_collisions = len(_filter_out_alive_at_end(self).keys())
+        n_alive_at_end = len(_filter_out_dead_at_end(self).keys())
         out = f"This simulation involved {n_total_particles} electrons."
         out += f"\n\t{n_seed_electrons} where seed electrons."
         out += f"\n\t{n_emitted_electrons} where emitted electrons."
@@ -137,7 +135,7 @@ class ParticleMonitor(dict):
         if source_id is not None:
             subset = _filter_source_id(subset, source_id)
         if remove_alive_at_end:
-            subset = _filter_out_alive_at_end(subset, self.max_time)
+            subset = _filter_out_alive_at_end(subset)
 
         out = [part.collision_energy(extrapolation)
                for part in subset.values()]
@@ -190,7 +188,7 @@ class ParticleMonitor(dict):
         if source_id is not None:
             subset = _filter_source_id(subset, source_id)
         if remove_alive_at_end:
-            subset = _filter_out_alive_at_end(subset, self.max_time)
+            subset = _filter_out_alive_at_end(subset)
 
         out = [part.pos[-1] for part in subset.values()]
         if to_numpy:
@@ -251,7 +249,7 @@ class ParticleMonitor(dict):
         if source_id is not None:
             subset = _filter_source_id(subset, source_id)
         if remove_alive_at_end:
-            subset = _filter_out_alive_at_end(subset, self.max_time)
+            subset = _filter_out_alive_at_end(subset)
 
         out = [part.mom[-1] for part in subset.values()]
 
@@ -300,23 +298,20 @@ def _filter_source_id(input_dict: dict[int, Particle],
             if part.source_id == wanted_id}
 
 
-def _filter_out_dead_at_end(input_dict: dict[int, Particle],
-                            max_time: float,
-                            tol: float = 1e-6,
+def _filter_out_dead_at_end(input_dict: dict[int, Particle]
                             ) -> dict[int, Particle]:
     """Filter out Particles that collisioned during simulation."""
     particles_alive_at_end = {pid: part for pid, part in input_dict.items()
-                              if abs(part.time[-1] - max_time) < tol}
+                              if part.alive_at_end}
     return particles_alive_at_end
 
 
 def _filter_out_alive_at_end(input_dict: dict[int, Particle],
-                             max_time: float
                              ) -> dict[int, Particle]:
     """Filter out Particles that were alive at the end of simulation."""
     particles_that_collisioned_during_simulation = {
         pid: part for pid, part in input_dict.items()
-        if part.time[-1] < max_time}
+        if not part.alive_at_end}
     return particles_that_collisioned_during_simulation
 
 
