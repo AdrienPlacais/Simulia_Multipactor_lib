@@ -99,6 +99,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.time = [line[9]]
         self.particle_id = line[10]
         self.source_id = line[11]
+        self.alive_at_end = False
 
     def add_a_file(self, *line: str) -> None:
         """Add a time-step/a file to the current Particle."""
@@ -254,6 +255,12 @@ class Particle:  # pylint: disable=too-many-instance-attributes
                                                       self.extrapolated_times,
                                                       poly_fit_deg)
 
+    def determine_if_alive_at_end(self,
+                                  max_time: float,
+                                  tol: float = 1e-6) -> None:
+        """Determine if the particle collisioned before end of simulation."""
+        if abs(max_time - self.time[-1]) < tol:
+            self.alive_at_end = True
 
 def _str_to_correct_types(line: tuple[str]) -> tuple[float | int]:
     """Convert the input line of strings to proper data types."""

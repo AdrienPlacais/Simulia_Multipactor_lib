@@ -70,6 +70,8 @@ class ParticleMonitor(dict):
         super().__init__(dict_of_parts)
 
         self.max_time = np.max([part.time[-1] for part in self.values()])
+        for particle in self.values():
+            particle.determine_if_alive_at_end(self.max_time)
 
     @property
     def seed_electrons(self) -> dict[int, Particle]:
