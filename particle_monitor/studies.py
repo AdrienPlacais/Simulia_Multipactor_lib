@@ -10,7 +10,6 @@ collision energy or the trajectories of the particles stored in a
 ``ParticleMonitor``.
 
 """
-from collections import Counter
 from typing import Any
 
 import numpy as np
@@ -102,11 +101,10 @@ def plot_collision_energies(particles: ParticleMonitor,
     return fig
 
 
-def plot_impact_angles(particles: ParticleMonitor,
-                       structure: Any,
+def plot_impact_angles(particle_monitor: ParticleMonitor,
+                       mesh: vedo.Mesh,
                        bins: int = 100,
                        hist_range: tuple[float, float] = (0., 90.),
-                       check_collisions: bool = True,
                        ) -> Figure:
     """Compute and plot a particles impact angle histogram.
 
@@ -114,8 +112,8 @@ def plot_impact_angles(particles: ParticleMonitor,
     ----------
     particles : ParticleMonitor
         particles
-    structure : Any
-        structure
+    mesh : Any
+        mesh
     bins : int
         bins
     hist_range : tuple[float, float]
@@ -133,29 +131,11 @@ def plot_impact_angles(particles: ParticleMonitor,
     axes[0].set_xlabel(r"Impact angle $\theta$ [deg]")
     axes[0].set_ylabel("Distribution all electrons")
 
-    last_known_position = particles.last_known_position(
-        to_numpy=True,
-        remove_alive_at_end=True)
-    last_known_direction = particles.last_known_direction(
-        to_numpy=True,
-        normalize=True,
-        remove_alive_at_end=True)
+    particle_monitor.study_all_collisions(mesh)
+    collision_angles = [particle.collision_angle
+                        for particle in particle_monitor.values()]
 
-    collisions, _, impact_angles = part_mesh_intersections(
-        origins=last_known_position,
-        directions=last_known_direction,
-        structure=structure)
-
-    if check_collisions:
-        n_intersections_per_particle = [
-            np.where(this_part_collisions)[0].shape[0]
-            for this_part_collisions in collisions
-        ]
-        counts_intersect = Counter(n_intersections_per_particle)
-        print("Number of collisions detected: number of particles with this "
-              f"number of collisions\n{counts_intersect}")
-
-    counts, bins = np.histogram(np.rad2deg(impact_angles),
+    counts, bins = np.histogram(np.rad2deg(collision_angles),
                                 bins=bins,
                                 range=hist_range)
     axes[0].hist(bins[:-1], bins, weights=counts)
@@ -166,7 +146,7 @@ def plot_impact_angles(particles: ParticleMonitor,
 # Do the same function but in 3D
 def plot_trajectories(particles: ParticleMonitor,
                       particle_id: list[int],
-                      structure: Any = None) -> Figure:
+                      mesh: Any = None) -> Figure:
     """Plot trajectories of particles with the desired ``pid``.
 
     Parameters
@@ -176,7 +156,7 @@ def plot_trajectories(particles: ParticleMonitor,
     particle_id : list[int]
         List holding the ``pid`` (Particle ID) of the electrons which
         trajectory should be plotted.
-    structure : Any, optional
+    mesh : Any, optional
         Object holding the borders of the geometry for better representation.
         The default is None.
 
@@ -187,13 +167,13 @@ def plot_trajectories(particles: ParticleMonitor,
 
     Raises
     ------
-    NotImplementedError : ``structure`` different from None is not supported.
+    NotImplementedError : ``mesh`` different from None is not supported.
 
     """
     fig, axes = create_fig_if_not_exists(range(221, 224), num=4)
 
-    if structure is not None:
-        raise NotImplementedError("Plot of structure not implemented yet.")
+    if mesh is not None:
+        raise NotImplementedError("Plot of mesh not implemented yet.")
 
     particles_to_plot = {pid: part for pid, part in particles.items()
                          if pid in particle_id}
@@ -221,7 +201,7 @@ def plot_trajectories(particles: ParticleMonitor,
 
 
 def plot_impact_density_distribution(particles: ParticleMonitor,
-                                     structure: Any) -> Figure:
+                                     mesh: Any) -> Figure:
     raise NotImplementedError
     fig, axes = create_fig_if_not_exists(1, num=5, **{'projection': '3d',
                                                       'proj_type': 'ortho'})
@@ -241,7 +221,7 @@ def plot_impact_density_distribution(particles: ParticleMonitor,
     collisions, _, _ = part_mesh_intersections(
         origins=last_known_position,
         directions=last_known_direction,
-        structure=structure)
+        mesh=mesh)
     collisions_per_cell = collisions.sum(axis=0)
-    collision_density = collisions_per_cell / structure.areas
+    collision_density = collisions_per_cell / mesh.areas
     collision_density /= np.max(collision_density)
