@@ -11,21 +11,13 @@ This script showcases how CST data can be analyzed. Data must comes from the
 """
 import os.path
 import random as rand
+
 import numpy as np
 import matplotlib.pyplot as plt
-
-from palettable.colorbrewer.qualitative import Dark2_8
-from cycler import cycler
 
 import multipactor.loaders.loader_cst as lcst
 import multipactor.visualization.plot as mp_plt
 import multipactor.util.exp_growth as mp_exp
-
-font = {'family': 'serif',
-        'size': 25}
-plt.rc('font', **font)
-plt.rcParams['axes.prop_cycle'] = cycler(color=Dark2_8.mpl_colors)
-
 
 # =============================================================================
 # Parameters
