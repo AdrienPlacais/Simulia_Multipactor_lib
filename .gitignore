@@ -58,6 +58,7 @@ docs/_build/
 target/
 
 # Perso
+*.old
 *.swp
 examples/.ipynb_checkpoints/*
 examples/cst/WR75_reduced/wr75_pic/*
