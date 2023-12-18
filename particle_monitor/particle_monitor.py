@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import overload
 
 import numpy as np
+import vedo
 
 from multipactor.particle_monitor.particle import Particle
 from multipactor.loaders.loader_cst import particle_monitor
@@ -259,6 +260,18 @@ class ParticleMonitor(dict):
         if to_numpy:
             return np.array(out)
         return out
+
+    def study_all_collisions(self,
+                             mesh: vedo.Mesh,
+                             **kwargs
+                             ) -> None:
+        """Find all collisions."""
+        print('warning, ParticleMonitor.study_all_collisions should be called '
+              'only once')
+        mesh.compute_normals(points=False, cells=True)
+        for particle in self.values():
+            particle.find_collision(mesh, **kwargs)
+            particle.compute_collision_angle(mesh)
 
 
 @overload
