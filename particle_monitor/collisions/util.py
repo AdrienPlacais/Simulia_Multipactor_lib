@@ -19,6 +19,8 @@ def triangles_ray_intersections(
     Based on `Möller–Trumbore intersection algorithm`_. Stolen and adapted from
     `printrun`_ library. Parallel implementation taken from `@V0XNIHILI`_.
 
+    .. _`Möller–Trumbore intersection algorithm`: https://en.wikipedia.org/wik\
+i/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
     .. _printrun: https://github.com/kliment/Printrun/blob/master/printrun/\
 stltool.py#L47
     .. _@V0XNIHILI: https://gist.github.com/V0XNIHILI/\
