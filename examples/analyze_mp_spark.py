@@ -1,33 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb 27 09:23:41 2023.
+Showcase how multipactor can be analyzed from SPARK3D files.
 
-@author: placais
-
-This script showcases how multipactor can be analyzed from SPARK3D files. For
-files manually exported (Right-click on ``Multipactor results``,
+For files manually exported (Right-click on ``Multipactor results``,
 ``Export to CSV``), use :func:`get_population_evolution``.
 For files automatically exported by SPARK3D, use :func:`get_time_results`.
 
+.. todo::
+    Should be more user-friendly.
+
 """
 import os
+from pathlib import Path
 import random as rand
-import numpy as np
-import matplotlib.pyplot as plt
 
-from palettable.colorbrewer.qualitative import Dark2_8
-from cycler import cycler
+import numpy as np
 
 import multipactor.loaders.loader_spark as lspark
-import multipactor.visualization.plot as mp_plt
 import multipactor.util.exp_growth as mp_exp
-
-font = {'family': 'serif',
-        'size': 25}
-plt.rc('font', **font)
-plt.rcParams['axes.prop_cycle'] = cycler(color=Dark2_8.mpl_colors)
-
+import multipactor.visualization.plot as mp_plt
 
 # =============================================================================
 # Parameters
@@ -50,10 +42,10 @@ omega_0 = 2. * np.pi * freq
 fitting_range = 20. * period
 
 # Load file
-base = "spark"
+base = Path("spark")
 
 e_acc = np.linspace(1e6, 3e7, 30)
-filepath = os.path.join(base, "time_results.csv")
+filepath = Path(base, "time_results.csv")
 label = "csv (manual export)"
 
 # e_acc = np.linspace(1e6, 3e7, 291)
@@ -84,7 +76,9 @@ key_eacc = 'E_acc in MV per m'
 # =============================================================================
 # Exp growth fit
 # =============================================================================
-mp_exp.fit_all_spark(str_model='classic', data=data, key_part=key_part,
+mp_exp.fit_all_spark(str_model='classic',
+                     data=data,
+                     key_part=key_part,
                      fitting_range=fitting_range)
 
 # =============================================================================
@@ -100,7 +94,9 @@ if plot_some_pop_evolutions:
         data_sample[i] = data[i]
         map_id_sample[i] = map_id[i]
 
-    kwargs = {'x_label': "Time [ns]", 'y_label': "Electrons", 'yscale': 'log',
+    kwargs = {'x_label': "Time [ns]",
+              'y_label': "Electrons",
+              'yscale': 'log',
               'title': f'Labels correspond to: {None}'}
     _, axx = mp_plt.plot_dict_of_arrays(data_sample, map_id_sample, key_part,
                                         **kwargs)

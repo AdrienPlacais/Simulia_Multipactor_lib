@@ -8,11 +8,12 @@ Created on Mon Jan  9 10:25:07 2023.
 In this module we define functions to load data from SPARK3D.
 
 """
+from pathlib import Path
 
 import numpy as np
 
 
-def get_population_evolution(filepath: str,
+def get_population_evolution(filepath: Path,
                              e_acc: list[float],
                              delimiter: str = ' ',
                              ) -> tuple[dict, np.ndarray]:
@@ -23,7 +24,7 @@ def get_population_evolution(filepath: str,
 
     Parameters
     ----------
-    filepath : str
+    filepath : Path
         Path to the file to be loaded.
     e_acc : list[float]
         List of accelerating field values in MV/m.
@@ -62,11 +63,11 @@ def get_population_evolution(filepath: str,
     return data, parameters
 
 
-def get_time_results(filepath: str,
+def get_time_results(filepath: Path,
                      e_acc: list[float],
                      delimiter: str = '\t',
                      ) -> tuple[dict, np.ndarray]:
-    """
+    r"""
     Get population evolution, auto export from SPARK3D.
 
     Precise an output directory in the SPARK3D command-line, look for
@@ -74,7 +75,7 @@ def get_time_results(filepath: str,
 
     Parameters
     ----------
-    filepath : str
+    filepath : Path
         Path to the file to be loaded.
     e_acc : list[float]
         List of accelerating field values in MV/m.
