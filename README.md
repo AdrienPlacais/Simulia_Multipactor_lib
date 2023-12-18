@@ -8,7 +8,6 @@ In particular:
 
 # Requirements
 You will need a recent version of Python (>3.7).
-TODO : doc to install `spark3dbatch` library.
 
 The `vedo` module is necessary to study collisions of particles (ParticleMonitor) with walls (impact energy, impact angle).
 If you manage your distribution with `pip`, refer to: https://vedo.embl.es/docs/vedo.html#install-and-test
@@ -39,6 +38,9 @@ For package update, go to the package folder and `git pull origin master`.
 # Documentation
 Documentation is available on: http://adrien.placais.pages.in2p3.fr/python-multipactor-library/
 Documentation is integrated following: https://daler.github.io/sphinxdoc-test/includeme.html
+
+Packages required to compile documentation: `sphinx_rtd_theme`, `myst-parser`.
+
 TODO: get `https` certification
 
 # Tutorial
