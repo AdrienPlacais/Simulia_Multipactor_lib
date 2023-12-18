@@ -9,8 +9,9 @@ In this module we define :class:`Particle`. This object is created by
 sequentially reading CST ParticleMonitor files.
 
 """
-import numpy as np
+import math
 
+import numpy as np
 import vedo
 
 from multipactor.constants import clight, qelem
@@ -106,6 +107,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.alive_at_end = False
         self.collision_cell_id: np.ndarray = np.array([], dtype=np.float64)
         self.collision_point: np.ndarray = np.array([], dtype=np.uint32)
+        self.collision_angle: float = np.NaN
 
     def add_a_file(self, *line: str) -> None:
         """Add a time-step/a file to the current Particle."""
@@ -337,13 +339,28 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         if warn_multiple_collisions and collision_point.shape[0] > 1:
             print(f"More than one collision for particle {self.particle_id}."
                   "Only considering the first.")
-            collision_point = collision_point[0]
-            collision_cell = collision_cell[0]
+            collision_point = collision_point[0, :]
+            collision_cell = collision_cell[0, np.newaxis]
 
         self.collision_cell_id = collision_cell
         self.collision_point = collision_point
         return
 
+    def compute_collision_angle(self,
+                                mesh: vedo.Mesh,
+                                ) -> None:
+        """Compute the angle of impact."""
+        if self.alive_at_end:
+            return
+        if self.collision_cell_id.shape[0] < 1:
+            return
+
+        direction = self.mom[-1]
+        normal = mesh.cell_normals[self.collision_cell_id]
+        adjacent = normal.dot(direction)
+        opposite = np.linalg.norm(np.cross(normal, direction))
+        tan_theta = opposite / adjacent
+        self.collision_angle = abs(math.atan(tan_theta))
 
 
 def _str_to_correct_types(line: tuple[str]) -> tuple[float | int]:
