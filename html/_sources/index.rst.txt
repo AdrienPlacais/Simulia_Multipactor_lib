@@ -8,7 +8,7 @@ Welcome to Simulia Multipactor Library documentation!
    :glob:
 
    manual/introduction
-   manual/examples
+   manual/examples_jupyter_notebooks
    API Reference <modules>
 
 Indices and tables

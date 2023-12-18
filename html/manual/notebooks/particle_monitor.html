@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Particle Monitor: WR75 study case &mdash; Simulia Multipactor Library  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="multipactor" href="../../modules.html" />
+    <link rel="prev" title="Export Parametric from CST" href="export_parametric.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Simulia Multipactor Library
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples_jupyter_notebooks.html">Jupyter notebook examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="compute_exp_growth_spark.html">Compute exponential growth from SPARK3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="export_parametric.html">Export Parametric from CST</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Particle Monitor: WR75 study case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Particle-Monitor-TESLA-study-case">Particle Monitor TESLA study case</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Simulia Multipactor Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../examples_jupyter_notebooks.html">Jupyter notebook examples</a></li>
+      <li class="breadcrumb-item active">Particle Monitor: WR75 study case</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/manual/notebooks/particle_monitor.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Particle-Monitor:-WR75-study-case">
+<h1>Particle Monitor: WR75 study case<a class="headerlink" href="#Particle-Monitor:-WR75-study-case" title="Link to this heading"></a></h1>
+<p>In this script, we showcase how the particle monitor data from CST can be treated. Source <code class="docutils literal notranslate"><span class="pre">.cst</span></code> file for the electromagnetic and PIC solvers are provided.</p>
+<section id="Loading-files">
+<h2>Loading files<a class="headerlink" href="#Loading-files" title="Link to this heading"></a></h2>
+<p>First of all, we define the paths to the folder with all the <code class="docutils literal notranslate"><span class="pre">.txt</span></code> file produced by CST, as well as the character that separates the columns in the file.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="n">example_data</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;cst&quot;</span><span class="p">)</span>
+<span class="n">folder</span><span class="p">,</span> <span class="n">delimiter</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">example_data</span><span class="p">,</span> <span class="s2">&quot;WR75_reduced&quot;</span><span class="p">,</span> <span class="s2">&quot;Export&quot;</span><span class="p">,</span> <span class="s2">&quot;3d&quot;</span><span class="p">),</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+<p>Now we load the particles. This operation will take a while, as there are a lot of files.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">multipactor.particle_monitor.particle_monitor</span> <span class="kn">import</span> <span class="n">ParticleMonitor</span>
+<span class="n">my_particle_monitor</span> <span class="o">=</span> <span class="n">ParticleMonitor</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/placais/Documents/Simulation/python/multipactor/particle_monitor/particle.py:455: RankWarning: Polyfit may be poorly conditioned
+  polynom = np.polyfit(known_time, known_mom, poly_fit_deg)
+</pre></div></div>
+</div>
+<p>The warning is raised during the extrapolation of the position and momentum arrays (used to detect collision with the mesh). It is raised because the distance crossed by the particles between two position monitor files is too high. Typically, I generally save 20 files per RF period. Here I just wanted the files to be light enough, hence the low resolution.</p>
+</section>
+<section id="Plotting-emission-energies">
+<h2>Plotting emission energies<a class="headerlink" href="#Plotting-emission-energies" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">multipactor.particle_monitor.studies</span> <span class="kn">import</span> <span class="n">plot_emission_energies</span>
+
+<span class="n">bins</span> <span class="o">=</span> <span class="mi">200</span>  <span class="c1"># Number of histogram bins</span>
+<span class="n">hist_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1e2</span><span class="p">)</span>  <span class="c1"># Range of the histogram</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plot_emission_energies</span><span class="p">(</span><span class="n">my_particle_monitor</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">hist_range</span><span class="o">=</span><span class="n">hist_range</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/manual_notebooks_particle_monitor_7_0.png" src="../../_images/manual_notebooks_particle_monitor_7_0.png" />
+</div>
+</div>
+</section>
+<section id="Plotting-collision-energies">
+<h2>Plotting collision energies<a class="headerlink" href="#Plotting-collision-energies" title="Link to this heading"></a></h2>
+<p>To plot the distribution of the collision energies, the syntax is very similar.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">multipactor.particle_monitor.studies</span> <span class="kn">import</span> <span class="n">plot_collision_energies</span>
+
+<span class="n">bins</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">hist_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2e2</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plot_collision_energies</span><span class="p">(</span><span class="n">my_particle_monitor</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">hist_range</span><span class="o">=</span><span class="n">hist_range</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/manual_notebooks_particle_monitor_9_0.png" src="../../_images/manual_notebooks_particle_monitor_9_0.png" />
+</div>
+</div>
+</section>
+<section id="Plotting-impact-angles">
+<h2>Plotting impact angles<a class="headerlink" href="#Plotting-impact-angles" title="Link to this heading"></a></h2>
+<p>We can also plot an histogram of the impact angles. This is a little bit more complex, as it depends on the geometry of the system. From CST, we export it as a <code class="docutils literal notranslate"><span class="pre">.stl</span></code> file. Then we load it using the <code class="docutils literal notranslate"><span class="pre">vedo</span></code> library. To check if the resolution of the file or the units math the ones of the particle monitor, look at “Plotting trajectories” a few cells below.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">vedo</span>
+<span class="n">stl_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">example_data</span><span class="p">,</span> <span class="s2">&quot;WR75_reduced&quot;</span><span class="p">,</span> <span class="s2">&quot;wr75.stl&quot;</span><span class="p">)</span>
+<span class="n">my_mesh</span> <span class="o">=</span> <span class="n">vedo</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stl_file</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>We reduce the opacity of the waveguide to 30% to see inside. For full list of what you can see <code class="docutils literal notranslate"><span class="pre">vedo</span></code>, see <a class="reference external" href="https://vedo.embl.es/docs/vedo.html">https://vedo.embl.es/docs/vedo.html</a>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_mesh</span><span class="o">.</span><span class="n">alpha</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<table>
+<tr>
+<td>
+<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAACRUlEQVR4nO3XsQ3CQBQFQYzoidgxPRHQE7FjqjpaMJJXNtZMfMEPVk+6aYxxga1d9z6AcxIWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGREBaJ2/qny/vZ3cFfmB+vlS8tFokfFqsz3/e+4FyWz94XWCwiwiIhLBLCIiEsEof4FR7hF8O2LBaJaYyx9w2ckMUiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBJfJTgOFzZpAxcAAAAASUVORK5CYII='></img>
+</td>
+<td style='text-align: center; vertical-align: center;'><br/>
+<b><a href="https://vedo.embl.es/docs/vedo/mesh.html" target="_blank">vedo.mesh.Mesh</a></b><br/><code><i>(...data/cst/WR75_reduced/wr75.stl)</i></code>
+<table>
+<tr><td><b> bounds </b> <br/> (x/y/z) </td><td>-10.02 ... 10.02<br/>-0.5000 ... 0.6000<br/>-15.00 ... 15.00</td></tr>
+<tr><td><b> center of mass </b></td><td>(0, 0.0500, 0)</td></tr>
+<tr><td><b> average size </b></td><td>17.909</td></tr>
+<tr><td><b> nr. points&nbsp/&nbspfaces </b></td><td>16&nbsp/&nbsp44</td></tr>
+
+
+</table>
+</table></div>
+</div>
+<p>In contrary to <code class="docutils literal notranslate"><span class="pre">Particle.emission_energy</span></code> or <code class="docutils literal notranslate"><span class="pre">Particle.collision_energy</span></code>, we cannot just call <code class="docutils literal notranslate"><span class="pre">Particle.collision_angle</span></code>; we must compute it first.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_particle_monitor</span><span class="o">.</span><span class="n">compute_collision_angles</span><span class="p">(</span><span class="n">my_mesh</span><span class="p">,</span>
+                                             <span class="n">warn_multiple_collisions</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                             <span class="n">warn_no_collision</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+No collision for particle 56121.
+</pre></div></div>
+</div>
+<p>Collision angles are computed thanks to the extrapolated position. Here, the extrapolated position is outside of the rectangular waveguide, so the trajectory crosses several cells; we only keep the impacted cell with the lowest ID, which is not very very rigorous. Will be changed in a latter update.</p>
+<p>Now we can plot the distribution of the impact energies!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">multipactor.particle_monitor.studies</span> <span class="kn">import</span> <span class="n">plot_collision_angles</span>
+
+<span class="n">bins</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">hist_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">90.</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plot_collision_angles</span><span class="p">(</span><span class="n">my_particle_monitor</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">hist_range</span><span class="o">=</span><span class="n">hist_range</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/manual_notebooks_particle_monitor_18_0.png" src="../../_images/manual_notebooks_particle_monitor_18_0.png" />
+</div>
+</div>
+</section>
+<section id="Plotting-the-trajectories">
+<h2>Plotting the trajectories<a class="headerlink" href="#Plotting-the-trajectories" title="Link to this heading"></a></h2>
+<p>We can also plot some trajectories. First of all, we define <code class="docutils literal notranslate"><span class="pre">pid_to_plot</span></code>, a list of integers which correspond to the identifier (<code class="docutils literal notranslate"><span class="pre">pid</span></code>) of the particle to plot. Here, we will plot the trajectories of 15 random particles.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="n">number_of_particles_to_plot</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">pid_to_plot</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">my_particle_monitor</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">number_of_particles_to_plot</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">multipactor.visualization.plot_3d</span> <span class="kn">import</span> <span class="n">plot_structure_and_some_trajectories</span>
+
+<span class="n">vedo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_backend</span> <span class="o">=</span> <span class="s1">&#39;vtk&#39;</span>
+<span class="n">veplot</span> <span class="o">=</span> <span class="n">plot_structure_and_some_trajectories</span><span class="p">(</span><span class="n">my_particle_monitor</span><span class="p">,</span>
+                                              <span class="n">pid_to_plot</span><span class="p">,</span>
+                                              <span class="n">my_mesh</span><span class="p">,</span>
+                                              <span class="n">add_extrapolated_position</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In this plot, the emission points are in blue. If there is no emission point, it is because the electron you are looking at is a seed electron. The last known position is in red. If you want to see the extrapolated position, it will be in green.</p>
+</section>
+</section>
+<section id="Particle-Monitor-TESLA-study-case">
+<h1>Particle Monitor TESLA study case<a class="headerlink" href="#Particle-Monitor-TESLA-study-case" title="Link to this heading"></a></h1>
+<p>As the gap of the reduced WR75 is very tight, the visualisation of the trajectories is not very impressive. Let’s fix that by looking at a TESLA cavity.</p>
+<section id="Loading-data-and-making-trajectory-plot">
+<h2>Loading data and making trajectory plot<a class="headerlink" href="#Loading-data-and-making-trajectory-plot" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">example_data</span><span class="p">,</span> <span class="s2">&quot;Particle_Monitor&quot;</span><span class="p">,</span> <span class="s2">&quot;tesla_no_mp&quot;</span><span class="p">)</span>
+<span class="n">my_particle_monitor</span> <span class="o">=</span> <span class="n">ParticleMonitor</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+
+<span class="n">stl_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">example_data</span><span class="p">,</span> <span class="s2">&quot;Particle_Monitor&quot;</span><span class="p">,</span> <span class="s2">&quot;tesla.stl&quot;</span><span class="p">)</span>
+<span class="n">my_mesh</span> <span class="o">=</span> <span class="n">vedo</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stl_file</span><span class="p">))</span><span class="o">.</span><span class="n">alpha</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">number_of_particles_to_plot</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">pid_to_plot</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">my_particle_monitor</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">number_of_particles_to_plot</span><span class="p">)</span>
+
+<span class="n">veplot</span> <span class="o">=</span> <span class="n">plot_structure_and_some_trajectories</span><span class="p">(</span><span class="n">my_particle_monitor</span><span class="p">,</span>
+                                              <span class="n">pid_to_plot</span><span class="p">,</span>
+                                              <span class="n">my_mesh</span><span class="p">,</span>
+                                              <span class="n">add_extrapolated_position</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Note that, again, the resolution on the trajectories is low. This may lead to incorrect impact angles.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="export_parametric.html" class="btn btn-neutral float-left" title="Export Parametric from CST" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../modules.html" class="btn btn-neutral float-right" title="multipactor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Adrien Plaçais.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
