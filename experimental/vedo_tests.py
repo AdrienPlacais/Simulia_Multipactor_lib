@@ -11,10 +11,10 @@ Created on Sat Sep 23 13:40:42 2023.
 """
 from pathlib import Path
 import random
-from typing import Any
 
 import vedo
 
+from multipactor.particle_monitor.studies import plot_impact_angles
 from multipactor.particle_monitor.particle import Particle
 from multipactor.particle_monitor.particle_monitor import ParticleMonitor
 from multipactor.visualization.plot_3d import (
@@ -58,6 +58,8 @@ if __name__ == '__main__':
         my_mesh,
     )
 
+    # %%
+    plot_impact_angles(my_particle_monitor, my_mesh)
     # # Find intersections
     # # my_mesh.intersect_with_lines
 
