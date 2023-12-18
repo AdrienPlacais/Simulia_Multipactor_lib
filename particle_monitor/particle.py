@@ -102,7 +102,10 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.time = [line[9]]
         self.particle_id = line[10]
         self.source_id = line[11]
+
         self.alive_at_end = False
+        self.collision_cell_id: np.ndarray = np.array([], dtype=np.float64)
+        self.collision_point: np.ndarray = np.array([], dtype=np.uint32)
 
     def add_a_file(self, *line: str) -> None:
         """Add a time-step/a file to the current Particle."""
@@ -262,12 +265,12 @@ class Particle:  # pylint: disable=too-many-instance-attributes
             self.alive_at_end = True
 
     # could also return the intersection point
-    def find_collision_cell(self,
-                            mesh: vedo.Mesh,
-                            warn_no_collision: bool = True,
-                            warn_multiple_collisions: bool = True,
-                            **kwargs
-                            ) -> np.ndarray:
+    def find_collision(self,
+                       mesh: vedo.Mesh,
+                       warn_no_collision: bool = True,
+                       warn_multiple_collisions: bool = True,
+                       **kwargs
+                       ) -> None:
         """Find where the trajectory impacts the structure.
 
         If the particle is alive at the end of the simulation, we do not even
@@ -300,50 +303,46 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         kwargs :
             kwargs
 
-        Returns
-        -------
-        cell_ids : np.ndarray[np.uint32]
-            ID of the impacted cell(s).
-
         """
-        default_return = np.array([], dtype=np.uint32)
         if self.alive_at_end:
-            return default_return
+            return
         if self.pos.shape[0] <= 1:
-            return default_return
+            return
 
         p_0 = self.pos[-1]
         assert self.extrapolated_pos is not None
         p_1 = self.extrapolated_pos[-1]
 
-        intersecting_points, cell_ids = mesh.intersect_with_line(
+        collision_point, collision_cell = mesh.intersect_with_line(
             p0=p_0,
             p1=p_1,
             return_ids=True,
             tol=0)
 
-        if intersecting_points.shape[0] == 0:
+        if collision_point.shape[0] == 0:
             if self.pos.shape[0] <= 2:
-                return default_return
+                return
             p_1 = p_0
             p_0 = self.pos[-2]
-            intersecting_points, cell_ids = mesh.intersect_with_line(
+            collision_point, collision_cell = mesh.intersect_with_line(
                 p0=p_0,
                 p1=p_1,
                 return_ids=True,
                 tol=0)
 
-        if warn_no_collision and intersecting_points.shape[0] == 0:
+        if warn_no_collision and collision_point.shape[0] == 0:
             print(f"No collision for particle {self.particle_id}.")
-            return cell_ids
+            return
 
-        if warn_multiple_collisions and intersecting_points.shape[0] > 1:
+        if warn_multiple_collisions and collision_point.shape[0] > 1:
             print(f"More than one collision for particle {self.particle_id}."
                   "Only considering the first.")
-            intersecting_points = intersecting_points[0]
-            cell_ids = cell_ids[0]
+            collision_point = collision_point[0]
+            collision_cell = collision_cell[0]
 
-        return cell_ids
+        self.collision_cell_id = collision_cell
+        self.collision_point = collision_point
+        return
 
 
 
