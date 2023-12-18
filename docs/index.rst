@@ -1,5 +1,5 @@
-Welcome to PyMultipactor CST's documentation!
-=============================================
+Welcome to Simulia Multipactor Library documentation!
+=====================================================
 
 .. toctree::
    :maxdepth: 3
