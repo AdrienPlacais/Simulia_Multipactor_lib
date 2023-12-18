@@ -4,16 +4,22 @@ In particular:
  - Load particle sweeps and position monitor data from CST Microwave Studio.
  - Load results from SPARK3D.
  - Post-treat electron vs time results from these tools: multipactor trend, multipactor order.
- - Post-treat position monitor data: energy of incoming electrons, impact angle (TODO).
+ - Post-treat CST's position monitor data: energy of incoming electrons, impact angle, visualize trajectories.
 
 # Requirements
 You will need a recent version of Python (>3.7).
 TODO : doc to install `spark3dbatch` library.
 
-The `numpy-stl` module is necessary to study collisions of particles (ParticleMonitor) with walls (impact energy, impact angle).
-If you manage your distribution with `pip`, refer to: https://github.com/conda-forge/numpy-stl-feedstock
-If you manage your installation with `conda`, refer to: https://github.com/conda-forge/numpy-stl-feedstock
+The `vedo` module is necessary to study collisions of particles (ParticleMonitor) with walls (impact energy, impact angle).
+If you manage your distribution with `pip`, refer to: https://vedo.embl.es/docs/vedo.html#install-and-test
+
+If you manage your installation with `conda`, run:
+```
+conda create -n vedo_env -c conda-forge python=3.11
+conda install -c conda-forge numpy matplotlib pandas vedo
+```
 Warning: in the latter case, all your packages must be installed from the `conda-forge` source, which is not the default.
+Also, you must run `conda activate vedo_env` to activate this environment.
 More information: https://www.youtube.com/watch?v=Ul79ihg41Rs
 
 # Install package
