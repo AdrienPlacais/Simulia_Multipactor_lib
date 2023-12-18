@@ -16,10 +16,13 @@ If you manage your distribution with `pip`, refer to: https://vedo.embl.es/docs/
 If you manage your installation with `conda`, run:
 ```
 conda create -n vedo_env -c conda-forge python=3.11
-conda install -c conda-forge numpy matplotlib pandas vedo
+conda activate vedo_env
+conda install -c conda-forge numpy matplotlib pandas scipy vedo
 ```
 Warning: in the latter case, all your packages must be installed from the `conda-forge` source, which is not the default.
-Also, you must run `conda activate vedo_env` to activate this environment.
+You may also want to `conda install -c conda-forge spyder` to have an IDE.
+
+Remember to run `conda activate vedo_env` to activate this environment.
 More information: https://www.youtube.com/watch?v=Ul79ihg41Rs
 
 # Install package
