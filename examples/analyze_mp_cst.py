@@ -11,6 +11,9 @@ accelerating field ``E_acc`` for several initial number of particles ``N_0``.
 .. todo::
     Should be more user-friendly.
 
+.. todo::
+    label for e_acc plot
+
 """
 import os.path
 from pathlib import Path
