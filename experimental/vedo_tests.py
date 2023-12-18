@@ -31,8 +31,6 @@ def monitor_to_list_of_particles(particle_monitor: ParticleMonitor,
         return [parts]
     return parts
 
-
-
 if __name__ == '__main__':
     vedo.close()
 
@@ -59,7 +57,7 @@ if __name__ == '__main__':
     )
 
     # %%
-    plot_impact_angles(my_particle_monitor, my_mesh)
+    plot_impact_angles(my_particle_monitor)
     # # Find intersections
     # # my_mesh.intersect_with_lines
 
