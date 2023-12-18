@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'PyMultipactor CST'
+project = 'Simulia Multipactor Library'
 copyright = '2023, Adrien Plaçais'
 author = 'Adrien Plaçais'
 
@@ -20,6 +20,7 @@ extensions = [
     "sphinx_rtd_theme",         # ReadTheDocs theme
     "myst_parser",
     "sphinx.ext.todo",          # allow use of TODO
+    "nbsphinx",                 # integration of notebooks
     # "sphinx.ext.viewcode",
     # "sphinxcontrib.fulltoc",
 ]

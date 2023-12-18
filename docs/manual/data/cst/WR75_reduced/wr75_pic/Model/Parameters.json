@@ -1,0 +1,58 @@
+{
+    "parameters": [
+        {
+            "descr": "Width of waveguide",
+            "expr": "19.05",
+            "name": "width",
+            "value": "19.05"
+        },
+        {
+            "descr": "Thickness of walls",
+            "expr": "0.5",
+            "name": "thickness",
+            "value": "0.5"
+        },
+        {
+            "descr": "Height of waveguide",
+            "expr": "0.1",
+            "name": "height",
+            "value": "0.1"
+        },
+        {
+            "descr": "Length of waveguide",
+            "expr": "30",
+            "name": "length",
+            "value": "30"
+        },
+        {
+            "descr": "rf frequency",
+            "expr": "11",
+            "name": "freq",
+            "value": "11"
+        },
+        {
+            "descr": "rf period",
+            "expr": "1/freq",
+            "name": "T_rf",
+            "value": "9.09090909090909e-02"
+        },
+        {
+            "descr": "rf power",
+            "expr": "300",
+            "name": "power",
+            "value": "300"
+        },
+        {
+            "descr": "Max simulation time",
+            "expr": "30 * T_rf",
+            "name": "t_max",
+            "value": "2.72727272727273"
+        },
+        {
+            "expr": "T_rf / 20",
+            "name": "position_monitor_time_step",
+            "value": "4.54545454545455e-03"
+        }
+    ],
+    "version": 1
+}

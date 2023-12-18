@@ -1,0 +1,21 @@
+[Version]
+2
+[ProjectVersion]
+'# PS Version: Version 2023.5 - Jun 08 2023 - ACIS 32.0.1 -
+[Author]
+placais
+[Mesh Cells]
+3,220
+[Mesh Type]
+Hexahedral
+[Last Problem Type]
+PIC Solver
+[Last Solver Type]
+PT PIC
+[Last Solver Type Abb]
+pic
+[Results]
+Time Domain: PIC
+[Modeler Unique ID]
+5:wr75_pic.cst?c5b803ad1a1325554095da9ffb1c688c?17351:numberofparameters=9:port=1>mode=1>zre=0>zim=0?port=2>mode=1>zre=0>zim=0:::t_rf?freq?height?length?position_monitor_time_step?power?t_max?thickness?width
+[Comment]

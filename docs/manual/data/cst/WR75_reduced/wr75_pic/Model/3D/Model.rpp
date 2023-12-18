@@ -1,0 +1,26 @@
+10
+0
+0
+2
+Load Particle Info
+Load Particle Info
+1
+M1D
+Particles
+P
+ED10
+Load Particle Info^+PS.rtp
+2
+ParticleInfo [PIC]\Particle vs. Time
+ParticleInfo [PIC]\Emitted Secondaries
+position  monitor 1
+- Export 3D Field Result
+1
+1D
+2D and 3D Field Results
+P
+ED10
+- Export 3D Field Result.rtp
+1
+position  monitor 1
+0
