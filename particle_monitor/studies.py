@@ -102,7 +102,6 @@ def plot_collision_energies(particles: ParticleMonitor,
 
 
 def plot_collision_angles(particle_monitor: ParticleMonitor,
-                          mesh: vedo.Mesh,
                           bins: int = 100,
                           hist_range: tuple[float, float] = (0., 90.),
                           **kwargs,
@@ -113,8 +112,6 @@ def plot_collision_angles(particle_monitor: ParticleMonitor,
     ----------
     particles : ParticleMonitor
         particles
-    mesh : Any
-        mesh
     bins : int
         bins
     hist_range : tuple[float, float]
