@@ -11,9 +11,12 @@ sequentially reading CST ParticleMonitor files.
 """
 import numpy as np
 
+import vedo
+
 from multipactor.constants import clight, qelem
 from multipactor.particle_monitor.converters import (
-    adim_momentum_to_eV, adim_momentum_to_speed_mm_per_ns
+    adim_momentum_to_eV,
+    adim_momentum_to_speed_mm_per_ns,
 )
 
 
@@ -167,10 +170,6 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.macro_charge = self.macro_charge[idx]
         self.time = self.time[idx]
 
-    def get_collision_angle(self) -> float:
-        """Determine the impact incidence angle, w.r.t. the surface normal."""
-        raise NotImplementedError
-
     @property
     def emission_energy(self) -> float:
         """Compute emission energy in eV."""
@@ -261,6 +260,92 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         """Determine if the particle collisioned before end of simulation."""
         if abs(max_time - self.time[-1]) < tol:
             self.alive_at_end = True
+
+    # could also return the intersection point
+    def find_collision_cell(self,
+                            mesh: vedo.Mesh,
+                            warn_no_collision: bool = True,
+                            warn_multiple_collisions: bool = True,
+                            **kwargs
+                            ) -> np.ndarray:
+        """Find where the trajectory impacts the structure.
+
+        If the particle is alive at the end of the simulation, we do not even
+        try. If it has only one known time step, neither do we.
+
+        We first try to detect a collision between the last known position of
+        the particle and the last extrapolated position. If no collision is
+        found, we try to find it between the last known position and the
+        know position just before that.
+
+        .. note::
+            If the last extrapolated position is too far from the last known
+            position, several collisions may be detected.
+
+        .. todo::
+            Take only nearest cell instead of the one with the lowest ID as for
+            now.
+
+        Parameters
+        ----------
+        mesh : vedo.Mesh
+            ``vedo`` mesh object describing the structure of the rf system.
+        warn_no_collision : bool, optional
+            If True, a warning is raised when the electron was not alive at the
+            end of the simulation, but no collision was detected. The default
+            is True.
+        warn_multiple_collisions : bool
+            To warn if several collisions were detected for the same particle.
+            Also remove all collisions but the first one. The default is True.
+        kwargs :
+            kwargs
+
+        Returns
+        -------
+        cell_ids : np.ndarray[np.uint32]
+            ID of the impacted cell(s).
+
+        """
+        default_return = np.array([], dtype=np.uint32)
+        if self.alive_at_end:
+            return default_return
+        if self.pos.shape[0] <= 1:
+            return default_return
+
+        p_0 = self.pos[-1]
+        assert self.extrapolated_pos is not None
+        p_1 = self.extrapolated_pos[-1]
+
+        intersecting_points, cell_ids = mesh.intersect_with_line(
+            p0=p_0,
+            p1=p_1,
+            return_ids=True,
+            tol=0)
+
+        if intersecting_points.shape[0] == 0:
+            if self.pos.shape[0] <= 2:
+                return default_return
+            p_1 = p_0
+            p_0 = self.pos[-2]
+            intersecting_points, cell_ids = mesh.intersect_with_line(
+                p0=p_0,
+                p1=p_1,
+                return_ids=True,
+                tol=0)
+
+        if warn_no_collision and intersecting_points.shape[0] == 0:
+            print(f"No collision for particle {self.particle_id}.")
+            return cell_ids
+
+        if warn_multiple_collisions and intersecting_points.shape[0] > 1:
+            print(f"More than one collision for particle {self.particle_id}."
+                  "Only considering the first.")
+            intersecting_points = intersecting_points[0]
+            cell_ids = cell_ids[0]
+
+        return cell_ids
+
+
 
 def _str_to_correct_types(line: tuple[str]) -> tuple[float | int]:
     """Convert the input line of strings to proper data types."""

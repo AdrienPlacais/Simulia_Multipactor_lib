@@ -15,10 +15,12 @@ from typing import Any
 
 import numpy as np
 from matplotlib.figure import Figure
-from stl import mesh
+import vedo
 
 from multipactor.particle_monitor.particle_monitor import ParticleMonitor
-from multipactor.particle_monitor.collision import part_mesh_intersections
+from multipactor.particle_monitor.collisions.vedo_mesh_collisions import (
+    part_mesh_intersections,
+)
 from multipactor.visualization.plot import create_fig_if_not_exists
 
 
@@ -101,7 +103,7 @@ def plot_collision_energies(particles: ParticleMonitor,
 
 
 def plot_impact_angles(particles: ParticleMonitor,
-                       structure: mesh.Mesh,
+                       structure: Any,
                        bins: int = 100,
                        hist_range: tuple[float, float] = (0., 90.),
                        check_collisions: bool = True,
@@ -112,7 +114,7 @@ def plot_impact_angles(particles: ParticleMonitor,
     ----------
     particles : ParticleMonitor
         particles
-    structure : mesh.Mesh
+    structure : Any
         structure
     bins : int
         bins
@@ -219,7 +221,8 @@ def plot_trajectories(particles: ParticleMonitor,
 
 
 def plot_impact_density_distribution(particles: ParticleMonitor,
-                                     structure: mesh.Mesh) -> Figure:
+                                     structure: Any) -> Figure:
+    raise NotImplementedError
     fig, axes = create_fig_if_not_exists(1, num=5, **{'projection': '3d',
                                                       'proj_type': 'ortho'})
     axes.set_xlabel(r"$x$")
