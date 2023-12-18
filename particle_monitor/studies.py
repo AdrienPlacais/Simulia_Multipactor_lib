@@ -101,11 +101,12 @@ def plot_collision_energies(particles: ParticleMonitor,
     return fig
 
 
-def plot_impact_angles(particle_monitor: ParticleMonitor,
-                       mesh: vedo.Mesh,
-                       bins: int = 100,
-                       hist_range: tuple[float, float] = (0., 90.),
-                       ) -> Figure:
+def plot_collision_angles(particle_monitor: ParticleMonitor,
+                          mesh: vedo.Mesh,
+                          bins: int = 100,
+                          hist_range: tuple[float, float] = (0., 90.),
+                          **kwargs,
+                          ) -> Figure:
     """Compute and plot a particles impact angle histogram.
 
     Parameters
@@ -131,7 +132,6 @@ def plot_impact_angles(particle_monitor: ParticleMonitor,
     axes[0].set_xlabel(r"Impact angle $\theta$ [deg]")
     axes[0].set_ylabel("Distribution all electrons")
 
-    particle_monitor.study_all_collisions(mesh)
     collision_angles = [particle.collision_angle
                         for particle in particle_monitor.values()]
 

@@ -266,7 +266,6 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         if abs(max_time - self.time[-1]) < tol:
             self.alive_at_end = True
 
-    # could also return the intersection point
     def find_collision(self,
                        mesh: vedo.Mesh,
                        warn_no_collision: bool = True,
@@ -336,11 +335,12 @@ class Particle:  # pylint: disable=too-many-instance-attributes
             print(f"No collision for particle {self.particle_id}.")
             return
 
-        if warn_multiple_collisions and collision_point.shape[0] > 1:
-            print(f"More than one collision for particle {self.particle_id}. "
-                  "Only considering the first.")
+        if collision_point.shape[0] > 1:
             collision_point = collision_point[0, :]
             collision_cell = collision_cell[0, np.newaxis]
+            if warn_multiple_collisions:
+                print("More than one collision for particle "
+                      f"{self.particle_id}. Only considering the first.")
 
         self.collision_cell_id = collision_cell
         self.collision_point = collision_point

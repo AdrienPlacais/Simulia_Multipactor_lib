@@ -21,8 +21,9 @@ from typing import overload
 import numpy as np
 import vedo
 
-from multipactor.particle_monitor.particle import Particle
 from multipactor.loaders.loader_cst import particle_monitor
+from multipactor.particle_monitor.particle import Particle
+from multipactor.helper.helper import printc
 
 
 class ParticleMonitor(dict):
@@ -37,13 +38,13 @@ class ParticleMonitor(dict):
     """
 
     def __init__(self,
-                 folder: str | Path,
+                 folder: Path,
                  delimiter: str | None = None) -> None:
         """Create the object, ordered list of filepaths beeing provided.
 
         Parameters
         ----------
-        folder : str
+        folder : Path
             Folder where all the CST ParticleMonitor files are stored.
         delimiter : str | None, optional
             Delimiter used to separate columns in the CST ParticleMonitor
@@ -52,12 +53,13 @@ class ParticleMonitor(dict):
         """
         dict_of_parts: dict[int, Particle] = {}
 
-        filepaths = _absolute_file_paths(folder)
+        filepaths = list(_absolute_file_paths(folder))
 
         for filepath in filepaths:
             particles_info = particle_monitor(filepath, delimiter=delimiter)
 
             for particle_info in particles_info:
+                # what is this??
                 particle_id = int(particle_info[10])
                 if particle_id in dict_of_parts:
                     dict_of_parts[particle_id].add_a_file(*particle_info)
@@ -70,7 +72,7 @@ class ParticleMonitor(dict):
 
         super().__init__(dict_of_parts)
 
-        self.max_time = np.max([part.time[-1] for part in self.values()])
+        self.max_time = max([part.time[-1] for part in self.values()])
         for particle in self.values():
             particle.determine_if_alive_at_end(self.max_time)
 
@@ -261,46 +263,25 @@ class ParticleMonitor(dict):
             return np.array(out)
         return out
 
-    def study_all_collisions(self,
-                             mesh: vedo.Mesh,
-                             **kwargs
-                             ) -> None:
+    def compute_collision_angles(self, mesh: vedo.Mesh, **kwargs) -> None:
         """Find all collisions."""
-        print('warning, ParticleMonitor.study_all_collisions should be called '
-              'only once')
+        printc('ParticleMonitor.compute_collision_angles', 'should be called',
+               'only once.')
         mesh.compute_normals(points=False, cells=True)
         for particle in self.values():
             particle.find_collision(mesh, **kwargs)
             particle.compute_collision_angle(mesh)
 
 
-@overload
-def _absolute_file_paths(directory: str) -> Generator[str, str, None]: ...
-
-
-@overload
-def _absolute_file_paths(directory: Path) -> Generator[Path, Path, None]: ...
-
-
-def _absolute_file_paths(
-        directory: str | Path
-) -> Generator[str, str, None] | Generator[Path, Path, None]:
+def _absolute_file_paths(directory: Path) -> Generator[Path, Path, None]:
     """Get all filepaths in absolute from dir, remove unwanted files."""
-    if isinstance(directory, str):
+    for dirpath, _, filenames in os.walk(directory):
         for dirpath, _, filenames in os.walk(directory):
             for f in filenames:
-                if os.path.splitext(f)[1] in ['.swp']:
+                f = Path(f)
+                if f.suffix in ('.swp', ):
                     continue
-                yield os.path.abspath(os.path.join(dirpath, f))
-
-    else:
-        for dirpath, _, filenames in os.walk(directory):
-            for dirpath, _, filenames in os.walk(directory):
-                for f in filenames:
-                    f = Path(f)
-                    if f.suffix in ('.swp', ):
-                        continue
-                    yield Path(dirpath, f)
+                yield Path(dirpath, f)
 
 
 def _filter_source_id(input_dict: dict[int, Particle],
