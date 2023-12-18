@@ -6,6 +6,14 @@ multipactor.particle\_monitor package
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   multipactor.particle_monitor.collisions
+
 Submodules
 ----------
 

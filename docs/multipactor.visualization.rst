@@ -13,3 +13,4 @@ Submodules
    :maxdepth: 4
 
    multipactor.visualization.plot
+   multipactor.visualization.plot_3d

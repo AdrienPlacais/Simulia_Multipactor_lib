@@ -1,7 +1,7 @@
-multipactor.experimental.collision module
+multipactor.visualization.plot\_3d module
 =========================================
 
-.. automodule:: multipactor.experimental.collision
+.. automodule:: multipactor.visualization.plot_3d
    :members:
    :undoc-members:
    :show-inheritance:
