@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>multipactor.particle_monitor.particle module &mdash; PyMultipactor CST  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="multipactor.particle_monitor.particle_monitor module" href="multipactor.particle_monitor.particle_monitor.html" />
+    <link rel="prev" title="multipactor.particle_monitor.converters module" href="multipactor.particle_monitor.converters.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PyMultipactor CST
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">multipactor</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="multipactor.html">multipactor package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="multipactor.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="multipactor.experimental.html">multipactor.experimental package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multipactor.helper.html">multipactor.helper package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multipactor.lib.html">multipactor.lib package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multipactor.loaders.html">multipactor.loaders package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="multipactor.particle_monitor.html">multipactor.particle_monitor package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multipactor.util.html">multipactor.util package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multipactor.visualization.html">multipactor.visualization package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="multipactor.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyMultipactor CST</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">multipactor</a></li>
+          <li class="breadcrumb-item"><a href="multipactor.html">multipactor package</a></li>
+          <li class="breadcrumb-item"><a href="multipactor.particle_monitor.html">multipactor.particle_monitor package</a></li>
+      <li class="breadcrumb-item active">multipactor.particle_monitor.particle module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/multipactor.particle_monitor.particle.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-multipactor.particle_monitor.particle">
+<span id="multipactor-particle-monitor-particle-module"></span><h1>multipactor.particle_monitor.particle module<a class="headerlink" href="#module-multipactor.particle_monitor.particle" title="Link to this heading"></a></h1>
+<p>Created on Mon Jul 10 12:35:01 2023.</p>
+<p>&#64;author: placais</p>
+<p>In this module we define <a class="reference internal" href="#multipactor.particle_monitor.particle.Particle" title="multipactor.particle_monitor.particle.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a>. This object is created by
+sequentially reading CST ParticleMonitor files.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Particle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Holds evolution of position (in mm) and adim momentum with time (ns).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">_posx,</span> <span class="pre">_posy,</span> <span class="pre">_posz</span></span></dt>
+<dd><p>Position in m at each time step along each direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.pos">
+<span class="sig-name descname"><span class="pre">pos</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.pos" title="Link to this definition"></a></dt>
+<dd><p>Position in mm along the three directions stored in a single array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">_momx</span> <span class="pre">_momy,</span> <span class="pre">_momz</span></span></dt>
+<dd><p>Adimensional momentum at each time step along each direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.mom">
+<span class="sig-name descname"><span class="pre">mom</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.mom" title="Link to this definition"></a></dt>
+<dd><p>Adimensional momentum along three directions stored in a single array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.extrapolated_pos">
+<span class="sig-name descname"><span class="pre">extrapolated_pos</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.extrapolated_pos" title="Link to this definition"></a></dt>
+<dd><p>Position in mm, extrapolated to refine the position of collision.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.extrapolated_mom">
+<span class="sig-name descname"><span class="pre">extrapolated_mom</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.extrapolated_mom" title="Link to this definition"></a></dt>
+<dd><p>Adimensional momentum, extrapolated to refine the momentum of
+collision.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle._masses">
+<span class="sig-name descname"><span class="pre">_masses</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle._masses" title="Link to this definition"></a></dt>
+<dd><p>Mass of particle at each time step. An error is raised if it changes
+between two files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float] | np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.mass">
+<span class="sig-name descname"><span class="pre">mass</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.mass" title="Link to this definition"></a></dt>
+<dd><p>Mass of the particle in kg.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.mass_eV">
+<span class="sig-name descname"><span class="pre">mass_eV</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.mass_eV" title="Link to this definition"></a></dt>
+<dd><p>Mass of the particle in eV.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle._charges">
+<span class="sig-name descname"><span class="pre">_charges</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle._charges" title="Link to this definition"></a></dt>
+<dd><p>Charge of particle at each time step. An error is raised if it changes
+between two files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float] | np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.charge">
+<span class="sig-name descname"><span class="pre">charge</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.charge" title="Link to this definition"></a></dt>
+<dd><p>Charge of the particle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.macro_charge">
+<span class="sig-name descname"><span class="pre">macro_charge</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.macro_charge" title="Link to this definition"></a></dt>
+<dd><p>Charge of the macro-particle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float] | np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.time">
+<span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.time" title="Link to this definition"></a></dt>
+<dd><p>Holds the time steps in ns corresponding to every value of <code class="docutils literal notranslate"><span class="pre">pos</span></code>,
+<code class="docutils literal notranslate"><span class="pre">mom</span></code>, etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float] | np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.particle_id">
+<span class="sig-name descname"><span class="pre">particle_id</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.particle_id" title="Link to this definition"></a></dt>
+<dd><p>Unique id for the particle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.source_id">
+<span class="sig-name descname"><span class="pre">source_id</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.source_id" title="Link to this definition"></a></dt>
+<dd><p>Gives information on how the particle was created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>{0, 1}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.extrapolated_times">
+<span class="sig-name descname"><span class="pre">extrapolated_times</span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.extrapolated_times" title="Link to this definition"></a></dt>
+<dd><p>Times at which position and momentum are extrapolated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle._check_constanteness_of_some_attributes">
+<span class="sig-name descname"><span class="pre">_check_constanteness_of_some_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle._check_constanteness_of_some_attributes" title="Link to this definition"></a></dt>
+<dd><p>Ensure that mass and charge did not evolve during simulation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle._some_values_to_array">
+<span class="sig-name descname"><span class="pre">_some_values_to_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle._some_values_to_array" title="Link to this definition"></a></dt>
+<dd><p>Tranform position, momentum and time lists to np.arrays.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle._sort_by_increasing_time_values">
+<span class="sig-name descname"><span class="pre">_sort_by_increasing_time_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle._sort_by_increasing_time_values" title="Link to this definition"></a></dt>
+<dd><p>Sort arrays by increasing time values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle._switch_to_mm_ns_units">
+<span class="sig-name descname"><span class="pre">_switch_to_mm_ns_units</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle._switch_to_mm_ns_units" title="Link to this definition"></a></dt>
+<dd><p>Change the system units to limit rounding errors.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In CST Particle Monitor files, the time is given in seconds *
+1e-18 (aka nano-nanoseconds).  Tested with CST units for time in
+nanoseconds.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.add_a_file">
+<span class="sig-name descname"><span class="pre">add_a_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.add_a_file" title="Link to this definition"></a></dt>
+<dd><p>Add a time-step/a file to the current Particle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.collision_energy">
+<span class="sig-name descname"><span class="pre">collision_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extrapolation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.collision_energy" title="Link to this definition"></a></dt>
+<dd><p>Determine the impact energy in eV.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>extrapolation</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, perform an extrapolation of the last time steps to
+increase the precision. The default is True.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>energy</strong> – The last known energy in eV.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p>:raises NotImplementedError : If extrapolation is True.:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.compute_collision_angle">
+<span class="sig-name descname"><span class="pre">compute_collision_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mesh</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.compute_collision_angle" title="Link to this definition"></a></dt>
+<dd><p>Compute the angle of impact.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.determine_if_alive_at_end">
+<span class="sig-name descname"><span class="pre">determine_if_alive_at_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.determine_if_alive_at_end" title="Link to this definition"></a></dt>
+<dd><p>Determine if the particle collisioned before end of simulation.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.emission_energy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">emission_energy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.emission_energy" title="Link to this definition"></a></dt>
+<dd><p>Compute emission energy in eV.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.extrapolate_pos_and_mom_one_time_step_further">
+<span class="sig-name descname"><span class="pre">extrapolate_pos_and_mom_one_time_step_further</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.extrapolate_pos_and_mom_one_time_step_further" title="Link to this definition"></a></dt>
+<dd><p>Extrapolate position and momentum by one time-step.</p>
+<p>CST PIC solves the motion with a leapfrog solver (source: Mohamad
+Houssini from Keonys, private communication).
+Several possibilities:
+- <code class="docutils literal notranslate"><span class="pre">pos</span></code> corresponds to <code class="docutils literal notranslate"><span class="pre">time</span></code> and <code class="docutils literal notranslate"><span class="pre">mom</span></code> shifted by half
+time-steps (most probable).
+- <code class="docutils literal notranslate"><span class="pre">mom</span></code> corresponds to <code class="docutils literal notranslate"><span class="pre">time</span></code> and <code class="docutils literal notranslate"><span class="pre">pos</span></code> shifted by half
+time-steps (also possible).
+- <code class="docutils literal notranslate"><span class="pre">pos</span></code> or <code class="docutils literal notranslate"><span class="pre">mom</span></code> is interpolated so that both are expressed at
+full <code class="docutils literal notranslate"><span class="pre">time</span></code> steps (what I will consider for now).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.finalize">
+<span class="sig-name descname"><span class="pre">finalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.finalize" title="Link to this definition"></a></dt>
+<dd><p>Post treat Particles for consistency checks, better data types.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle.Particle.find_collision">
+<span class="sig-name descname"><span class="pre">find_collision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_no_collision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_multiple_collisions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle.Particle.find_collision" title="Link to this definition"></a></dt>
+<dd><p>Find where the trajectory impacts the structure.</p>
+<p>If the particle is alive at the end of the simulation, we do not even
+try. If it has only one known time step, neither do we.</p>
+<p>We first try to detect a collision between the last known position of
+the particle and the last extrapolated position. If no collision is
+found, we try to find it between the last known position and the
+know position just before that.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the last extrapolated position is too far from the last known
+position, several collisions may be detected.</p>
+</div>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Take only nearest cell instead of the one with the lowest ID as for
+now.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesh</strong> (<em>vedo.Mesh</em>) – <code class="docutils literal notranslate"><span class="pre">vedo</span></code> mesh object describing the structure of the rf system.</p></li>
+<li><p><strong>warn_no_collision</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, a warning is raised when the electron was not alive at the
+end of the simulation, but no collision was detected. The default
+is True.</p></li>
+<li><p><strong>warn_multiple_collisions</strong> (<em>bool</em>) – To warn if several collisions were detected for the same particle.
+Also remove all collisions but the first one. The default is True.</p></li>
+<li><p><strong>kwargs</strong> – kwargs</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle._extrapolate_momentum">
+<span class="sig-name descname"><span class="pre">_extrapolate_momentum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">known_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">known_mom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poly_fit_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle._extrapolate_momentum" title="Link to this definition"></a></dt>
+<dd><p>Extrapolate the momentum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>known_time</strong> (<em>np.ndarray</em>) – x-data used for extrapolation.</p></li>
+<li><p><strong>known_mom</strong> (<em>np.ndarray</em>) – y_data used for extrapolation.</p></li>
+<li><p><strong>desired_time</strong> (<em>np.ndarray</em>) – Time momentum should be extrapolated on.</p></li>
+<li><p><strong>poly_fit_deg</strong> (<em>int</em>) – Degree of the polynomial fit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>desired_mom</strong> – Momentum extrapolated on desired_time.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle._extrapolate_position">
+<span class="sig-name descname"><span class="pre">_extrapolate_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">last_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_mom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle._extrapolate_position" title="Link to this definition"></a></dt>
+<dd><p>Extrapolate the position using the last known momentum.</p>
+<p>This is a first-order approximation. We consider that the momentum is
+constant over <code class="docutils literal notranslate"><span class="pre">desired_time</span></code>. Not adapted to extrapolation on long time
+spans.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>last_pos</strong> (<em>np.ndarray</em>) – Last known position.</p></li>
+<li><p><strong>last_mom</strong> (<em>np.ndarray</em>) – Last known momentum.</p></li>
+<li><p><strong>desired_time</strong> (<em>np.ndarray</em>) – Time on which position should be extrapolated. Should not be too long.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>desired_pos</strong> – Extrapolated position starting from <code class="docutils literal notranslate"><span class="pre">last_pos</span></code>, over <code class="docutils literal notranslate"><span class="pre">desired_time</span></code>
+with the constant momentum <code class="docutils literal notranslate"><span class="pre">last_mom</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle._get_constant">
+<span class="sig-name descname"><span class="pre">_get_constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle._get_constant" title="Link to this definition"></a></dt>
+<dd><p>Check that the list of floats is a constant, return constant.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle._is_sorted">
+<span class="sig-name descname"><span class="pre">_is_sorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle._is_sorted" title="Link to this definition"></a></dt>
+<dd><p>Check that given array is ordered (increasing values).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.particle_monitor.particle._str_to_correct_types">
+<span class="sig-name descname"><span class="pre">_str_to_correct_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#multipactor.particle_monitor.particle._str_to_correct_types" title="Link to this definition"></a></dt>
+<dd><p>Convert the input line of strings to proper data types.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="multipactor.particle_monitor.converters.html" class="btn btn-neutral float-left" title="multipactor.particle_monitor.converters module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="multipactor.particle_monitor.particle_monitor.html" class="btn btn-neutral float-right" title="multipactor.particle_monitor.particle_monitor module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Adrien Plaçais.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

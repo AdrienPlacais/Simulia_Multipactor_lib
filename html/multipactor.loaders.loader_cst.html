@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>multipactor.loaders.loader_cst module &mdash; PyMultipactor CST  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="multipactor.loaders.loader_spark module" href="multipactor.loaders.loader_spark.html" />
+    <link rel="prev" title="multipactor.loaders package" href="multipactor.loaders.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PyMultipactor CST
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">multipactor</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="multipactor.html">multipactor package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="multipactor.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="multipactor.experimental.html">multipactor.experimental package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multipactor.helper.html">multipactor.helper package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multipactor.lib.html">multipactor.lib package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="multipactor.loaders.html">multipactor.loaders package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multipactor.particle_monitor.html">multipactor.particle_monitor package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multipactor.util.html">multipactor.util package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multipactor.visualization.html">multipactor.visualization package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="multipactor.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyMultipactor CST</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">multipactor</a></li>
+          <li class="breadcrumb-item"><a href="multipactor.html">multipactor package</a></li>
+          <li class="breadcrumb-item"><a href="multipactor.loaders.html">multipactor.loaders package</a></li>
+      <li class="breadcrumb-item active">multipactor.loaders.loader_cst module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/multipactor.loaders.loader_cst.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-multipactor.loaders.loader_cst">
+<span id="multipactor-loaders-loader-cst-module"></span><h1>multipactor.loaders.loader_cst module<a class="headerlink" href="#module-multipactor.loaders.loader_cst" title="Link to this heading"></a></h1>
+<p>Define all the functions to import CST data.</p>
+<p>The main function is <a class="reference internal" href="#multipactor.loaders.loader_cst.get_parameter_sweep_auto_export" title="multipactor.loaders.loader_cst.get_parameter_sweep_auto_export"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_parameter_sweep_auto_export()</span></code></a>. It works with the
+Template Based Post-Processing <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Export</span> <span class="pre">Folder</span> <span class="pre">during</span> <span class="pre">Parameter</span> <span class="pre">Sweep</span></code>
+(one folder per set of parameters, in which several quantities may be stored).</p>
+<p>Needs Python 3.7+ as uses ordering of dicts
+<a class="reference external" href="https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value">https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value</a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As for now, it can only load data stored in a single file. For Position
+Monitor exports (one file = one time step), see dedicated package
+<code class="docutils literal notranslate"><span class="pre">PositionMonitor</span></code>.</p>
+</div>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Evaluate expressions such as <code class="docutils literal notranslate"><span class="pre">param2</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">*</span> <span class="pre">param1</span></code></p>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.loaders.loader_cst._get_single_parameter_auto_export">
+<span class="sig-name descname"><span class="pre">_get_single_parameter_auto_export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folderpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#multipactor.loaders.loader_cst._get_single_parameter_auto_export" title="Link to this definition"></a></dt>
+<dd><p>Load all the data stored into a single <code class="docutils literal notranslate"><span class="pre">mmdd-xxxxxxx</span></code> folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folderpath</strong> (<em>Path</em>) – <code class="docutils literal notranslate"><span class="pre">mmdd-xxxxxx</span></code> folder from which all files will be loaded.</p></li>
+<li><p><strong>delimiter</strong> (<em>str</em>) – Delimiter between two columns.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>dic</strong> – Dictionary holding all exported data. Keys are the name of the data,
+values the corresponding value. The Parameters dict is also stored.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.loaders.loader_cst._insert_parameters_values">
+<span class="sig-name descname"><span class="pre">_insert_parameters_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters_unique_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#multipactor.loaders.loader_cst._insert_parameters_values" title="Link to this definition"></a></dt>
+<dd><p>Insert the values of the parameters in first row of every dimension.</p>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>Handle number of parameters &gt; 3.</p>
+</div>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>Not very Pythonic…</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>out</strong> (<em>np.ndarray</em>) – Value asked by user.</p></li>
+<li><p><strong>parameters_unique_values</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Unique values of the parameters, to be inserted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>new_out</strong> – <code class="docutils literal notranslate"><span class="pre">out</span></code> but with parameters unique values in each first row/column/etc.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotImplementedError :</strong> – When the number of parameters if higher than three.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.loaders.loader_cst._map_param_to_id">
+<span class="sig-name descname"><span class="pre">_map_param_to_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#multipactor.loaders.loader_cst._map_param_to_id" title="Link to this definition"></a></dt>
+<dd><p>Associate ids (data key entries) to specific parameter values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – Full data dict as returned by <a class="reference internal" href="#multipactor.loaders.loader_cst.get_parameter_sweep_auto_export" title="multipactor.loaders.loader_cst.get_parameter_sweep_auto_export"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_parameter_sweep_auto_export()</span></code></a>.</p></li>
+<li><p><strong>*parameters</strong> (<em>str</em>) – The parameters to be mapped.</p></li>
+<li><p><strong>sort</strong> (<em>bool</em><em>, </em><em>optional</em>) – To tell if the output should be sorted by increasing parameter values.
+The default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>map_id</strong> – A dictionary linking simulation ID to parameters values. The keys are
+the ID of the simulations. The values are the values of the parameters
+corresponding to the simulation ID.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[int, list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.loaders.loader_cst._parameters_file_to_dict">
+<span class="sig-name descname"><span class="pre">_parameters_file_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#multipactor.loaders.loader_cst._parameters_file_to_dict" title="Link to this definition"></a></dt>
+<dd><p>Load the <code class="docutils literal notranslate"><span class="pre">Parameters.txt</span></code> file.</p>
+<div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">Todo</p>
+<p>Detect integer values</p>
+</div>
+<div class="admonition-todo admonition" id="id5">
+<p class="admonition-title">Todo</p>
+<p>Evaluate simple expressions. A parameter defined as ‘1/2’ will be a
+string instead of 0.5 (float)…</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>Path</em>) – Path to the file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>parameters</strong> – Holds the name of the Parameter as a key, and the corresponding value
+as a value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, float | str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.loaders.loader_cst.full_map_param_to_id">
+<span class="sig-name descname"><span class="pre">full_map_param_to_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#multipactor.loaders.loader_cst.full_map_param_to_id" title="Link to this definition"></a></dt>
+<dd><p>Link simulation ID to parameters values, get unique parameters values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – Full data dict as returned by <a class="reference internal" href="#multipactor.loaders.loader_cst.get_parameter_sweep_auto_export" title="multipactor.loaders.loader_cst.get_parameter_sweep_auto_export"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_parameter_sweep_auto_export()</span></code></a>.</p></li>
+<li><p><strong>*parameters</strong> (<em>str</em>) – The parameters under study.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>map_id</strong> (<em>dict[int, list[float]]</em>) – A dictionary linking simulation ID to parameters values. The keys are
+the ID of the simulations. The values are the values of the parameters
+corresponding to the simulation ID.</p></li>
+<li><p><strong>uniques</strong> (<em>dict[str, list[float]]</em>) – Dictionary holding all unique values of each parameter. Keys are name
+of the parameters parameters. Values are a list of the unique values;
+should be of length 1 for each parameter that did not evolve during
+simulation.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.loaders.loader_cst.get_id">
+<span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">parameters_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#multipactor.loaders.loader_cst.get_id" title="Link to this definition"></a></dt>
+<dd><p>Give ID of simulation that was realized with the set <code class="docutils literal notranslate"><span class="pre">parameters_vals</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>map_id</strong> (<em>dict</em><em>[</em><em>int</em><em>, </em><em>list</em><em>[</em><em>float</em><em>]</em><em>]</em>) – A dictionary linking simulation ID to parameters values. The keys are
+the ID of the simulations. The values are the values of the
+<code class="docutils literal notranslate"><span class="pre">parameters</span></code> corresponding to the simulation ID. As returned by
+<a class="reference internal" href="#multipactor.loaders.loader_cst._map_param_to_id" title="multipactor.loaders.loader_cst._map_param_to_id"><code class="xref py py-func docutils literal notranslate"><span class="pre">_map_param_to_id()</span></code></a>.</p></li>
+<li><p><strong>*parameters_vals</strong> (<em>float</em>) – Values of the parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>simul_id</strong> – ID of the simulation realized with the set of parameters values
+<code class="docutils literal notranslate"><span class="pre">parameters_vals</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.loaders.loader_cst.get_parameter_sweep_auto_export">
+<span class="sig-name descname"><span class="pre">get_parameter_sweep_auto_export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folderpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'\t'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#multipactor.loaders.loader_cst.get_parameter_sweep_auto_export" title="Link to this definition"></a></dt>
+<dd><p>Get parameter sweep data from a CST automatic Post-Processing ASCII export.</p>
+<p>In Template Based Post-Processing:
+<code class="docutils literal notranslate"><span class="pre">General</span> <span class="pre">1D</span> <span class="pre">&gt;</span> <span class="pre">ASCII</span> <span class="pre">Export</span> <span class="pre">&gt;</span> <span class="pre">what</span> <span class="pre">you</span> <span class="pre">want</span> <span class="pre">(one</span> <span class="pre">for</span> <span class="pre">each</span> <span class="pre">data)</span></code>.
+After the last ASCII Export :
+<code class="docutils literal notranslate"><span class="pre">Template</span> <span class="pre">Based</span> <span class="pre">Post-Processing</span> <span class="pre">&gt;</span> <span class="pre">Misc</span> <span class="pre">&gt;</span> <span class="pre">Save</span> <span class="pre">Export</span> <span class="pre">Folder</span> <span class="pre">during</span>
+<span class="pre">Parameter</span> <span class="pre">Sweep</span></code></p>
+<p>This way, all exported ASCII data are in
+<code class="docutils literal notranslate"><span class="pre">Project/Export_Parametric/mmdd-xxxxxxx</span></code> folders.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folderpath</strong> (<em>Path</em>) – Path to the folder where the <code class="docutils literal notranslate"><span class="pre">mmdd-xxxxxxx</span></code> folders are located.</p></li>
+<li><p><strong>delimiter</strong> (<em>str</em><em>, </em><em>optional</em>) – Delimiter between columns. The default is <code class="docutils literal notranslate"><span class="pre">\t</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>data</strong> – Holds all the exported data for every set of parameters. Keys are the
+ID of each simulation (the seven-digits number in the corresponding
+folder name). Values are dictionaries as returned by
+<a class="reference internal" href="#multipactor.loaders.loader_cst._get_single_parameter_auto_export" title="multipactor.loaders.loader_cst._get_single_parameter_auto_export"><code class="xref py py-func docutils literal notranslate"><span class="pre">_get_single_parameter_auto_export()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[int, dict[str, float | np.ndarray | dict[str, float | str]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.loaders.loader_cst.get_values">
+<span class="sig-name descname"><span class="pre">get_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_numpy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_missing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ins_param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#multipactor.loaders.loader_cst.get_values" title="Link to this definition"></a></dt>
+<dd><p>Return a n-dim numpy array containing data sorted by parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>int</em><em>, </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – Dict holding all data as returned by
+<a class="reference internal" href="#multipactor.loaders.loader_cst.get_parameter_sweep_auto_export" title="multipactor.loaders.loader_cst.get_parameter_sweep_auto_export"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_parameter_sweep_auto_export()</span></code></a>.</p></li>
+<li><p><strong>key_data</strong> (<em>str</em>) – Key to the data you want (should be a filename in
+<code class="docutils literal notranslate"><span class="pre">Export_Parametric/mmdd-xxxxxxx</span></code> folders).</p></li>
+<li><p><strong>*parameters</strong> (<em>str</em>) – Keys to against which parameter <code class="docutils literal notranslate"><span class="pre">key_data</span></code> should be sorted (should
+be in <code class="docutils literal notranslate"><span class="pre">Parameters.txt</span></code>).</p></li>
+<li><p><strong>to_numpy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return the data as a numpy array. The default is True.</p></li>
+<li><p><strong>warn_missing</strong> (<em>bool</em><em>, </em><em>optional</em>) – Raise a warning if there is no data for some combinations of
+parameters. The default is False.</p></li>
+<li><p><strong>ins_param</strong> (<em>bool</em><em>, </em><em>optional</em>) – Tells if the value of the parameters defined by <code class="docutils literal notranslate"><span class="pre">parameters</span></code> should
+be INSerted in the first axis. The default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – Raised when the number of parameters is too high.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out</strong> – Array holding <code class="docutils literal notranslate"><span class="pre">key_data</span></code>, sorted by combination of <code class="docutils literal notranslate"><span class="pre">parameters</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">ins_param</span></code>, first line of every axis holds parameter value.
+If <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">to_numpy</span></code>, out is converted to a list.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="multipactor.loaders.loader_cst.particle_monitor">
+<span class="sig-name descname"><span class="pre">particle_monitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#multipactor.loaders.loader_cst.particle_monitor" title="Link to this definition"></a></dt>
+<dd><p>Load a single Particle Monitor file.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="multipactor.loaders.html" class="btn btn-neutral float-left" title="multipactor.loaders package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="multipactor.loaders.loader_spark.html" class="btn btn-neutral float-right" title="multipactor.loaders.loader_spark module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Adrien Plaçais.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
