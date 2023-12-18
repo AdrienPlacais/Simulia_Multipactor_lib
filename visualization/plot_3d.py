@@ -71,7 +71,7 @@ def plot_structure_and_some_trajectories(
         mesh: vedo.Mesh,
         veplot: vedo.Plotter | None = None,
         add_extrapolated_position: bool = False,
-        **kwargs):
+        **kwargs) -> vedo.Plotter:
     """Create a simple representation of the structure and some trajectories.
 
     Parameters
@@ -108,3 +108,4 @@ def plot_structure_and_some_trajectories(
 
     veplot += lines + points
     veplot.show()
+    return veplot
