@@ -265,8 +265,6 @@ class ParticleMonitor(dict):
 
     def compute_collision_angles(self, mesh: vedo.Mesh, **kwargs) -> None:
         """Find all collisions."""
-        printc('ParticleMonitor.compute_collision_angles', 'should be called',
-               'only once.')
         mesh.compute_normals(points=False, cells=True)
         for particle in self.values():
             particle.find_collision(mesh, **kwargs)
