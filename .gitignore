@@ -61,6 +61,7 @@ target/
 *.old
 *.swp
 examples/.ipynb_checkpoints/*
+docs/manual/notebooks/.ipynb_checkpoints/*
 examples/cst/WR75_reduced/wr75_pic/*
 
 # Tracked with git lfs
