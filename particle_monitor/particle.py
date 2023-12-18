@@ -337,7 +337,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
             return
 
         if warn_multiple_collisions and collision_point.shape[0] > 1:
-            print(f"More than one collision for particle {self.particle_id}."
+            print(f"More than one collision for particle {self.particle_id}. "
                   "Only considering the first.")
             collision_point = collision_point[0, :]
             collision_cell = collision_cell[0, np.newaxis]
