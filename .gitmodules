@@ -1,3 +1,0 @@
-[submodule "lib/spark3dbatch"]
-	path = lib/spark3dbatch
-	url = https://github.com/AdrienPlacais/Spark3DBatch
