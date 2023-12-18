@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb 27 09:23:41 2023.
+Showcase how CST data can be analyzed.
 
-@author: placais
+Data must comes from the ``Export Parametric`` option of CST.
 
-This script showcases how CST data can be analyzed. Data must comes from the
-``Export Parametric`` option of CST.
+.. todo::
+    May be more user-friendly.
 
 """
 import os.path
+from pathlib import Path
 import random as rand
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 import multipactor.loaders.loader_cst as lcst
 import multipactor.visualization.plot as mp_plt
@@ -42,7 +42,7 @@ key_freq = 'f'
 key_npart = 'N_0'
 
 
-filepath = "cst/Export_Parametric"
+filepath = Path("cst", "Export_Parametric")
 keys_param = (key_eacc, key_npart, key_freq)
 
 # Files created by CST

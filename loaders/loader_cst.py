@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan  9 10:25:07 2023.
+Define all the functions to import CST data.
 
-@author: placais
-
-This module holds all the functions to import CST data. The main function is
-:func:`get_parameter_sweep_auto_export` .
-It works with the Template Based Post-Processing
-``Save Export Folder during Parameter Sweep`` (one folder per set of
-parameters, in which several quantities may be stored).
+The main function is :func:`get_parameter_sweep_auto_export`. It works with the
+Template Based Post-Processing ``Save Export Folder during Parameter Sweep``
+(one folder per set of parameters, in which several quantities may be stored).
 
 Needs Python 3.7+ as uses ordering of dicts
 https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
@@ -23,19 +19,21 @@ https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
     Evaluate expressions such as "param2 = 2 \\* param1"
 
 """
+import ast
+import itertools as it
 import os
+from pathlib import Path
 from typing import Any
 
-import itertools as it
 import numpy as np
-import ast
 
 
 # =============================================================================
 # Actual loaders
 # =============================================================================
 def get_parameter_sweep_auto_export(
-        folderpath: str, delimiter: str = '\t'
+        folderpath: Path,
+        delimiter: str = '\t'
 ) -> dict[int, dict[str, float | np.ndarray | dict[str, float | str]]]:
     r"""
     Get parameter sweep data from a CST automatic Post-Processing ASCII export.
@@ -51,7 +49,7 @@ def get_parameter_sweep_auto_export(
 
     Parameters
     ----------
-    folderpath : str
+    folderpath : Path
         Path to the folder where the ``mmdd-xxxxxxx`` folders are located.
     delimiter : str, optional
         Delimiter between columns. The default is ``\t``.
@@ -66,23 +64,22 @@ def get_parameter_sweep_auto_export(
 
     """
     data = {}
-    folders = os.listdir(folderpath)
-    keys = [folder.split('-')[-1] for folder in folders]
+    folders = list(folderpath.iterdir())
+    keys = [str(folder).split('-')[-1] for folder in folders]
 
     for folder, key in zip(folders, keys):
-        folder = os.path.join(folderpath, folder)
         data[int(key)] = _get_single_parameter_auto_export(folder, delimiter)
     return data
 
 
-def _get_single_parameter_auto_export(folderpath: str,
+def _get_single_parameter_auto_export(folderpath: Path,
                                       delimiter: str) -> dict[str, Any]:
     """
     Load all the data stored into a single ``mmdd-xxxxxxx`` folder.
 
     Parameters
     ----------
-    folderpath : str
+    folderpath : Path
         ``mmdd-xxxxxx`` folder from which all files will be loaded.
     delimiter : str
         Delimiter between two columns.
@@ -103,8 +100,8 @@ def _get_single_parameter_auto_export(folderpath: str,
             continue
 
         for file in files:
-            full_path = os.path.join(root, file)
-            file = os.path.splitext(file)[0]
+            full_path = Path(root, file)
+            file = full_path.stem
 
             # Skip hidden files
             if file[0] == '.':
@@ -122,7 +119,7 @@ def _get_single_parameter_auto_export(folderpath: str,
     return dic
 
 
-def _parameters_file_to_dict(filepath: str) -> dict[str, float | str]:
+def _parameters_file_to_dict(filepath: Path) -> dict[str, float | str]:
     """
     Load the ``Parameters.txt`` file.
 
@@ -135,7 +132,7 @@ def _parameters_file_to_dict(filepath: str) -> dict[str, float | str]:
 
     Parameters
     ----------
-    filepath : str
+    filepath : Path
         Path to the file.
 
     Returns
@@ -404,7 +401,8 @@ def _insert_parameters_values(out: np.ndarray,
 # =============================================================================
 # More specific loaders
 # =============================================================================
-def particle_monitor(filepath: str, delimiter: str | None = None
+def particle_monitor(filepath: Path,
+                     delimiter: str | None = None
                      ) -> tuple[tuple[float | int]]:
     """Load a single Particle Monitor file."""
     n_header = 6
