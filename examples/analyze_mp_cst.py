@@ -3,10 +3,13 @@
 """
 Showcase how CST data can be analyzed.
 
-Data must comes from the ``Export Parametric`` option of CST.
+Data must come from the ``Export Parametric`` option of CST.
+
+Here, we compute the exponential growth factor ``alpha`` as a function of the
+accelerating field ``E_acc`` for several initial number of particles ``N_0``.
 
 .. todo::
-    May be more user-friendly.
+    Should be more user-friendly.
 
 """
 import os.path
@@ -27,7 +30,7 @@ savefigs = False
 savedat = False
 
 # What you want to plot
-plot_some_pop_evolutions = False
+plot_some_pop_evolutions = True
 plot_exp_growth_factors = True
 print_fit_parameters = False
 
@@ -43,7 +46,7 @@ key_npart = 'N_0'
 
 
 filepath = Path("cst", "Export_Parametric")
-keys_param = (key_eacc, key_npart, key_freq)
+keys_param = (key_eacc, key_size_cell, key_freq)
 
 # Files created by CST
 key_part = 'Particle vs. Time'
@@ -81,8 +84,12 @@ fitting_range = 5. * period
 # =============================================================================
 # Exp growth fit
 # =============================================================================
-mp_exp.fit_all(str_model='classic', data=data, map_id=map_id,
-               key_part=key_part, period=period, fitting_range=fitting_range)
+mp_exp.fit_all(str_model='classic',
+               data=data,
+               map_id=map_id,
+               key_part=key_part,
+               period=period,
+               fitting_range=fitting_range)
 
 # =============================================================================
 # Plot some data

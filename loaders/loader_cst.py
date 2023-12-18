@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
+r"""
 Define all the functions to import CST data.
 
 The main function is :func:`get_parameter_sweep_auto_export`. It works with the
@@ -16,7 +16,7 @@ https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
     ``PositionMonitor``.
 
 .. todo::
-    Evaluate expressions such as "param2 = 2 \\* param1"
+    Evaluate expressions such as ``param2 = 2 * param1``
 
 """
 import ast
@@ -26,6 +26,8 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+
+from multipactor.helper.helper import printc
 
 
 # =============================================================================
@@ -271,15 +273,18 @@ def get_id(map_id: dict[int, list[float]], *parameters_vals: float) -> int:
 # =============================================================================
 # Actual values getter
 # =============================================================================
-def get_values(data: dict, key_data: str, *parameters: str,
-               to_numpy: bool = True, warn_missing: bool = False,
+def get_values(data: dict[int, dict[str, Any]],
+               key_data: str,
+               *parameters: str,
+               to_numpy: bool = True,
+               warn_missing: bool = False,
                ins_param: bool = False) -> np.ndarray:
     """
     Return a n-dim numpy array containing data sorted by parameters.
 
     Parameters
     ----------
-    data : dict
+    data : dict[int, dict[str, Any]]
         Dict holding all data as returned by
         :func:`get_parameter_sweep_auto_export`.
     key_data : str
@@ -323,7 +328,8 @@ def get_values(data: dict, key_data: str, *parameters: str,
 
         if _id == -1:
             if warn_missing:
-                print(f"Warning! No value found for the parameters {__c}.")
+                printc("loader_cst.get_values warning", "no value found for",
+                       f"the parameters {__c}.")
             continue
 
         out[i] = data[_id][key_data]
@@ -333,7 +339,7 @@ def get_values(data: dict, key_data: str, *parameters: str,
         out = np.reshape(np.asarray(out, dtype=object), new_shape)
 
     if ins_param:
-        out = _insert_parameters_values(out, len(parameters))
+        out = _insert_parameters_values(out, parameters_unique_values)
 
     if not to_numpy:
         return out.tolist()
@@ -371,7 +377,7 @@ def _insert_parameters_values(out: np.ndarray,
 
     """
     n_parameters = len(parameters_unique_values)
-    shape = out.shape()
+    shape = out.shape
     if n_parameters == 1:
         new_out = np.full((shape[0] + 1, 2), np.NaN, dtype=object)
         new_out[1:, 0] = parameters_unique_values[0]

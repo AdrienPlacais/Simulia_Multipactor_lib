@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan 16 17:32:09 2023.
+Define exponential growth models, define fitting functions.
 
-@author: placais
-
-Module to store the exponential growth models, perform fit.  Currently, only
-exponential growth model is implemented:
+Currently, only one exponential growth model is implemented:
 
 .. math::
     N(t) = N_0 \\mathrm{e}^{\\alpha t}
@@ -22,8 +19,8 @@ Other approaches that have been tried:
 I dropped it as with too much unkowns, any model can fit anything.
 
 """
-
 import warnings
+
 import numpy as np
 from scipy.optimize import curve_fit, OptimizeWarning
 from scipy.ndimage import uniform_filter1d
@@ -44,8 +41,10 @@ def fit_all(str_model: str,
             fitting_range: float, running_mean: bool = True):
     """Perform the exponential growth fit over all set of parameters."""
     for key, val in data.items():
-        modelled, fit_parameters = _fit_single(str_model, val[key_part],
-                                               period, fitting_range)
+        modelled, fit_parameters = _fit_single(str_model,
+                                               val[key_part],
+                                               period,
+                                               fitting_range)
 
         val[f"{key_part} (model)"] = modelled
         if fit_parameters is None:
@@ -116,9 +115,14 @@ def _model_1_printer(*args):
 # =============================================================================
 # Actual fit function
 # =============================================================================
-def _fit_single(str_model: str, data: np.array, period: float,
-                fitting_range: float, running_mean: bool = True,
-                print_fit_parameters: bool = False):
+def _fit_single(str_model: str,
+                data: np.array,
+                period: float,
+                fitting_range: float,
+                running_mean: bool = True,
+                print_fit_parameters: bool = False,
+                skip_obvious: bool = True,
+                ) -> tuple[np.ndarray, tuple[float, ...] | None]:
     """
     Perform the exponential growth fitting on a single parameter.
 
@@ -135,18 +139,25 @@ def _fit_single(str_model: str, data: np.array, period: float,
         do not want to start the fit before the exp growth starts.
     running_mean : bool, optional
         To tell if you want to average the number of particles over one period.
-        Hihgly recommended. The default is True.
+        Highly recommended. The default is True.
     print_fit_parameters : bool, optional
         To tell if you want to output the fitting parameters when they are
         found. The default is False.
+    skip_obvious : bool, optional
+        When True, we do not bother trying to fit exponential growth if the
+        number of electrons at the end of simulation is less than 10. The
+        default is True.
 
     Returns
     -------
-    modelled : np.array
-        Holds time in first column, modelled number of electrons in second.
-    fit_parameters : tuple or None
-        Holds all exp growth model parameters, as well as the time at which the
-        fit starts. If no MP, fit_parameters is None.
+    modelled : np.ndarray
+        Holds time in first column, modelled number of electrons in second. It
+        has the same shape as ``data``, but number of particles is full of NaN
+        before the start of the fit.
+    fit_parameters : tuple[float, ...] | None
+        First elements of the tuple are the fitting constants. Last element is
+        the time at which the fit starts. If fit was unsuccessful, returns None
+        instead.
 
     """
     model, model_log, model_printer, n_args, bounds, initial_values \
@@ -155,9 +166,8 @@ def _fit_single(str_model: str, data: np.array, period: float,
     modelled = np.full(data.shape, np.NaN)
     modelled[:, 0] = data[:, 0]
 
-    # If obvious no MP, we skip
-    # if data[-1, 1] < 10.:
-        # return modelled, None
+    if skip_obvious and data[-1, 1] < 10.:
+        return modelled, None
 
     idx_end = np.where(data[:, 1])[0][-1]
     t_start = data[idx_end, 0] - fitting_range
@@ -173,11 +183,9 @@ def _fit_single(str_model: str, data: np.array, period: float,
         # We get the number of points spanning over one period
         i_width = np.argmin(np.abs(data[:, 0] - period))
         if i_width < 5:
-            print("Warning! i_width is too small. Check that period and" +
-                  " data[:, 0] have same units. Consider also reducing the" +
-                  "fitting range.")
-        # We do not use the last points
-        # i_remove = -int(i_width / 2)
+            printc("exp_growth._fit_single warning:", "i_width is too small.",
+                   "Check that period and data[:, 0] have same units.",
+                   "Consider reducing the fitting range.")
 
         # https://stackoverflow.com/a/43200476/12188681
         # run = uniform_filter1d(np.log(data[:, 1]), size=i_width,
@@ -187,7 +195,8 @@ def _fit_single(str_model: str, data: np.array, period: float,
         # data_to_fit = np.column_stack((data[:, 0], run))
         # # data_to_fit = data_to_fit[idx_start:i_remove]
         # data_to_fit = data_to_fit[idx_start:idx_end + 1]\
-        data_to_fit[:, 1] = uniform_filter1d(data_to_fit[:, 1], size=i_width,
+        data_to_fit[:, 1] = uniform_filter1d(data_to_fit[:, 1],
+                                             size=i_width,
                                              mode='nearest')
 
     try:
@@ -204,7 +213,6 @@ def _fit_single(str_model: str, data: np.array, period: float,
     if print_fit_parameters:
         model_printer(*result)
 
-    # modelled[idx_start:i_remove, 1] = model(data_to_fit[:, 0], *result)
     modelled[idx_start:idx_end + 1, 1] = model(data_to_fit[:, 0], *result)
 
     return modelled, (*result, t_start)
