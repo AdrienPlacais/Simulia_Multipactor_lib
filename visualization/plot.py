@@ -16,15 +16,6 @@ from matplotlib.axes._axes import Axes
 
 import multipactor.loaders.loader_cst as lcst
 
-from palettable.colorbrewer.qualitative import Dark2_8
-from cycler import cycler
-
-font = {'family': 'serif', 'size': 25}
-plt.rc('font', **font)
-plt.rcParams['axes.prop_cycle'] = cycler(color=Dark2_8.mpl_colors)
-plt.rcParams["figure.figsize"] = (19.2, 11.24)
-plt.rcParams["figure.dpi"] = 100
-
 
 def plot_dict_of_arrays(data: dict,
                         map_id: dict,
