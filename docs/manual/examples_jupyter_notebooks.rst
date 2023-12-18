@@ -5,4 +5,6 @@ Note that the interactive plots produced with `vedo` will not appear here in thi
 .. toctree::
    :maxdepth: 2
 
+   notebooks/compute_exp_growth_spark
+   notebooks/export_parametric
    notebooks/particle_monitor
