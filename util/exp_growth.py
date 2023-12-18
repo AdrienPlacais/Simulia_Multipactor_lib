@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Define exponential growth models, define fitting functions.
+r"""
+Define exponential growth models as well as fitting functions.
 
 Currently, only one exponential growth model is implemented:
 
@@ -56,24 +56,30 @@ def fit_all(str_model: str,
         val["alfa (model)"] = fit_parameters[1]
 
 
-def fit_all_spark(str_model: str, data: dict, key_part: str,
-                  fitting_range: float, period: float,
+def fit_all_spark(str_model: str,
+                  complete_population_evolutions: dict,
+                  key_eacc: str,
+                  key_part: str,
+                  fitting_range: float,
+                  period: float,
                   running_mean: bool = True):
     """Perform the exponential growth fit over all set of parameters."""
-    key_eacc = 'E_acc in MV per m'
-    for key, val in data.items():
-        modelled, fit_parameters = \
-            _fit_single_spark(str_model, val[key_part], fitting_range, period,
-                              e_acc=val[key_eacc])
+    for population_evolution in complete_population_evolutions.values():
+        modelled, fit_parameters = _fit_single_spark(
+            str_model,
+            population_evolution[key_part],
+            fitting_range,
+            period,
+            e_acc=population_evolution[key_eacc])
 
-        val[f"{key_part} (model)"] = modelled
+        population_evolution[f"{key_part} (model)"] = modelled
         if fit_parameters is None:
-            print(f"Skipped {val[key_eacc]}")
-            val['alfa (model)'] = np.NaN
+            print(f"Skipped {population_evolution[key_eacc]}")
+            population_evolution['alfa (model)'] = np.NaN
             continue
 
         # Keep only what really interests us
-        val["alfa (model)"] = fit_parameters[1]
+        population_evolution["alfa (model)"] = fit_parameters[1]
 
 
 # =============================================================================
@@ -218,9 +224,12 @@ def _fit_single(str_model: str,
     return modelled, (*result, t_start)
 
 
-def _fit_single_spark(str_model: str, data: np.array, fitting_range: float,
+def _fit_single_spark(str_model: str,
+                      population_evolution: np.ndarray,
+                      fitting_range: float,
                       period: float,
-                      print_fit_parameters: bool = False, e_acc: float = None):
+                      print_fit_parameters: bool = False,
+                      e_acc: float | None = None):
     """
     Perform the exponential growth fitting on a single parameter.
 
@@ -228,7 +237,7 @@ def _fit_single_spark(str_model: str, data: np.array, fitting_range: float,
     ----------
     str_model : str
         Indicates what exp growth model should be used.
-    data : np.array
+    population_evolution : np.array
         Holds time in ns in first column, number of electrons in second.
     fitting_range : float
         Time over which the exp growth is searched. Longer is better, but you
@@ -251,26 +260,26 @@ def _fit_single_spark(str_model: str, data: np.array, fitting_range: float,
     model, model_log, model_printer, n_args, bounds, initial_values \
         = _select_model(str_model)
 
-    modelled = np.full(data.shape, np.NaN)
-    modelled[:, 0] = data[:, 0]
+    modelled = np.full(population_evolution.shape, np.NaN)
+    modelled[:, 0] = population_evolution[:, 0]
 
     # Ignore population = 0:
-    # t_end = data[-1, 0]
-    # if data[-1, 1]
-    # if data[-1, 1] < 1.:
+    # t_end = population_evolution[-1, 0]
+    # if population_evolution[-1, 1]
+    # if population_evolution[-1, 1] < 1.:
         # return modelled, None
 
-    idx_end = np.where(data[:, 1])[0][-1]
+    idx_end = np.where(population_evolution[:, 1])[0][-1]
 
     # For SWELL baked
     if True:
         # we want to avoid fitting on the end of the decay
         idx_end = min(idx_end,
-                      np.argmin(np.abs(data[:, 1] - 10.))
+                      np.argmin(np.abs(population_evolution[:, 1] - 10.))
                       )
         print(idx_end, e_acc)
 
-    t_start = data[idx_end, 0] - fitting_range
+    t_start = population_evolution[idx_end, 0] - fitting_range
 
     t_lim = 5. * period
     if t_start < t_lim:
@@ -279,16 +288,20 @@ def _fit_single_spark(str_model: str, data: np.array, fitting_range: float,
                f"higher value {t_lim:2f}ns.")
         t_start = t_lim
 
-    idx_start = np.argmin(np.abs(data[:, 0] - t_start))
-    data_to_fit = np.column_stack((data[idx_start:idx_end + 1, 0],
-                                   np.log(data[idx_start:idx_end + 1, 1])))
+    idx_start = np.argmin(np.abs(population_evolution[:, 0] - t_start))
+    population_evolution_to_fit = np.column_stack((
+        population_evolution[idx_start:idx_end + 1, 0],
+        np.log(population_evolution[idx_start:idx_end + 1, 1])
+    ))
 
     try:
-        initial_values[0] = data_to_fit[0, 0]
+        initial_values[0] = population_evolution_to_fit[0, 0]
         if initial_values[0] < bounds[0][0]:
             initial_values[0] = bounds[0][0]
         # initial_values = [None, None]
-        result = curve_fit(model_log, data_to_fit[:, 0], data_to_fit[:, 1],
+        result = curve_fit(model_log,
+                           population_evolution_to_fit[:, 0],
+                           population_evolution_to_fit[:, 1],
                            p0=initial_values,
                            bounds=bounds, maxfev=5000)[0]
 
@@ -301,6 +314,8 @@ def _fit_single_spark(str_model: str, data: np.array, fitting_range: float,
     if print_fit_parameters:
         model_printer(*result)
 
-    modelled[idx_start:idx_end + 1, 1] = model(data_to_fit[:, 0], *result)
+    modelled[idx_start:idx_end + 1, 1] = model(
+        population_evolution_to_fit[:, 0],
+        *result)
 
     return modelled, (*result, t_start)

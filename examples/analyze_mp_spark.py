@@ -47,7 +47,7 @@ filepath = Path(basefolder, "time_results.csv")
 label = "csv (manual export)"
 
 # e_acc = np.linspace(1e6, 3e7, 291)
-# filepath = Path(base, "time_results.txt")
+# filepath = Path(basefolder, "time_results.txt")
 # label = "txt (batch auto export)"
 
 key_part = 'Particle vs. Time'
@@ -73,9 +73,11 @@ key_alfa = 'alfa (model)'
 # =============================================================================
 # Exp growth fit
 # =============================================================================
-mp_exp.fit_all_spark(str_model='classic',
-                     data=complete_population_evolutions,
+mp_exp.fit_all_spark('classic',
+                     complete_population_evolutions,
+                     key_eacc=key_eacc,
                      key_part=key_part,
+                     period=period,
                      fitting_range=fitting_range)
 
 # =============================================================================

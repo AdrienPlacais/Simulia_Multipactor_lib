@@ -10,7 +10,7 @@ In this module we define functions to load data from SPARK3D.
 .. note::
     In ``complete_population_evolutions`` returned by the loading functions,
     keys are unique integers corresponding to a simulation. With SPARK3D, they
-    start at 0 and are ordered.
+    start at 1 and are ordered.
     This is only for consistency with CST, which gives random ID number to
     every simulation.
 
@@ -117,7 +117,7 @@ def _get_population_evolution_csv(filepath: Path,
             key_part: population_evolution,
             }
         for i, (single_e_acc, population_evolution)
-        in enumerate(zip(e_acc, population_evolutions))
+        in enumerate(zip(e_acc, population_evolutions), start=1)
     }
     return complete_population_evolutions, parameters
 
