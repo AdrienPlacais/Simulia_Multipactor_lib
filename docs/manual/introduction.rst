@@ -1,7 +1,7 @@
 Introduction
 ============
 This library is a set of tool to treat results from CST and SPARK3D.
-All illustrations shown below are produced with the scripts from the :doc:`examples` section.
+All illustrations shown below are produced with the scripts from the Jupyter notebook examples.
 
 
 Compute exponential growth factors
@@ -41,6 +41,9 @@ Compute distribution of the impact angles
 .. image:: images/collision_angle_distribution.png
    :alt: Distribution of collision angles
 
+.. note::
+   In contrary to the collision angle histogram, the collision and emission energy histograms are natively available in CST.
+
 Plot trajectories
 -----------------
 
@@ -50,6 +53,3 @@ Plot trajectories
 .. image:: images/trajectories_2.png
    :alt: Plot of some trajectories
 
-
-.. note::
-   The collision and emission energy histograms are natively available in CST.
