@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>simulia_multipactor_lib.particle_monitor.particle_monitor module &mdash; Simulia Multipactor Library 1.2-8-g13dfe48 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=c08a3ddd"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="simulia_multipactor_lib.particle_monitor.studies module" href="simulia_multipactor_lib.particle_monitor.studies.html" />
+    <link rel="prev" title="simulia_multipactor_lib.particle_monitor.particle module" href="simulia_multipactor_lib.particle_monitor.particle.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Simulia Multipactor Library
+          </a>
+              <div class="version">
+                1.2-8-g13dfe48
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manual/examples_jupyter_notebooks.html">Jupyter notebook examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="simulia_multipactor_lib.html">simulia_multipactor_lib package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.experimental.html">simulia_multipactor_lib.experimental package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.helper.html">simulia_multipactor_lib.helper package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.lib.html">simulia_multipactor_lib.lib package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.loaders.html">simulia_multipactor_lib.loaders package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.html">simulia_multipactor_lib.particle_monitor package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.collisions.html">simulia_multipactor_lib.particle_monitor.collisions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.converters.html">simulia_multipactor_lib.particle_monitor.converters module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html">simulia_multipactor_lib.particle_monitor.particle module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">simulia_multipactor_lib.particle_monitor.particle_monitor module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.studies.html">simulia_multipactor_lib.particle_monitor.studies module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.util.html">simulia_multipactor_lib.util package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.visualization.html">simulia_multipactor_lib.visualization package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.constants.html">simulia_multipactor_lib.constants module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Simulia Multipactor Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">simulia_multipactor_lib</a></li>
+          <li class="breadcrumb-item"><a href="simulia_multipactor_lib.html">simulia_multipactor_lib package</a></li>
+          <li class="breadcrumb-item"><a href="simulia_multipactor_lib.particle_monitor.html">simulia_multipactor_lib.particle_monitor package</a></li>
+      <li class="breadcrumb-item active">simulia_multipactor_lib.particle_monitor.particle_monitor module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/simulia_multipactor_lib.particle_monitor.particle_monitor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-simulia_multipactor_lib.particle_monitor.particle_monitor">
+<span id="simulia-multipactor-lib-particle-monitor-particle-monitor-module"></span><h1>simulia_multipactor_lib.particle_monitor.particle_monitor module<a class="headerlink" href="#module-simulia_multipactor_lib.particle_monitor.particle_monitor" title="Link to this heading"></a></h1>
+<p>Define <a class="reference internal" href="#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParticleMonitor</span></code></a>.</p>
+<p>This dictionary-based  object holds <code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code> objects. Keys of the
+dictionary are the particle id of the <code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code>.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Raise error when folder is not found.</p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParticleMonitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<p>Holds all <code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code> objects as values, particle id as keys.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.max_time">
+<span class="sig-name descname"><span class="pre">max_time</span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.max_time" title="Link to this definition"></a></dt>
+<dd><p>Time at which the simulation ended.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.collision_energies">
+<span class="sig-name descname"><span class="pre">collision_energies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_numpy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extrapolation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_alive_at_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.collision_energies" title="Link to this definition"></a></dt>
+<dd><p>Get all collision energies in eV.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_id</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – If set, we only take particles which source_id is <code class="docutils literal notranslate"><span class="pre">source_id</span></code>.
+The default is None.</p></li>
+<li><p><strong>to_numpy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, output list is transformed to an array. The default is
+True.</p></li>
+<li><p><strong>extrapolation</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, we extrapolate over the last time steps to refine the
+collision energy. Otherwise, we simply take the last known energy
+of the particle. The default is True.</p></li>
+<li><p><strong>remove_alive_at_end</strong> (<em>bool</em><em>, </em><em>optional</em>) – To remove particles alive at the end of the simulation (did not
+impact a wall). The default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.compute_collision_angles">
+<span class="sig-name descname"><span class="pre">compute_collision_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mesh</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.compute_collision_angles" title="Link to this definition"></a></dt>
+<dd><p>Find all collisions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.emission_energies">
+<span class="sig-name descname"><span class="pre">emission_energies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_numpy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.emission_energies" title="Link to this definition"></a></dt>
+<dd><p>Get emission energies of all or only a subset of particles.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.emitted_electrons">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">emitted_electrons</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html#simulia_multipactor_lib.particle_monitor.particle.Particle" title="simulia_multipactor_lib.particle_monitor.particle.Particle"><span class="pre">Particle</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.emitted_electrons" title="Link to this definition"></a></dt>
+<dd><p>Return only emitted electrons.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.last_known_direction">
+<span class="sig-name descname"><span class="pre">last_known_direction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_numpy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_alive_at_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.last_known_direction" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">last_known_direction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_numpy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_alive_at_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Get the last recorded direction of every particle.</p>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>Why did I choose to compute position difference rather than just
+taking the momentum array when not normalizing???</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_id</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – If set, we only take particles which source_id is <code class="docutils literal notranslate"><span class="pre">source_id</span></code>.
+The default is None.</p></li>
+<li><p><strong>to_numpy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, output list is transformed to an array. The default is
+True.</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – To normalize the direction vector. The default is True.</p></li>
+<li><p><strong>remove_alive_at_end</strong> (<em>bool</em><em>, </em><em>optional</em>) – To remove particles alive at the end of the simulation (did not
+impact a wall). The default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – Last known moment vector of every particle.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[np.ndarray[np.float64]] | np.ndarray[np.float64]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.last_known_position">
+<span class="sig-name descname"><span class="pre">last_known_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_numpy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_alive_at_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.last_known_position" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">last_known_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_numpy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_alive_at_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Get the last recorded position of every particle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_id</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – If set, we only take particles which source_id is <code class="docutils literal notranslate"><span class="pre">source_id</span></code>.
+The default is None.</p></li>
+<li><p><strong>to_numpy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, output list is transformed to an array. The default is
+True.</p></li>
+<li><p><strong>remove_alive_at_end</strong> (<em>bool</em><em>, </em><em>optional</em>) – To remove particles alive at the end of the simulation (did not
+impact a wall). The default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – Last known position in mm of every particle.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[np.ndarray[np.float64]] | np.ndarray[np.float64]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.seed_electrons">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">seed_electrons</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html#simulia_multipactor_lib.particle_monitor.particle.Particle" title="simulia_multipactor_lib.particle_monitor.particle.Particle"><span class="pre">Particle</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor.seed_electrons" title="Link to this definition"></a></dt>
+<dd><p>Return only seed electrons.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor._absolute_file_paths">
+<span class="sig-name descname"><span class="pre">_absolute_file_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor._absolute_file_paths" title="Link to this definition"></a></dt>
+<dd><p>Get all filepaths in absolute from dir, remove unwanted files.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor._filter_out_alive_at_end">
+<span class="sig-name descname"><span class="pre">_filter_out_alive_at_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html#simulia_multipactor_lib.particle_monitor.particle.Particle" title="simulia_multipactor_lib.particle_monitor.particle.Particle"><span class="pre">Particle</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html#simulia_multipactor_lib.particle_monitor.particle.Particle" title="simulia_multipactor_lib.particle_monitor.particle.Particle"><span class="pre">Particle</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor._filter_out_alive_at_end" title="Link to this definition"></a></dt>
+<dd><p>Filter out Particles that were alive at the end of simulation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor._filter_out_dead_at_end">
+<span class="sig-name descname"><span class="pre">_filter_out_dead_at_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html#simulia_multipactor_lib.particle_monitor.particle.Particle" title="simulia_multipactor_lib.particle_monitor.particle.Particle"><span class="pre">Particle</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html#simulia_multipactor_lib.particle_monitor.particle.Particle" title="simulia_multipactor_lib.particle_monitor.particle.Particle"><span class="pre">Particle</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor._filter_out_dead_at_end" title="Link to this definition"></a></dt>
+<dd><p>Filter out Particles that collisioned during simulation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor._filter_out_part_with_one_time_step">
+<span class="sig-name descname"><span class="pre">_filter_out_part_with_one_time_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html#simulia_multipactor_lib.particle_monitor.particle.Particle" title="simulia_multipactor_lib.particle_monitor.particle.Particle"><span class="pre">Particle</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html#simulia_multipactor_lib.particle_monitor.particle.Particle" title="simulia_multipactor_lib.particle_monitor.particle.Particle"><span class="pre">Particle</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor._filter_out_part_with_one_time_step" title="Link to this definition"></a></dt>
+<dd><p>Remove particle with only one known position.</p>
+<p>This is useful when the time resolution is low.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.particle_monitor._filter_source_id">
+<span class="sig-name descname"><span class="pre">_filter_source_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html#simulia_multipactor_lib.particle_monitor.particle.Particle" title="simulia_multipactor_lib.particle_monitor.particle.Particle"><span class="pre">Particle</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wanted_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html#simulia_multipactor_lib.particle_monitor.particle.Particle" title="simulia_multipactor_lib.particle_monitor.particle.Particle"><span class="pre">Particle</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.particle_monitor._filter_source_id" title="Link to this definition"></a></dt>
+<dd><p>Filter Particles against the sourceID field.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="simulia_multipactor_lib.particle_monitor.particle.html" class="btn btn-neutral float-left" title="simulia_multipactor_lib.particle_monitor.particle module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="simulia_multipactor_lib.particle_monitor.studies.html" class="btn btn-neutral float-right" title="simulia_multipactor_lib.particle_monitor.studies module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Adrien Plaçais.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

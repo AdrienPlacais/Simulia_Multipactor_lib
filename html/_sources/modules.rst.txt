@@ -1,7 +1,7 @@
-multipactor
-===========
+simulia_multipactor_lib
+=======================
 
 .. toctree::
    :maxdepth: 4
 
-   multipactor
+   simulia_multipactor_lib

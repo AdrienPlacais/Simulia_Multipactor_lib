@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Particle Monitor: WR75 study case &mdash; Simulia Multipactor Library  documentation</title>
+  <title>Particle Monitor: WR75 study case &mdash; Simulia Multipactor Library 1.2-8-g13dfe48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -16,7 +16,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/documentation_options.js?v=c08a3ddd"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -25,7 +25,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="multipactor" href="../../modules.html" />
+    <link rel="next" title="simulia_multipactor_lib" href="../../modules.html" />
     <link rel="prev" title="Export Parametric from CST" href="export_parametric.html" /> 
 </head>
 
@@ -40,6 +40,9 @@
           <a href="../../index.html" class="icon icon-home">
             Simulia Multipactor Library
           </a>
+              <div class="version">
+                1.2-8-g13dfe48
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -55,7 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="compute_exp_growth_spark.html">Compute exponential growth from SPARK3D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="export_parametric.html">Export Parametric from CST</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Particle Monitor: WR75 study case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Particle-Monitor-TESLA-study-case">Particle Monitor TESLA study case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Particle-Monitor-TESLA:-study-case">Particle Monitor TESLA: study case</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">API Reference</a></li>
@@ -107,7 +110,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">multipactor.particle_monitor.particle_monitor</span> <span class="kn">import</span> <span class="n">ParticleMonitor</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">simulia_multipactor_lib.particle_monitor.particle_monitor</span> <span class="kn">import</span> <span class="n">ParticleMonitor</span>
 <span class="n">my_particle_monitor</span> <span class="o">=</span> <span class="n">ParticleMonitor</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -117,7 +120,7 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/placais/Documents/Simulation/python/multipactor/particle_monitor/particle.py:455: RankWarning: Polyfit may be poorly conditioned
+/home/placais/Documents/Simulation/python/simulia_multipactor_lib/particle_monitor/particle.py:445: RankWarning: Polyfit may be poorly conditioned
   polynom = np.polyfit(known_time, known_mom, poly_fit_deg)
 </pre></div></div>
 </div>
@@ -129,7 +132,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">multipactor.particle_monitor.studies</span> <span class="kn">import</span> <span class="n">plot_emission_energies</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">simulia_multipactor_lib.particle_monitor.studies</span> <span class="kn">import</span> <span class="n">plot_emission_energies</span>
 
 <span class="n">bins</span> <span class="o">=</span> <span class="mi">200</span>  <span class="c1"># Number of histogram bins</span>
 <span class="n">hist_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1e2</span><span class="p">)</span>  <span class="c1"># Range of the histogram</span>
@@ -152,7 +155,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">multipactor.particle_monitor.studies</span> <span class="kn">import</span> <span class="n">plot_collision_energies</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">simulia_multipactor_lib.particle_monitor.studies</span> <span class="kn">import</span> <span class="n">plot_collision_energies</span>
 
 <span class="n">bins</span> <span class="o">=</span> <span class="mi">1000</span>
 <span class="n">hist_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2e2</span><span class="p">)</span>
@@ -237,7 +240,7 @@ No collision for particle 56121.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">multipactor.particle_monitor.studies</span> <span class="kn">import</span> <span class="n">plot_collision_angles</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">simulia_multipactor_lib.particle_monitor.studies</span> <span class="kn">import</span> <span class="n">plot_collision_angles</span>
 
 <span class="n">bins</span> <span class="o">=</span> <span class="mi">200</span>
 <span class="n">hist_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">90.</span><span class="p">)</span>
@@ -264,7 +267,7 @@ No collision for particle 56121.
 <span class="n">number_of_particles_to_plot</span> <span class="o">=</span> <span class="mi">15</span>
 <span class="n">pid_to_plot</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">my_particle_monitor</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">number_of_particles_to_plot</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">multipactor.visualization.plot_3d</span> <span class="kn">import</span> <span class="n">plot_structure_and_some_trajectories</span>
+<span class="kn">from</span> <span class="nn">simulia_multipactor_lib.visualization.plot_3d</span> <span class="kn">import</span> <span class="n">plot_structure_and_some_trajectories</span>
 
 <span class="n">vedo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_backend</span> <span class="o">=</span> <span class="s1">&#39;vtk&#39;</span>
 <span class="n">veplot</span> <span class="o">=</span> <span class="n">plot_structure_and_some_trajectories</span><span class="p">(</span><span class="n">my_particle_monitor</span><span class="p">,</span>
@@ -277,8 +280,8 @@ No collision for particle 56121.
 <p>In this plot, the emission points are in blue. If there is no emission point, it is because the electron you are looking at is a seed electron. The last known position is in red. If you want to see the extrapolated position, it will be in green.</p>
 </section>
 </section>
-<section id="Particle-Monitor-TESLA-study-case">
-<h1>Particle Monitor TESLA study case<a class="headerlink" href="#Particle-Monitor-TESLA-study-case" title="Link to this heading"></a></h1>
+<section id="Particle-Monitor-TESLA:-study-case">
+<h1>Particle Monitor TESLA: study case<a class="headerlink" href="#Particle-Monitor-TESLA:-study-case" title="Link to this heading"></a></h1>
 <p>As the gap of the reduced WR75 is very tight, the visualisation of the trajectories is not very impressive. Let’s fix that by looking at a TESLA cavity.</p>
 <section id="Loading-data-and-making-trajectory-plot">
 <h2>Loading data and making trajectory plot<a class="headerlink" href="#Loading-data-and-making-trajectory-plot" title="Link to this heading"></a></h2>
@@ -303,14 +306,6 @@ No collision for particle 56121.
 </div>
 </div>
 <p>Note that, again, the resolution on the trajectories is low. This may lead to incorrect impact angles.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 
@@ -319,13 +314,13 @@ No collision for particle 56121.
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="export_parametric.html" class="btn btn-neutral float-left" title="Export Parametric from CST" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../../modules.html" class="btn btn-neutral float-right" title="multipactor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../../modules.html" class="btn btn-neutral float-right" title="simulia_multipactor_lib" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Adrien Plaçais.</p>
+    <p>&#169; Copyright 2024, Adrien Plaçais.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

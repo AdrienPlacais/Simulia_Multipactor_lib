@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>simulia_multipactor_lib.loaders.loader_spark module &mdash; Simulia Multipactor Library 1.2-8-g13dfe48 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=c08a3ddd"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="simulia_multipactor_lib.particle_monitor package" href="simulia_multipactor_lib.particle_monitor.html" />
+    <link rel="prev" title="simulia_multipactor_lib.loaders.loader_cst module" href="simulia_multipactor_lib.loaders.loader_cst.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Simulia Multipactor Library
+          </a>
+              <div class="version">
+                1.2-8-g13dfe48
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manual/examples_jupyter_notebooks.html">Jupyter notebook examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="simulia_multipactor_lib.html">simulia_multipactor_lib package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.experimental.html">simulia_multipactor_lib.experimental package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.helper.html">simulia_multipactor_lib.helper package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.lib.html">simulia_multipactor_lib.lib package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="simulia_multipactor_lib.loaders.html">simulia_multipactor_lib.loaders package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="simulia_multipactor_lib.loaders.loader_cst.html">simulia_multipactor_lib.loaders.loader_cst module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">simulia_multipactor_lib.loaders.loader_spark module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.html">simulia_multipactor_lib.particle_monitor package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.util.html">simulia_multipactor_lib.util package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.visualization.html">simulia_multipactor_lib.visualization package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.constants.html">simulia_multipactor_lib.constants module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Simulia Multipactor Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">simulia_multipactor_lib</a></li>
+          <li class="breadcrumb-item"><a href="simulia_multipactor_lib.html">simulia_multipactor_lib package</a></li>
+          <li class="breadcrumb-item"><a href="simulia_multipactor_lib.loaders.html">simulia_multipactor_lib.loaders package</a></li>
+      <li class="breadcrumb-item active">simulia_multipactor_lib.loaders.loader_spark module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/simulia_multipactor_lib.loaders.loader_spark.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-simulia_multipactor_lib.loaders.loader_spark">
+<span id="simulia-multipactor-lib-loaders-loader-spark-module"></span><h1>simulia_multipactor_lib.loaders.loader_spark module<a class="headerlink" href="#module-simulia_multipactor_lib.loaders.loader_spark" title="Link to this heading"></a></h1>
+<p>Define functions to load data from SPARK3D.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">complete_population_evolutions</span></code> returned by the loading functions,
+keys are unique integers corresponding to a simulation. With SPARK3D, they
+start at 1 and are ordered.
+This is only for consistency with CST, which gives random ID number to
+every simulation.</p>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.loaders.loader_spark._get_population_evolution_csv">
+<span class="sig-name descname"><span class="pre">_get_population_evolution_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e_acc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_part</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_eacc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#simulia_multipactor_lib.loaders.loader_spark._get_population_evolution_csv" title="Link to this definition"></a></dt>
+<dd><p>Get population evolution data from a SPARK3D manual export.</p>
+<p>Right-click on <code class="docutils literal notranslate"><span class="pre">Multipactor</span> <span class="pre">results</span></code>, <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">to</span> <span class="pre">CSV</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.loaders.loader_spark._get_population_evolution_txt">
+<span class="sig-name descname"><span class="pre">_get_population_evolution_txt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e_acc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_part</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_eacc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'\t'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#simulia_multipactor_lib.loaders.loader_spark._get_population_evolution_txt" title="Link to this definition"></a></dt>
+<dd><p>Get population evolution, auto export from SPARK3D.</p>
+<p>Precise an output directory in the SPARK3D command-line, look for
+<code class="docutils literal notranslate"><span class="pre">time_results.txt</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.loaders.loader_spark.load_population_evolution">
+<span class="sig-name descname"><span class="pre">load_population_evolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e_acc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_part</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Particle</span> <span class="pre">vs.</span> <span class="pre">Time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_eacc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'E_acc</span> <span class="pre">in</span> <span class="pre">MV</span> <span class="pre">per</span> <span class="pre">m'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'power_rms'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#simulia_multipactor_lib.loaders.loader_spark.load_population_evolution" title="Link to this definition"></a></dt>
+<dd><p>Get population evolution data from SPARK3D simulation.</p>
+<p>We infer the format of the data from the extension of <code class="docutils literal notranslate"><span class="pre">filepath</span></code>. If it
+is <code class="docutils literal notranslate"><span class="pre">.csv</span></code>, it is expected that you manually exported the data. If it is
+<code class="docutils literal notranslate"><span class="pre">.txt</span></code>, it is expected that you called SPARK3D from the command line and
+provide the path to the <code class="docutils literal notranslate"><span class="pre">time_results.txt</span></code> file that is produced.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>Path</em>) – Path to the file to be loaded.</p></li>
+<li><p><strong>e_acc</strong> (<em>np.ndarray</em>) – Accelerating field values in MV/m.</p></li>
+<li><p><strong>delimiter</strong> (<em>str</em><em>, </em><em>optional</em>) – Delimiter between columns. The default is a space.</p></li>
+<li><p><strong>key_part</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the particle vs time entry in the output dictionaries. The
+default is ‘Particle vs. Time’.</p></li>
+<li><p><strong>key_eacc</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the accelerating field entry in the output dictionaries.
+The default is ‘E_acc in MV per m’.</p></li>
+<li><p><strong>key_power</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the RMS power entry in the output dictionaries. The default
+is ‘power_rms’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>complete_population_evolutions</strong> (<em>dict[int, dict[str, np.ndarray | float |None]]</em>) – Holds evolution of electron population with time in ns. Keys are unique
+integers, values are other dict holding accelerating field, evolution
+of population with time.</p></li>
+<li><p><strong>parameters</strong> (<em>np.ndarray</em>) – Array of accelerating fields in V/m.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="simulia_multipactor_lib.loaders.loader_cst.html" class="btn btn-neutral float-left" title="simulia_multipactor_lib.loaders.loader_cst module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="simulia_multipactor_lib.particle_monitor.html" class="btn btn-neutral float-right" title="simulia_multipactor_lib.particle_monitor package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Adrien Plaçais.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

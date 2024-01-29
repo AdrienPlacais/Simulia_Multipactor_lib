@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>simulia_multipactor_lib.particle_monitor.studies module &mdash; Simulia Multipactor Library 1.2-8-g13dfe48 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=c08a3ddd"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="simulia_multipactor_lib.util package" href="simulia_multipactor_lib.util.html" />
+    <link rel="prev" title="simulia_multipactor_lib.particle_monitor.particle_monitor module" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Simulia Multipactor Library
+          </a>
+              <div class="version">
+                1.2-8-g13dfe48
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manual/examples_jupyter_notebooks.html">Jupyter notebook examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="simulia_multipactor_lib.html">simulia_multipactor_lib package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.experimental.html">simulia_multipactor_lib.experimental package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.helper.html">simulia_multipactor_lib.helper package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.lib.html">simulia_multipactor_lib.lib package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.loaders.html">simulia_multipactor_lib.loaders package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.html">simulia_multipactor_lib.particle_monitor package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.collisions.html">simulia_multipactor_lib.particle_monitor.collisions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.converters.html">simulia_multipactor_lib.particle_monitor.converters module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle.html">simulia_multipactor_lib.particle_monitor.particle module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html">simulia_multipactor_lib.particle_monitor.particle_monitor module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">simulia_multipactor_lib.particle_monitor.studies module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.util.html">simulia_multipactor_lib.util package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.visualization.html">simulia_multipactor_lib.visualization package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulia_multipactor_lib.constants.html">simulia_multipactor_lib.constants module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Simulia Multipactor Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">simulia_multipactor_lib</a></li>
+          <li class="breadcrumb-item"><a href="simulia_multipactor_lib.html">simulia_multipactor_lib package</a></li>
+          <li class="breadcrumb-item"><a href="simulia_multipactor_lib.particle_monitor.html">simulia_multipactor_lib.particle_monitor package</a></li>
+      <li class="breadcrumb-item active">simulia_multipactor_lib.particle_monitor.studies module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/simulia_multipactor_lib.particle_monitor.studies.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-simulia_multipactor_lib.particle_monitor.studies">
+<span id="simulia-multipactor-lib-particle-monitor-studies-module"></span><h1>simulia_multipactor_lib.particle_monitor.studies module<a class="headerlink" href="#module-simulia_multipactor_lib.particle_monitor.studies" title="Link to this heading"></a></h1>
+<p>Define basic functions to treat data from <a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParticleMonitor</span></code></a> object.</p>
+<p>In particular, plotthe emission energy, the collision energy or the
+trajectories of the particles.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.studies.plot_collision_angles">
+<span class="sig-name descname"><span class="pre">plot_collision_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">particle_monitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor"><span class="pre">ParticleMonitor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hist_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">90.0)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.studies.plot_collision_angles" title="Link to this definition"></a></dt>
+<dd><p>Compute and plot a particles impact angle histogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>particles</strong> (<a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor"><em>ParticleMonitor</em></a>) – particles</p></li>
+<li><p><strong>bins</strong> (<em>int</em>) – bins</p></li>
+<li><p><strong>hist_range</strong> (<em>tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – hist_range</p></li>
+<li><p><strong>check_collisions</strong> (<em>bool</em><em>, </em><em>optional</em>) – Check how many particles intersected the mesh, and how many particles
+intersected the mesh several times. The default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.studies.plot_collision_energies">
+<span class="sig-name descname"><span class="pre">plot_collision_energies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">particles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor"><span class="pre">ParticleMonitor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hist_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">10000.0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.studies.plot_collision_energies" title="Link to this definition"></a></dt>
+<dd><p>Plot all the collision energies as histogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>particles</strong> (<a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor"><em>ParticleMonitor</em></a>) – Object holding particles under study.</p></li>
+<li><p><strong>bins</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bins in the histogram. The default is 1000.</p></li>
+<li><p><strong>hist_range</strong> (<em>tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Holds first and last energies of the histogram. The default is
+<code class="docutils literal notranslate"><span class="pre">(0.,</span> <span class="pre">1e4)</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>fig</strong> – The figure that was created.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.studies.plot_emission_energies">
+<span class="sig-name descname"><span class="pre">plot_emission_energies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">particles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor"><span class="pre">ParticleMonitor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hist_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">10000.0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.studies.plot_emission_energies" title="Link to this definition"></a></dt>
+<dd><p>Plot the emission energies sorted by source id as a histogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>particles</strong> (<a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor"><em>ParticleMonitor</em></a>) – Object holding particles under study.</p></li>
+<li><p><strong>bins</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bins in the histogram. The default is 1000.</p></li>
+<li><p><strong>hist_range</strong> (<em>tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Holds first and last energies of the histogram. The default is
+<code class="docutils literal notranslate"><span class="pre">(0.,</span> <span class="pre">1e4)</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>fig</strong> – The figure that was created.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.studies.plot_impact_density_distribution">
+<span class="sig-name descname"><span class="pre">plot_impact_density_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">particles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor"><span class="pre">ParticleMonitor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.studies.plot_impact_density_distribution" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulia_multipactor_lib.particle_monitor.studies.plot_trajectories">
+<span class="sig-name descname"><span class="pre">plot_trajectories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">particles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor"><span class="pre">ParticleMonitor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#simulia_multipactor_lib.particle_monitor.studies.plot_trajectories" title="Link to this definition"></a></dt>
+<dd><p>Plot trajectories of particles with the desired <code class="docutils literal notranslate"><span class="pre">pid</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>particles</strong> (<a class="reference internal" href="simulia_multipactor_lib.particle_monitor.particle_monitor.html#simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor" title="simulia_multipactor_lib.particle_monitor.particle_monitor.ParticleMonitor"><em>ParticleMonitor</em></a>) – Object holding particles under study.</p></li>
+<li><p><strong>particle_id</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – List holding the <code class="docutils literal notranslate"><span class="pre">pid</span></code> (Particle ID) of the electrons which
+trajectory should be plotted.</p></li>
+<li><p><strong>mesh</strong> (<em>Any</em><em>, </em><em>optional</em>) – Object holding the borders of the geometry for better representation.
+The default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>fig</strong> – The figure that was created.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+<p>:raises NotImplementedError : <code class="docutils literal notranslate"><span class="pre">mesh</span></code> different from None is not supported.:</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="simulia_multipactor_lib.particle_monitor.particle_monitor.html" class="btn btn-neutral float-left" title="simulia_multipactor_lib.particle_monitor.particle_monitor module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="simulia_multipactor_lib.util.html" class="btn btn-neutral float-right" title="simulia_multipactor_lib.util package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Adrien Plaçais.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
