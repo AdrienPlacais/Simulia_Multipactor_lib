@@ -36,8 +36,9 @@ Clone the `git` repository (you can also download it as `.zip`, but you will not
 For package update, go to the package folder and `git pull origin master`.
 
 # Documentation
-Documentation is available on: http://adrien.placais.pages.in2p3.fr/python-multipactor-library/
-Documentation is integrated following: https://daler.github.io/sphinxdoc-test/includeme.html
+Documentation is available at: https://adrienplacais.github.io/simulia_multipactor_lib/html/index.html#
+
+Integrated following: https://daler.github.io/sphinxdoc-test/includeme.html
 
 # Tutorial
 Examples are provided in the `examples` folder.
