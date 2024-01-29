@@ -36,7 +36,7 @@ Clone the `git` repository (you can also download it as `.zip`, but you will not
 For package update, go to the package folder and `git pull origin master`.
 
 # Documentation
-Documentation is available at: https://adrienplacais.github.io/simulia_multipactor_lib/html/index.html#
+Documentation is available at: https://adrienplacais.github.io/Simulia_Multipactor_lib/html/index.html#
 
 Integrated following: https://daler.github.io/sphinxdoc-test/includeme.html
 
