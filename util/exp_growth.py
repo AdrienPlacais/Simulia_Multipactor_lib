@@ -25,7 +25,7 @@ import numpy as np
 from scipy.optimize import curve_fit, OptimizeWarning
 from scipy.ndimage import uniform_filter1d
 
-from multipactor.helper.helper import printc
+from simulia_multipactor_lib.helper.helper import printc
 
 warnings.simplefilter("error", OptimizeWarning)
 

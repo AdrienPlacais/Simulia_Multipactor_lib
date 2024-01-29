@@ -1,26 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Jul 10 15:55:49 2023.
+"""Define basic functions to treat data from :class:`.ParticleMonitor` object.
 
-@author: placais
-
-In this module, we define functions to visualise the emission energy, the
-collision energy or the trajectories of the particles stored in a
-``ParticleMonitor``.
+In particular, plotthe emission energy, the collision energy or the
+trajectories of the particles.
 
 """
 from typing import Any
 
 import numpy as np
 from matplotlib.figure import Figure
-import vedo
 
-from multipactor.particle_monitor.particle_monitor import ParticleMonitor
-from multipactor.particle_monitor.collisions.vedo_mesh_collisions import (
-    part_mesh_intersections,
-)
-from multipactor.visualization.plot import create_fig_if_not_exists
+from simulia_multipactor_lib.particle_monitor.collisions.vedo_mesh_collisions \
+    import part_mesh_intersections
+from simulia_multipactor_lib.particle_monitor.particle_monitor import \
+    ParticleMonitor
+from simulia_multipactor_lib.visualization.plot import create_fig_if_not_exists
 
 
 def plot_emission_energies(particles: ParticleMonitor,

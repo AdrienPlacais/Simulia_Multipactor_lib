@@ -1,24 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Jul 10 12:35:01 2023.
-
-@author: placais
-
-In this module we define :class:`Particle`. This object is created by
-sequentially reading CST ParticleMonitor files.
-
-"""
+"""Define :class:`Particle`, created by reading CST ParticleMonitor files."""
 import math
 
 import numpy as np
 import vedo
 
-from multipactor.constants import clight, qelem
-from multipactor.particle_monitor.converters import (
-    adim_momentum_to_eV,
-    adim_momentum_to_speed_mm_per_ns,
-)
+from simulia_multipactor_lib.constants import clight, qelem
+from simulia_multipactor_lib.particle_monitor.converters import (
+    adim_momentum_to_eV, adim_momentum_to_speed_mm_per_ns)
 
 
 class Particle:  # pylint: disable=too-many-instance-attributes

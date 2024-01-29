@@ -1,20 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Feb 27 13:14:58 2023.
-
-@author: placais
-
-In this module we store some generic helper functions for plotting.
-
-"""
-
+"""Store some generic helper functions for plotting."""
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.axes._axes import Axes
 
-import multipactor.loaders.loader_cst as lcst
+import simulia_multipactor_lib.loaders.loader_cst as lcst
 
 
 def plot_dict_of_arrays(data: dict,

@@ -27,7 +27,7 @@ from typing import Any
 
 import numpy as np
 
-from multipactor.helper.helper import printc
+from simulia_multipactor_lib.helper.helper import printc
 
 
 # =============================================================================

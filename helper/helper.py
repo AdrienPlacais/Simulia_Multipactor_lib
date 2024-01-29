@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Mar  1 11:29:06 2023
-
-@author: A. Plaçais
-"""
-import numpy as np
-
+"""Define a function to print messages in color."""
 
 def printc(*args, color='cyan'):
     """Print colored messages."""
@@ -22,4 +16,3 @@ def printc(*args, color='cyan'):
     for arg in args[1:]:
         print(arg, end=' ')
     print('')
-

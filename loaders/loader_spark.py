@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Jan  9 10:25:07 2023.
-
-@author: placais
-
-In this module we define functions to load data from SPARK3D.
+"""Define functions to load data from SPARK3D.
 
 .. note::
     In ``complete_population_evolutions`` returned by the loading functions,

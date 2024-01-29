@@ -6,7 +6,7 @@
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
-BUILDDIR      = ../../multipactor-docs
+BUILDDIR      = ../../simulia_multipactor_lib-docs/
 PDFBUILDDIR   = /tmp
 PDF           = ../manual.pdf
 

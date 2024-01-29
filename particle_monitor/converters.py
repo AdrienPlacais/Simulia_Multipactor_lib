@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Jul 10 15:04:56 2023.
-
-@author: placais
-
-In this module we define the functions to convert momentum and speeds.
-
-"""
+"""Define the functions to convert momentum and speeds."""
 import numpy as np
 
-from multipactor.constants import clight, clight_in_mm_per_ns
+from simulia_multipactor_lib.constants import clight, clight_in_mm_per_ns
 
 
 def adim_momentum_to_speed_m_per_s(mom: np.ndarray) -> np.ndarray:

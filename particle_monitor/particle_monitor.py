@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Jul 10 12:36:42 2023.
+"""Define :class:`ParticleMonitor`.
 
-@author: placais
-
-In this module we define :class:`ParticleMonitor`, a dictionary-based  object
-that holds :class:`Particle` objects. Keys of the dictionary are the particle
-id of the :class:`Particle`.
+This dictionary-based  object holds :class:`Particle` objects. Keys of the
+dictionary are the particle id of the :class:`Particle`.
 
 .. todo::
     Raise error when folder is not found.
@@ -21,9 +17,8 @@ from typing import overload
 import numpy as np
 import vedo
 
-from multipactor.loaders.loader_cst import particle_monitor
-from multipactor.particle_monitor.particle import Particle
-from multipactor.helper.helper import printc
+from simulia_multipactor_lib.loaders.loader_cst import particle_monitor
+from simulia_multipactor_lib.particle_monitor.particle import Particle
 
 
 class ParticleMonitor(dict):

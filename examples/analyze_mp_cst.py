@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Showcase how CST data can be analyzed.
+"""Showcase how CST data can be analyzed.
 
 Data must come from the ``Export Parametric`` option of CST.
 

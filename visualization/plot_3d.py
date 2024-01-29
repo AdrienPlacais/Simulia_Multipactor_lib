@@ -5,8 +5,8 @@ from collections.abc import Sequence
 
 import vedo
 
-from multipactor.particle_monitor.particle import Particle
-from multipactor.particle_monitor.particle_monitor import ParticleMonitor
+from simulia_multipactor_lib.particle_monitor.particle import Particle
+from simulia_multipactor_lib.particle_monitor.particle_monitor import ParticleMonitor
 
 
 def _create_trajectory_line(particle: Particle) -> vedo.Lines:

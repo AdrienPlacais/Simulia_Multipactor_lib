@@ -1,7 +1,7 @@
-multipactor.visualization.plot module
+simulia\_multipactor\_lib.lib package
 =====================================
 
-.. automodule:: multipactor.visualization.plot
+.. automodule:: simulia_multipactor_lib.lib
    :members:
    :undoc-members:
    :show-inheritance:

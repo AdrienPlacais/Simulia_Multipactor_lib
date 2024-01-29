@@ -5,10 +5,22 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+import os
+import sys
+import re
+
+sys.path.insert(0, os.path.abspath(
+    "/home/placais/Documents/Simulation/python/simulia_multipactor_lib/"))
 
 project = 'Simulia Multipactor Library'
-copyright = '2023, Adrien Plaçais'
+copyright = '2024, Adrien Plaçais'
 author = 'Adrien Plaçais'
+
+# See https://protips.readthedocs.io/git-tag-version.html
+# The full version, including alpha/beta/rc tags.
+release = re.sub('^v', '', os.popen('git describe').read().strip())
+# The short X.Y version.
+version = release
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -16,7 +28,6 @@ author = 'Adrien Plaçais'
 extensions = [
     "sphinx.ext.napoleon",      # handle numpy style
     "sphinx.ext.autodoc",
-    # "sphinx.ext.autosummary",
     "sphinx_rtd_theme",         # ReadTheDocs theme
     "myst_parser",
     "sphinx.ext.todo",          # allow use of TODO
