@@ -65,6 +65,8 @@ Results of a parametric study on the number of seed electrons.
 ![Distribution of collision angles](docs/manual/images/collision_angle_distribution.png)
 
 ### Trajectory plots
+Here we represented in red the collision points and in green the emission points.
+Electrons without a green point are seed electrons.
 ![Plot of some trajectories](docs/manual/images/trajectories_1.png)
 
 ![Plot of some trajectories](docs/manual/images/trajectories_2.png)
