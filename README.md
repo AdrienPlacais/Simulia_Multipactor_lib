@@ -46,19 +46,25 @@ It was integrated following [this tutorial](https://daler.github.io/sphinxdoc-te
 Examples are provided in the `examples` folder and in the documentation (work in progress).
 
 # Gallery
-## Compute exponential growth factor from SPARK3D or CST Particle Studio
+## Compute exponential growth factor
+### From SPARK3D
 ![Evolution of exponential growth factor with accelerating field](docs/manual/images/exp_growth_spark.png)
 
-
+### From CST
 ![Evolution of exponential growth factor with accelerating field](docs/manual/images/exp_growth_cst.png)
+Results of a parametric study on the number of seed electrons.
 
 ## Treat CST PIC Monitor data
+### Emission energies
 ![Distribution of emission energies](docs/manual/images/emission_energy_distribution.png)
 
+### Collision energies
 ![Distribution of collision energies](docs/manual/images/collision_energy_distribution.png)
 
+### Collision angles
 ![Distribution of collision angles](docs/manual/images/collision_angle_distribution.png)
 
+### Trajectory plots
 ![Plot of some trajectories](docs/manual/images/trajectories_1.png)
 
 ![Plot of some trajectories](docs/manual/images/trajectories_2.png)
