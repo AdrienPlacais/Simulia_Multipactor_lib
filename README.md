@@ -51,8 +51,8 @@ Examples are provided in the `examples` folder and in the documentation (work in
 ![Evolution of exponential growth factor with accelerating field](docs/manual/images/exp_growth_spark.png)
 
 ### From CST
-![Evolution of exponential growth factor with accelerating field](docs/manual/images/exp_growth_cst.png)
 Results of a parametric study on the number of seed electrons.
+![Evolution of exponential growth factor with accelerating field](docs/manual/images/exp_growth_cst.png)
 
 ## Treat CST PIC Monitor data
 ### Emission energies
