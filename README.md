@@ -21,7 +21,7 @@ If you manage your installation with `conda`, run:
 ```
 conda create -n vedo_env -c conda-forge python=3.11
 conda activate vedo_env
-conda install -c conda-forge numpy matplotlib pandas scipy vedo
+conda install -c conda-forge jupyter numpy matplotlib pandas scipy vedo
 ```
 Warning: in the latter case, all your packages must be installed from the `conda-forge` source, which is not the default.
 You may also want to `conda install -c conda-forge spyder` to have an IDE.
