@@ -1,22 +1,52 @@
-# Minimal makefile for Sphinx documentation
-#
+# Makefile for Sphinx documentation
 
-# You can set these variables from the command line, and also
-# from the environment for the first two.
 SPHINXOPTS    ?=
+# Builders
 SPHINXBUILD   ?= sphinx-build
+SPHINXAPIDOC  ?= sphinx-apidoc
+# Dirs
 SOURCEDIR     = .
-BUILDDIR      = ../../simulia_multipactor_lib-docs/
-PDFBUILDDIR   = /tmp
-PDF           = ../manual.pdf
+BUILDDIR      = ../../.simultipac-docs
+SRC_DIR       = ../src
+EXCLUDE_DIR   = ../src/simultipac/experimental/*
+APIDOC_DIR    = simultipac
 
-# Put it first so that "make" without argument is like "make help".
+.PHONY: help clean apidoc html 
+
+# Default target: help
+.DEFAULT_GOAL := help
+
 help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@echo "Usage: make [TARGET]"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  help            Show this help message"
+	@echo "  clean           Clean build artifacts"
+	@echo "  apidoc          Generate API documentation"
+	@echo "  html            Build unversioned HTML documentation"
 
-.PHONY: help Makefile
+# Clean build artifacts
+clean:
+	@echo "Cleaning build artifacts..."
+	@rm -rf "$(BUILDDIR)"
+	@if [ -d "$(APIDOC_DIR)" ]; then rm -rf "$(APIDOC_DIR)"/*; fi
+	@if [ -d "$(CONFIG_ENTRIES_DIR)" ]; then rm -rf "$(CONFIG_ENTRIES_DIR)"/*; fi
+	@if [ -d "$(MULTIVERSION_OUTPUT)" ]; then \
+	  find "$(MULTIVERSION_OUTPUT)" -mindepth 1 ! -name 'index.html' -exec rm -rf {} +; \
+	fi
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+# Generate API documentation using sphinx-apidoc
+apidoc:
+	@echo "Generating API documentation..."
+	@$(SPHINXAPIDOC) -o "$(APIDOC_DIR)" -d 5 -f -e -M "$(SRC_DIR)" "$(EXCLUDE_DIR)"
+	@cd "$(APIDOC_DIR)" && perl -i -pe 's/^\S*\.(\S*) (package|module)/$$1 $$2/' *.rst
+
+# Build unversioned HTML documentation
+html:
+	@echo "Building unversioned HTML documentation..."
+	@$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)
+
+# Catch-all target: route all unknown targets to Sphinx using the new "make mode" option
+%:
+	@echo "Unknown target '$@'."
+	@$(MAKE) help

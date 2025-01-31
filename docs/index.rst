@@ -1,15 +1,18 @@
-Welcome to Simulia Multipactor Library documentation!
-=====================================================
+Welcome to Simultipac's documentation!
+======================================
 
 .. toctree::
-   :maxdepth: 4
-   :caption: Contents:
+   :maxdepth: 5
+   :caption: LightWin
    :titlesonly:
    :glob:
+   :includehidden:
 
    manual/introduction
    manual/examples_jupyter_notebooks
-   API Reference <modules>
+   API Reference <simultipac/simultipac>
+
+.. todolist::
 
 Indices and tables
 ==================

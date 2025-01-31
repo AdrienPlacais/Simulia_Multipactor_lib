@@ -7,4 +7,4 @@ studies.
 
 import importlib.metadata
 
-__version__ = importlib.metadata.version("lightwin")
+__version__ = importlib.metadata.version("simultipac")

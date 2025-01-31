@@ -1,7 +1,7 @@
-simulia\_multipactor\_lib.helper.helper module
+converters module
 ==============================================
 
-.. automodule:: simulia_multipactor_lib.helper.helper
+.. automodule:: simultipac.particle_monitor.converters
    :members:
    :undoc-members:
    :show-inheritance:

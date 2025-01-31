@@ -1,7 +1,7 @@
-simulia\_multipactor\_lib.lib package
+loader\_cst module
 =====================================
 
-.. automodule:: simulia_multipactor_lib.lib
+.. automodule:: simultipac.loaders.loader_cst
    :members:
    :undoc-members:
    :show-inheritance:
