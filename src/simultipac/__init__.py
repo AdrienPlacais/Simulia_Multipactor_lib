@@ -4,3 +4,7 @@ In particular: CST Particle Studio and SPARK3D. It was designed for multipactor
 studies.
 
 """
+
+import importlib.metadata
+
+__version__ = importlib.metadata.version("lightwin")
