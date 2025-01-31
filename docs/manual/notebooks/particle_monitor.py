@@ -12,10 +12,10 @@ import random
 
 import vedo
 
-from simulia_multipactor_lib.particle_monitor.particle_monitor import ParticleMonitor
-from simulia_multipactor_lib.particle_monitor.studies import plot_emission_energies, plot_collision_energies, plot_collision_angles
-from simulia_multipactor_lib.particle_monitor.studies import plot_collision_energies
-from simulia_multipactor_lib.visualization.plot_3d import plot_structure_and_some_trajectories
+from simultipac.particle_monitor.particle_monitor import ParticleMonitor
+from simultipac.particle_monitor.studies import plot_emission_energies, plot_collision_energies, plot_collision_angles
+from simultipac.particle_monitor.studies import plot_collision_energies
+from simultipac.visualization.plot_3d import plot_structure_and_some_trajectories
 
 # To output interactive 3d in .html (needs k3d library):
 vedo.settings.default_backend= 'k3d'

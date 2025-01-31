@@ -22,10 +22,10 @@ I dropped it as with too much unkowns, any model can fit anything.
 import warnings
 
 import numpy as np
-from scipy.optimize import curve_fit, OptimizeWarning
 from scipy.ndimage import uniform_filter1d
+from scipy.optimize import OptimizeWarning, curve_fit
 
-from simulia_multipactor_lib.helper.helper import printc
+from simultipac.helper.helper import printc
 
 warnings.simplefilter("error", OptimizeWarning)
 
@@ -33,36 +33,40 @@ warnings.simplefilter("error", OptimizeWarning)
 # =============================================================================
 # Called by user
 # =============================================================================
-def fit_all(str_model: str,
-            data: dict,
-            map_id: dict,
-            key_part: str,
-            period: float,
-            fitting_range: float, running_mean: bool = True):
+def fit_all(
+    str_model: str,
+    data: dict,
+    map_id: dict,
+    key_part: str,
+    period: float,
+    fitting_range: float,
+    running_mean: bool = True,
+):
     """Perform the exponential growth fit over all set of parameters."""
     for key, val in data.items():
-        modelled, fit_parameters = _fit_single(str_model,
-                                               val[key_part],
-                                               period,
-                                               fitting_range)
+        modelled, fit_parameters = _fit_single(
+            str_model, val[key_part], period, fitting_range
+        )
 
         val[f"{key_part} (model)"] = modelled
         if fit_parameters is None:
             print(f"Skipped {map_id[key]}")
-            val['alfa (model)'] = np.NaN
+            val["alfa (model)"] = np.nan
             continue
 
         # Keep only what really interests us
         val["alfa (model)"] = fit_parameters[1]
 
 
-def fit_all_spark(str_model: str,
-                  complete_population_evolutions: dict,
-                  key_eacc: str,
-                  key_part: str,
-                  fitting_range: float,
-                  period: float,
-                  running_mean: bool = True):
+def fit_all_spark(
+    str_model: str,
+    complete_population_evolutions: dict,
+    key_eacc: str,
+    key_part: str,
+    fitting_range: float,
+    period: float,
+    running_mean: bool = True,
+):
     """Perform the exponential growth fit over all set of parameters."""
     for population_evolution in complete_population_evolutions.values():
         modelled, fit_parameters = _fit_single_spark(
@@ -70,12 +74,13 @@ def fit_all_spark(str_model: str,
             population_evolution[key_part],
             fitting_range,
             period,
-            e_acc=population_evolution[key_eacc])
+            e_acc=population_evolution[key_eacc],
+        )
 
         population_evolution[f"{key_part} (model)"] = modelled
         if fit_parameters is None:
             print(f"Skipped {population_evolution[key_eacc]}")
-            population_evolution['alfa (model)'] = np.NaN
+            population_evolution["alfa (model)"] = np.nan
             continue
 
         # Keep only what really interests us
@@ -94,9 +99,8 @@ def _select_model(str_model: str):
     model_printer = _model_1_printer
     n_args = 2
     #          N_0    alfa
-    bounds = ([1e-10, -10.],
-              [np.inf, 10.])
-    initial_values = [None, -9.]
+    bounds = ([1e-10, -10.0], [np.inf, 10.0])
+    initial_values = [None, -9.0]
 
     return model, model_log, model_printer, n_args, bounds, initial_values
 
@@ -121,14 +125,15 @@ def _model_1_printer(*args):
 # =============================================================================
 # Actual fit function
 # =============================================================================
-def _fit_single(str_model: str,
-                data: np.array,
-                period: float,
-                fitting_range: float,
-                running_mean: bool = True,
-                print_fit_parameters: bool = False,
-                skip_obvious: bool = True,
-                ) -> tuple[np.ndarray, tuple[float, ...] | None]:
+def _fit_single(
+    str_model: str,
+    data: np.array,
+    period: float,
+    fitting_range: float,
+    running_mean: bool = True,
+    print_fit_parameters: bool = False,
+    skip_obvious: bool = True,
+) -> tuple[np.ndarray, tuple[float, ...] | None]:
     """
     Perform the exponential growth fitting on a single parameter.
 
@@ -158,7 +163,7 @@ def _fit_single(str_model: str,
     -------
     modelled : np.ndarray
         Holds time in first column, modelled number of electrons in second. It
-        has the same shape as ``data``, but number of particles is full of NaN
+        has the same shape as ``data``, but number of particles is full of nan
         before the start of the fit.
     fit_parameters : tuple[float, ...] | None
         First elements of the tuple are the fitting constants. Last element is
@@ -166,32 +171,43 @@ def _fit_single(str_model: str,
         instead.
 
     """
-    model, model_log, model_printer, n_args, bounds, initial_values \
-        = _select_model(str_model)
+    model, model_log, model_printer, n_args, bounds, initial_values = (
+        _select_model(str_model)
+    )
 
-    modelled = np.full(data.shape, np.NaN)
+    modelled = np.full(data.shape, np.nan)
     modelled[:, 0] = data[:, 0]
 
-    if skip_obvious and data[-1, 1] < 10.:
+    if skip_obvious and data[-1, 1] < 10.0:
         return modelled, None
 
     idx_end = np.where(data[:, 1])[0][-1]
     t_start = data[idx_end, 0] - fitting_range
-    if t_start < 0.:
-        printc("exp_growth._fit_single warning:", "fitting range larger",
-               "than simulation time!")
+    if t_start < 0.0:
+        printc(
+            "exp_growth._fit_single warning:",
+            "fitting range larger",
+            "than simulation time!",
+        )
     idx_start = np.argmin(np.abs(data[:, 0] - t_start))
-    data_to_fit = np.column_stack((data[idx_start:idx_end + 1, 0],
-                                   np.log(data[idx_start:idx_end + 1, 1])))
+    data_to_fit = np.column_stack(
+        (
+            data[idx_start : idx_end + 1, 0],
+            np.log(data[idx_start : idx_end + 1, 1]),
+        )
+    )
 
     # i_remove = None
     if running_mean:
         # We get the number of points spanning over one period
         i_width = np.argmin(np.abs(data[:, 0] - period))
         if i_width < 5:
-            printc("exp_growth._fit_single warning:", "i_width is too small.",
-                   "Check that period and data[:, 0] have same units.",
-                   "Consider reducing the fitting range.")
+            printc(
+                "exp_growth._fit_single warning:",
+                "i_width is too small.",
+                "Check that period and data[:, 0] have same units.",
+                "Consider reducing the fitting range.",
+            )
 
         # https://stackoverflow.com/a/43200476/12188681
         # run = uniform_filter1d(np.log(data[:, 1]), size=i_width,
@@ -201,35 +217,43 @@ def _fit_single(str_model: str,
         # data_to_fit = np.column_stack((data[:, 0], run))
         # # data_to_fit = data_to_fit[idx_start:i_remove]
         # data_to_fit = data_to_fit[idx_start:idx_end + 1]\
-        data_to_fit[:, 1] = uniform_filter1d(data_to_fit[:, 1],
-                                             size=i_width,
-                                             mode='nearest')
+        data_to_fit[:, 1] = uniform_filter1d(
+            data_to_fit[:, 1], size=i_width, mode="nearest"
+        )
 
     try:
         initial_values[0] = data_to_fit[0, 0]
         if initial_values[0] < bounds[0][0]:
             initial_values[0] = bounds[0][0]
-        result = curve_fit(model_log, data_to_fit[:, 0], data_to_fit[:, 1],
-                           p0=initial_values, bounds=bounds, maxfev=5000)[0]
+        result = curve_fit(
+            model_log,
+            data_to_fit[:, 0],
+            data_to_fit[:, 1],
+            p0=initial_values,
+            bounds=bounds,
+            maxfev=5000,
+        )[0]
 
     except OptimizeWarning:
-        result = np.full((n_args), np.NaN)
+        result = np.full((n_args), np.nan)
 
     # Fit parameters
     if print_fit_parameters:
         model_printer(*result)
 
-    modelled[idx_start:idx_end + 1, 1] = model(data_to_fit[:, 0], *result)
+    modelled[idx_start : idx_end + 1, 1] = model(data_to_fit[:, 0], *result)
 
     return modelled, (*result, t_start)
 
 
-def _fit_single_spark(str_model: str,
-                      population_evolution: np.ndarray,
-                      fitting_range: float,
-                      period: float,
-                      print_fit_parameters: bool = False,
-                      e_acc: float | None = None):
+def _fit_single_spark(
+    str_model: str,
+    population_evolution: np.ndarray,
+    fitting_range: float,
+    period: float,
+    print_fit_parameters: bool = False,
+    e_acc: float | None = None,
+):
     """
     Perform the exponential growth fitting on a single parameter.
 
@@ -257,65 +281,74 @@ def _fit_single_spark(str_model: str,
         fit starts. If no MP, fit_parameters is None.
 
     """
-    model, model_log, model_printer, n_args, bounds, initial_values \
-        = _select_model(str_model)
+    model, model_log, model_printer, n_args, bounds, initial_values = (
+        _select_model(str_model)
+    )
 
-    modelled = np.full(population_evolution.shape, np.NaN)
+    modelled = np.full(population_evolution.shape, np.nan)
     modelled[:, 0] = population_evolution[:, 0]
 
     # Ignore population = 0:
     # t_end = population_evolution[-1, 0]
     # if population_evolution[-1, 1]
     # if population_evolution[-1, 1] < 1.:
-        # return modelled, None
+    # return modelled, None
 
     idx_end = np.where(population_evolution[:, 1])[0][-1]
 
     # For SWELL baked
     if True:
         # we want to avoid fitting on the end of the decay
-        idx_end = min(idx_end,
-                      np.argmin(np.abs(population_evolution[:, 1] - 10.))
-                      )
+        idx_end = min(
+            idx_end, np.argmin(np.abs(population_evolution[:, 1] - 10.0))
+        )
         print(idx_end, e_acc)
 
     t_start = population_evolution[idx_end, 0] - fitting_range
 
-    t_lim = 5. * period
+    t_lim = 5.0 * period
     if t_start < t_lim:
-        printc("exp_growth._fit_single_spark warning:", f"E_acc={e_acc:.2e} ",
-               "fitting range too large w.r.t simulation time! I set it to a",
-               f"higher value {t_lim:2f}ns.")
+        printc(
+            "exp_growth._fit_single_spark warning:",
+            f"E_acc={e_acc:.2e} ",
+            "fitting range too large w.r.t simulation time! I set it to a",
+            f"higher value {t_lim:2f}ns.",
+        )
         t_start = t_lim
 
     idx_start = np.argmin(np.abs(population_evolution[:, 0] - t_start))
-    population_evolution_to_fit = np.column_stack((
-        population_evolution[idx_start:idx_end + 1, 0],
-        np.log(population_evolution[idx_start:idx_end + 1, 1])
-    ))
+    population_evolution_to_fit = np.column_stack(
+        (
+            population_evolution[idx_start : idx_end + 1, 0],
+            np.log(population_evolution[idx_start : idx_end + 1, 1]),
+        )
+    )
 
     try:
         initial_values[0] = population_evolution_to_fit[0, 0]
         if initial_values[0] < bounds[0][0]:
             initial_values[0] = bounds[0][0]
         # initial_values = [None, None]
-        result = curve_fit(model_log,
-                           population_evolution_to_fit[:, 0],
-                           population_evolution_to_fit[:, 1],
-                           p0=initial_values,
-                           bounds=bounds, maxfev=5000)[0]
+        result = curve_fit(
+            model_log,
+            population_evolution_to_fit[:, 0],
+            population_evolution_to_fit[:, 1],
+            p0=initial_values,
+            bounds=bounds,
+            maxfev=5000,
+        )[0]
 
     except OptimizeWarning:
-        result = np.full((n_args), np.NaN)
+        result = np.full((n_args), np.nan)
     except IndexError:
-        result = np.full((n_args), np.NaN)
+        result = np.full((n_args), np.nan)
 
     # Fit parameters
     if print_fit_parameters:
         model_printer(*result)
 
-    modelled[idx_start:idx_end + 1, 1] = model(
-        population_evolution_to_fit[:, 0],
-        *result)
+    modelled[idx_start : idx_end + 1, 1] = model(
+        population_evolution_to_fit[:, 0], *result
+    )
 
     return modelled, (*result, t_start)

@@ -9,16 +9,16 @@ dictionary are the particle id of the :class:`Particle`.
     Raise error when folder is not found.
 
 """
-from collections.abc import Generator
 import os
+from collections.abc import Generator
 from pathlib import Path
 from typing import overload
 
 import numpy as np
 import vedo
 
-from simulia_multipactor_lib.loaders.loader_cst import particle_monitor
-from simulia_multipactor_lib.particle_monitor.particle import Particle
+from simultipac.loaders.loader_cst import particle_monitor
+from simultipac.particle_monitor.particle import Particle
 
 
 class ParticleMonitor(dict):
@@ -32,9 +32,7 @@ class ParticleMonitor(dict):
 
     """
 
-    def __init__(self,
-                 folder: Path,
-                 delimiter: str | None = None) -> None:
+    def __init__(self, folder: Path, delimiter: str | None = None) -> None:
         """Create the object, ordered list of filepaths beeing provided.
 
         Parameters
@@ -95,8 +93,9 @@ class ParticleMonitor(dict):
         out += f"\n\tThere was {n_collisions} collisions."
         return out
 
-    def emission_energies(self, source_id: int | None = None,
-                          to_numpy: bool = True) -> list[float]:
+    def emission_energies(
+        self, source_id: int | None = None, to_numpy: bool = True
+    ) -> list[float]:
         """Get emission energies of all or only a subset of particles."""
         subset = self
         if source_id is not None:
@@ -106,9 +105,13 @@ class ParticleMonitor(dict):
             return np.array(out)
         return out
 
-    def collision_energies(self, source_id: int | None = None,
-                           to_numpy: bool = True, extrapolation: bool = True,
-                           remove_alive_at_end: bool = True) -> None:
+    def collision_energies(
+        self,
+        source_id: int | None = None,
+        to_numpy: bool = True,
+        extrapolation: bool = True,
+        remove_alive_at_end: bool = True,
+    ) -> None:
         """
         Get all collision energies in eV.
 
@@ -135,31 +138,34 @@ class ParticleMonitor(dict):
         if remove_alive_at_end:
             subset = _filter_out_alive_at_end(subset)
 
-        out = [part.collision_energy(extrapolation)
-               for part in subset.values()]
+        out = [
+            part.collision_energy(extrapolation) for part in subset.values()
+        ]
         if to_numpy:
             return np.array(out)
         return out
 
     @overload
-    def last_known_position(self,
-                            source_id: int | None = None,
-                            to_numpy: bool = True,
-                            remove_alive_at_end: bool = True
-                            ) -> np.ndarray[np.float64]: ...
+    def last_known_position(
+        self,
+        source_id: int | None = None,
+        to_numpy: bool = True,
+        remove_alive_at_end: bool = True,
+    ) -> np.ndarray[np.float64]: ...
 
     @overload
-    def last_known_position(self,
-                            source_id: int | None = None,
-                            to_numpy: bool = True,
-                            remove_alive_at_end: bool = False
-                            ) -> list[np.ndarray[np.float64]]: ...
+    def last_known_position(
+        self,
+        source_id: int | None = None,
+        to_numpy: bool = True,
+        remove_alive_at_end: bool = False,
+    ) -> list[np.ndarray[np.float64]]: ...
 
     def last_known_position(
-            self,
-            source_id: int | None = None,
-            to_numpy: bool = True,
-            remove_alive_at_end: bool = True
+        self,
+        source_id: int | None = None,
+        to_numpy: bool = True,
+        remove_alive_at_end: bool = True,
     ) -> list[np.ndarray[np.float64]] | np.ndarray[np.float64]:
         """
         Get the last recorded position of every particle.
@@ -194,27 +200,29 @@ class ParticleMonitor(dict):
         return out
 
     @overload
-    def last_known_direction(self,
-                             source_id: int | None = None,
-                             to_numpy: bool = True,
-                             normalize: bool = True,
-                             remove_alive_at_end: bool = True
-                             ) -> np.ndarray[np.float64]: ...
+    def last_known_direction(
+        self,
+        source_id: int | None = None,
+        to_numpy: bool = True,
+        normalize: bool = True,
+        remove_alive_at_end: bool = True,
+    ) -> np.ndarray[np.float64]: ...
 
     @overload
-    def last_known_direction(self,
-                             source_id: int | None = None,
-                             to_numpy: bool = False,
-                             normalize: bool = True,
-                             remove_alive_at_end: bool = True
-                             ) -> list[np.ndarray[np.float64]]: ...
+    def last_known_direction(
+        self,
+        source_id: int | None = None,
+        to_numpy: bool = False,
+        normalize: bool = True,
+        remove_alive_at_end: bool = True,
+    ) -> list[np.ndarray[np.float64]]: ...
 
     def last_known_direction(
-            self,
-            source_id: int | None = None,
-            to_numpy: bool = True,
-            normalize: bool = True,
-            remove_alive_at_end: bool = True
+        self,
+        source_id: int | None = None,
+        to_numpy: bool = True,
+        normalize: bool = True,
+        remove_alive_at_end: bool = True,
     ) -> list[np.ndarray[np.float64]] | np.ndarray[np.float64]:
         """
         Get the last recorded direction of every particle.
@@ -272,42 +280,51 @@ def _absolute_file_paths(directory: Path) -> Generator[Path, Path, None]:
         for dirpath, _, filenames in os.walk(directory):
             for f in filenames:
                 f = Path(f)
-                if f.suffix in ('.swp', ):
+                if f.suffix in (".swp",):
                     continue
                 yield Path(dirpath, f)
 
 
-def _filter_source_id(input_dict: dict[int, Particle],
-                      wanted_id: int,
-                      ) -> dict[int, Particle]:
+def _filter_source_id(
+    input_dict: dict[int, Particle],
+    wanted_id: int,
+) -> dict[int, Particle]:
     """Filter Particles against the sourceID field."""
-    return {pid: part for pid, part in input_dict.items()
-            if part.source_id == wanted_id}
+    return {
+        pid: part
+        for pid, part in input_dict.items()
+        if part.source_id == wanted_id
+    }
 
 
-def _filter_out_dead_at_end(input_dict: dict[int, Particle]
-                            ) -> dict[int, Particle]:
+def _filter_out_dead_at_end(
+    input_dict: dict[int, Particle]
+) -> dict[int, Particle]:
     """Filter out Particles that collisioned during simulation."""
-    particles_alive_at_end = {pid: part for pid, part in input_dict.items()
-                              if part.alive_at_end}
+    particles_alive_at_end = {
+        pid: part for pid, part in input_dict.items() if part.alive_at_end
+    }
     return particles_alive_at_end
 
 
-def _filter_out_alive_at_end(input_dict: dict[int, Particle],
-                             ) -> dict[int, Particle]:
+def _filter_out_alive_at_end(
+    input_dict: dict[int, Particle],
+) -> dict[int, Particle]:
     """Filter out Particles that were alive at the end of simulation."""
     particles_that_collisioned_during_simulation = {
-        pid: part for pid, part in input_dict.items()
-        if not part.alive_at_end}
+        pid: part for pid, part in input_dict.items() if not part.alive_at_end
+    }
     return particles_that_collisioned_during_simulation
 
 
-def _filter_out_part_with_one_time_step(input_dict: dict[int, Particle]
-                                        ) -> dict[int, Particle]:
+def _filter_out_part_with_one_time_step(
+    input_dict: dict[int, Particle]
+) -> dict[int, Particle]:
     """Remove particle with only one known position.
 
     This is useful when the time resolution is low.
 
     """
-    return {pid: part for pid, part in input_dict.items()
-            if len(part.time) > 1}
+    return {
+        pid: part for pid, part in input_dict.items() if len(part.time) > 1
+    }

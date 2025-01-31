@@ -27,15 +27,14 @@ from typing import Any
 
 import numpy as np
 
-from simulia_multipactor_lib.helper.helper import printc
+from simultipac.helper.helper import printc
 
 
 # =============================================================================
 # Actual loaders
 # =============================================================================
 def get_parameter_sweep_auto_export(
-        folderpath: Path,
-        delimiter: str = '\t'
+    folderpath: Path, delimiter: str = "\t"
 ) -> dict[int, dict[str, float | np.ndarray | dict[str, float | str]]]:
     r"""
     Get parameter sweep data from a CST automatic Post-Processing ASCII export.
@@ -67,15 +66,16 @@ def get_parameter_sweep_auto_export(
     """
     data = {}
     folders = list(folderpath.iterdir())
-    keys = [str(folder).split('-')[-1] for folder in folders]
+    keys = [str(folder).split("-")[-1] for folder in folders]
 
     for folder, key in zip(folders, keys):
         data[int(key)] = _get_single_parameter_auto_export(folder, delimiter)
     return data
 
 
-def _get_single_parameter_auto_export(folderpath: Path,
-                                      delimiter: str) -> dict[str, Any]:
+def _get_single_parameter_auto_export(
+    folderpath: Path, delimiter: str
+) -> dict[str, Any]:
     """
     Load all the data stored into a single ``mmdd-xxxxxxx`` folder.
 
@@ -98,7 +98,7 @@ def _get_single_parameter_auto_export(folderpath: Path,
     # Recursively load every file
     for root, _, files in os.walk(folderpath):
         # Skip 3d data
-        if os.path.split(root)[-1] == '3d':
+        if os.path.split(root)[-1] == "3d":
             continue
 
         for file in files:
@@ -106,10 +106,10 @@ def _get_single_parameter_auto_export(folderpath: Path,
             file = full_path.stem
 
             # Skip hidden files
-            if file[0] == '.':
+            if file[0] == ".":
                 continue
 
-            if file == 'Parameters':
+            if file == "Parameters":
                 dic[file] = _parameters_file_to_dict(full_path)
                 continue
             data = np.loadtxt(full_path, delimiter=delimiter)
@@ -145,9 +145,9 @@ def _parameters_file_to_dict(filepath: Path) -> dict[str, float | str]:
 
     """
     parameters = {}
-    with open(filepath, 'r') as file:
+    with open(filepath, "r") as file:
         for line in file:
-            line = line.split('=')
+            line = line.split("=")
             parameters[line[0]] = line[1].strip()
 
     # Convert strings into float if possible
@@ -163,9 +163,9 @@ def _parameters_file_to_dict(filepath: Path) -> dict[str, float | str]:
 # =============================================================================
 # Link a simulation with a set of parameters
 # =============================================================================
-def full_map_param_to_id(data: dict, *parameters: str
-                         ) -> tuple[dict[int, list[float]],
-                                    dict[str, list[float]]]:
+def full_map_param_to_id(
+    data: dict, *parameters: str
+) -> tuple[dict[int, list[float]], dict[str, list[float]]]:
     """
     Link simulation ID to parameters values, get unique parameters values.
 
@@ -191,13 +191,16 @@ def full_map_param_to_id(data: dict, *parameters: str
     """
     map_id = _map_param_to_id(data, *parameters, sort=True)
 
-    uniques = {arg: list(dict.fromkeys([val[i] for val in map_id.values()]))
-               for i, arg in enumerate(parameters)}
+    uniques = {
+        arg: list(dict.fromkeys([val[i] for val in map_id.values()]))
+        for i, arg in enumerate(parameters)
+    }
     return map_id, uniques
 
 
-def _map_param_to_id(data: dict, *parameters: str, sort: bool = False
-                     ) -> dict[int, list[float]]:
+def _map_param_to_id(
+    data: dict, *parameters: str, sort: bool = False
+) -> dict[int, list[float]]:
     """
     Associate ids (data key entries) to specific parameter values.
 
@@ -224,7 +227,7 @@ def _map_param_to_id(data: dict, *parameters: str, sort: bool = False
     for _id in data.keys():
         params = []
         for param in parameters:
-            val = data[_id]['Parameters'][param]
+            val = data[_id]["Parameters"][param]
             if isinstance(val, str):
                 val = ast.literal_eval(val)
             params.append(val)
@@ -233,13 +236,15 @@ def _map_param_to_id(data: dict, *parameters: str, sort: bool = False
     # If necessary, sort by increasing value on each parameter
     # https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
     if sort:
-        map_id = {k: v for k, v in
-                  sorted(map_id.items(),
-                         key=lambda item: tuple(
-                             [item[1][i]
-                              for i, _ in enumerate(parameters)])
-                         )
-                  }
+        map_id = {
+            k: v
+            for k, v in sorted(
+                map_id.items(),
+                key=lambda item: tuple(
+                    [item[1][i] for i, _ in enumerate(parameters)]
+                ),
+            )
+        }
     return map_id
 
 
@@ -273,12 +278,14 @@ def get_id(map_id: dict[int, list[float]], *parameters_vals: float) -> int:
 # =============================================================================
 # Actual values getter
 # =============================================================================
-def get_values(data: dict[int, dict[str, Any]],
-               key_data: str,
-               *parameters: str,
-               to_numpy: bool = True,
-               warn_missing: bool = False,
-               ins_param: bool = False) -> np.ndarray:
+def get_values(
+    data: dict[int, dict[str, Any]],
+    key_data: str,
+    *parameters: str,
+    to_numpy: bool = True,
+    warn_missing: bool = False,
+    ins_param: bool = False,
+) -> np.ndarray:
     """
     Return a n-dim numpy array containing data sorted by parameters.
 
@@ -317,19 +324,22 @@ def get_values(data: dict[int, dict[str, Any]],
     """
     map_id, uniques = full_map_param_to_id(data, *parameters)
     parameters_unique_values = [vals for vals in uniques.values()]
-    combinations_of_param_vals = [p
-                                  for p in it.product(
-                                      *parameters_unique_values)]
+    combinations_of_param_vals = [
+        p for p in it.product(*parameters_unique_values)
+    ]
 
-    out = [np.NaN for i in range(len(combinations_of_param_vals))]
+    out = [np.nan for i in range(len(combinations_of_param_vals))]
 
     for i, __c in enumerate(combinations_of_param_vals):
         _id = get_id(map_id, *__c)
 
         if _id == -1:
             if warn_missing:
-                printc("loader_cst.get_values warning", "no value found for",
-                       f"the parameters {__c}.")
+                printc(
+                    "loader_cst.get_values warning",
+                    "no value found for",
+                    f"the parameters {__c}.",
+                )
             continue
 
         out[i] = data[_id][key_data]
@@ -346,9 +356,10 @@ def get_values(data: dict[int, dict[str, Any]],
     return out
 
 
-def _insert_parameters_values(out: np.ndarray,
-                              parameters_unique_values: list[list[float]],
-                              ) -> np.ndarray:
+def _insert_parameters_values(
+    out: np.ndarray,
+    parameters_unique_values: list[list[float]],
+) -> np.ndarray:
     """
     Insert the values of the parameters in first row of every dimension.
 
@@ -379,43 +390,47 @@ def _insert_parameters_values(out: np.ndarray,
     n_parameters = len(parameters_unique_values)
     shape = out.shape
     if n_parameters == 1:
-        new_out = np.full((shape[0] + 1, 2), np.NaN, dtype=object)
+        new_out = np.full((shape[0] + 1, 2), np.nan, dtype=object)
         new_out[1:, 0] = parameters_unique_values[0]
         new_out[1:, 1] = out
         return new_out
 
     if n_parameters == 2:
-        new_out = np.full([x + 1 for x in shape], np.NaN, dtype=object)
+        new_out = np.full([x + 1 for x in shape], np.nan, dtype=object)
         new_out[1:, 0] = parameters_unique_values[0]
         new_out[0, 1:] = parameters_unique_values[1]
         new_out[1:, 1:] = out
         return new_out
 
     if n_parameters == 3:
-        new_out = np.full([x + 1 for x in shape], np.NaN, dtype=object)
+        new_out = np.full([x + 1 for x in shape], np.nan, dtype=object)
         new_out[1:, 0, 0] = parameters_unique_values[0]
         new_out[0, 1:, 0] = parameters_unique_values[1]
         new_out[0, 0, 1:] = parameters_unique_values[2]
         new_out[1:, 1:, 1:] = out
         return new_out
 
-    raise NotImplementedError("Too much parameters.",
-                              "Parameter value insertion not implemented for "
-                              " more than three parameters.")
+    raise NotImplementedError(
+        "Too much parameters.",
+        "Parameter value insertion not implemented for "
+        " more than three parameters.",
+    )
 
 
 # =============================================================================
 # More specific loaders
 # =============================================================================
-def particle_monitor(filepath: Path,
-                     delimiter: str | None = None
-                     ) -> tuple[tuple[float | int]]:
+def particle_monitor(
+    filepath: Path, delimiter: str | None = None
+) -> tuple[tuple[float | int]]:
     """Load a single Particle Monitor file."""
     n_header = 6
 
-    with open(filepath, 'r', encoding='utf-8') as file:
-        particles_info = tuple(tuple(line.split(delimiter))
-                               for i, line in enumerate(file)
-                               if i > n_header)
+    with open(filepath, "r", encoding="utf-8") as file:
+        particles_info = tuple(
+            tuple(line.split(delimiter))
+            for i, line in enumerate(file)
+            if i > n_header
+        )
 
     return particles_info

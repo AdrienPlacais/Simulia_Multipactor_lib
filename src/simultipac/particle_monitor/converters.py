@@ -3,7 +3,7 @@
 """Define the functions to convert momentum and speeds."""
 import numpy as np
 
-from simulia_multipactor_lib.constants import clight, clight_in_mm_per_ns
+from simultipac.constants import clight, clight_in_mm_per_ns
 
 
 def adim_momentum_to_speed_m_per_s(mom: np.ndarray) -> np.ndarray:
@@ -40,4 +40,4 @@ def adim_momentum_to_eV(mom: np.ndarray, mass_eV: float) -> np.ndarray:
     """Convert adim momentum to energy in eV."""
     if len(mom.shape) == 1:
         mom = np.expand_dims(mom, 0)
-    return 0.5 * np.linalg.norm(mom)**2 * mass_eV
+    return 0.5 * np.linalg.norm(mom) ** 2 * mass_eV

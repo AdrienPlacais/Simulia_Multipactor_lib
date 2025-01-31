@@ -1,0 +1,79 @@
+[project]
+authors = [{ name = "Adrien Plaçais", email = "placais@lpsc.in2p3.fr" }]
+classifiers = [
+   "Development Status :: 3 - Alpha",
+   "Intended Audience :: Science/Research",
+   "License :: OSI Approved :: MIT License",
+   "Operating System :: OS Independent",
+   "Programming Language :: Python :: 3.12",
+   "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+   "matplotlib>=3.9.1, <4",
+   "numpy>=2, <3",
+   "pandas>=2.2, <3",
+   "palettable>=3.3.3, <4",
+   "pre-commit>=4, <5",
+   "scipy>=1.15,<2",
+   "vedo>=2025.5,<2026",
+]
+description = "Treat data from CST Particle Studio and SPARK3D for multipactor"
+dynamic = ["version"]
+name = "Simultipac"
+readme = "README.md"
+requires-python = ">=3.12"
+
+[project.optional-dependencies]
+docs = [
+   "myst-parser>=4, <5",
+   "nbsphinx>=0.9.6, <1",
+   "sphinx-autodoc-typehints>=3.0.1, <4",
+   "sphinx-rtd-theme>=3, <4",
+   "sphinx-tabs>=3.4,<4",
+   "sphinxcontrib-bibtex>=2.6,<3",
+]
+test = ["pytest>=8.3.2, <9"]
+
+[project.urls]
+changelog = "https://github.com/AdrienPlacais/Simulia_Multipactor_lib/blob/main/CHANGELOG.md"
+documentation = "https://simultipac.readthedocs.io/en/latest/"
+homepage = "https://github.com/AdrienPlacais/Simulia_Multipactor_lib"
+tracker = "https://github.com/AdrienPlacais/Simulia_Multipactor_lib/issues"
+
+[tool.black]
+line-length = 79
+target-version = ["py312"]
+
+[tool.isort]
+line_length = 79
+profile = "black"
+src_paths = ["./src"]
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib", "--strict-markers"]
+filterwarnings = ["ignore:.*cKDTree.*:DeprecationWarning"]
+markers = [
+   "implementation: mark tests currently under implementation",
+   "slow: mark a test as slow (deselect with '-m \"not slow\"')",
+   "smoke: mark quick and critical tests (select with '-m smoke')",
+   "tmp: mark to select specific tests for debug",
+]
+minversion = "6.0"
+testpaths = ["tests"]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
+
+[tool.cibuildwheel]
+build-verbosity = 1
+test-command = 'pytest {project}/tests -m "not implementation and not tracewin and not slow"'
+test-extras = "test"
+
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=64", "setuptools-scm>=8, <9"]

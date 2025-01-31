@@ -6,9 +6,11 @@ import math
 import numpy as np
 import vedo
 
-from simulia_multipactor_lib.constants import clight, qelem
-from simulia_multipactor_lib.particle_monitor.converters import (
-    adim_momentum_to_eV, adim_momentum_to_speed_mm_per_ns)
+from simultipac.constants import clight, qelem
+from simultipac.particle_monitor.converters import (
+    adim_momentum_to_eV,
+    adim_momentum_to_speed_mm_per_ns,
+)
 
 
 class Particle:  # pylint: disable=too-many-instance-attributes
@@ -97,7 +99,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.alive_at_end = False
         self.collision_cell_id: np.ndarray = np.array([], dtype=np.float64)
         self.collision_point: np.ndarray = np.array([], dtype=np.uint32)
-        self.collision_angle: float = np.NaN
+        self.collision_angle: float = np.nan
 
     def add_a_file(self, *line: str) -> None:
         """Add a time-step/a file to the current Particle."""
@@ -152,8 +154,8 @@ class Particle:  # pylint: disable=too-many-instance-attributes
             nanoseconds.
 
         """
-        self.pos *= 1e3     # mm
-        self.time *= 1e18   # ns
+        self.pos *= 1e3  # mm
+        self.time *= 1e18  # ns
         # I do not know why, but time is in s * 1e-18 (aka nanonanoseconds)
 
     def _sort_by_increasing_time_values(self) -> None:
@@ -170,8 +172,10 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         """Compute emission energy in eV."""
         return adim_momentum_to_eV(self.mom[0], self.mass_eV)
 
-    def collision_energy(self, extrapolation: bool = True,
-                         ) -> float | None:
+    def collision_energy(
+        self,
+        extrapolation: bool = True,
+    ) -> float | None:
         """
         Determine the impact energy in eV.
 
@@ -192,8 +196,10 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
         """
         if extrapolation:
-            raise NotImplementedError("TODO: extrapolation of on last time "
-                                      " steps for better precision.")
+            raise NotImplementedError(
+                "TODO: extrapolation of on last time "
+                " steps for better precision."
+            )
         return adim_momentum_to_eV(self.mom[-1], self.mass_eV)
 
     def extrapolate_pos_and_mom_one_time_step_further(self) -> None:
@@ -214,9 +220,9 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         n_extrapolated_points = 2
         n_extrapolated_time_steps = 10
 
-        self.extrapolated_times = np.full(n_extrapolated_points, np.NaN)
-        self.extrapolated_pos = np.full((n_extrapolated_points, 3), np.NaN)
-        self.extrapolated_mom = np.full((n_extrapolated_points, 3), np.NaN)
+        self.extrapolated_times = np.full(n_extrapolated_points, np.nan)
+        self.extrapolated_pos = np.full((n_extrapolated_points, 3), np.nan)
+        self.extrapolated_mom = np.full((n_extrapolated_points, 3), np.nan)
 
         if self.time.shape[0] <= 1:
             return
@@ -224,44 +230,47 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         fit_end = self.time[-1]
         time_step = self.time[-1] - self.time[-2]
         extrapolated_time_end = fit_end + n_extrapolated_time_steps * time_step
-        self.extrapolated_times = np.linspace(fit_end,
-                                              extrapolated_time_end,
-                                              n_extrapolated_points)
+        self.extrapolated_times = np.linspace(
+            fit_end, extrapolated_time_end, n_extrapolated_points
+        )
 
         self.extrapolated_pos = _extrapolate_position(
-            self.pos[-1], self.mom[-1], self.extrapolated_times - fit_end)
+            self.pos[-1], self.mom[-1], self.extrapolated_times - fit_end
+        )
 
         n_time_steps_for_polynom_fitting = 3
         poly_fit_deg = 2
 
         if poly_fit_deg >= n_time_steps_for_polynom_fitting:
-            raise IOError(f"You need at least {poly_fit_deg + 1} momentum and "
-                          "time step(s) to extrapolate momentum with a degree "
-                          f"{poly_fit_deg} polynom.")
+            raise IOError(
+                f"You need at least {poly_fit_deg + 1} momentum and "
+                "time step(s) to extrapolate momentum with a degree "
+                f"{poly_fit_deg} polynom."
+            )
 
         if n_time_steps_for_polynom_fitting > self.time.shape[0]:
             return
 
         known_time = self.time[-n_time_steps_for_polynom_fitting:]
         known_mom = self.mom[-n_time_steps_for_polynom_fitting:, :]
-        self.extrapolated_mom = _extrapolate_momentum(known_time,
-                                                      known_mom,
-                                                      self.extrapolated_times,
-                                                      poly_fit_deg)
+        self.extrapolated_mom = _extrapolate_momentum(
+            known_time, known_mom, self.extrapolated_times, poly_fit_deg
+        )
 
-    def determine_if_alive_at_end(self,
-                                  max_time: float,
-                                  tol: float = 1e-6) -> None:
+    def determine_if_alive_at_end(
+        self, max_time: float, tol: float = 1e-6
+    ) -> None:
         """Determine if the particle collisioned before end of simulation."""
         if abs(max_time - self.time[-1]) < tol:
             self.alive_at_end = True
 
-    def find_collision(self,
-                       mesh: vedo.Mesh,
-                       warn_no_collision: bool = True,
-                       warn_multiple_collisions: bool = True,
-                       **kwargs
-                       ) -> None:
+    def find_collision(
+        self,
+        mesh: vedo.Mesh,
+        warn_no_collision: bool = True,
+        warn_multiple_collisions: bool = True,
+        **kwargs,
+    ) -> None:
         """Find where the trajectory impacts the structure.
 
         If the particle is alive at the end of the simulation, we do not even
@@ -305,10 +314,8 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         p_1 = self.extrapolated_pos[-1]
 
         collision_point, collision_cell = mesh.intersect_with_line(
-            p0=p_0,
-            p1=p_1,
-            return_ids=True,
-            tol=0)
+            p0=p_0, p1=p_1, return_ids=True, tol=0
+        )
 
         if collision_point.shape[0] == 0:
             if self.pos.shape[0] <= 2:
@@ -316,10 +323,8 @@ class Particle:  # pylint: disable=too-many-instance-attributes
             p_1 = p_0
             p_0 = self.pos[-2]
             collision_point, collision_cell = mesh.intersect_with_line(
-                p0=p_0,
-                p1=p_1,
-                return_ids=True,
-                tol=0)
+                p0=p_0, p1=p_1, return_ids=True, tol=0
+            )
 
         if warn_no_collision and collision_point.shape[0] == 0:
             print(f"No collision for particle {self.particle_id}.")
@@ -329,16 +334,19 @@ class Particle:  # pylint: disable=too-many-instance-attributes
             collision_point = collision_point[0, :]
             collision_cell = collision_cell[0, np.newaxis]
             if warn_multiple_collisions:
-                print("More than one collision for particle "
-                      f"{self.particle_id}. Only considering the first.")
+                print(
+                    "More than one collision for particle "
+                    f"{self.particle_id}. Only considering the first."
+                )
 
         self.collision_cell_id = collision_cell
         self.collision_point = collision_point
         return
 
-    def compute_collision_angle(self,
-                                mesh: vedo.Mesh,
-                                ) -> None:
+    def compute_collision_angle(
+        self,
+        mesh: vedo.Mesh,
+    ) -> None:
         """Compute the angle of impact."""
         if self.alive_at_end:
             return
@@ -355,15 +363,20 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
 def _str_to_correct_types(line: tuple[str]) -> tuple[float | int]:
     """Convert the input line of strings to proper data types."""
-    corrected = (float(line[0]), float(line[1]), float(line[2]),
-                 float(line[3]), float(line[4]), float(line[5]),
-                 float(line[6]),
-                 float(line[7]),
-                 float(line[8]),
-                 float(line[9]),
-                 int(line[10]),
-                 int(line[11])
-                 )
+    corrected = (
+        float(line[0]),
+        float(line[1]),
+        float(line[2]),
+        float(line[3]),
+        float(line[4]),
+        float(line[5]),
+        float(line[6]),
+        float(line[7]),
+        float(line[8]),
+        float(line[9]),
+        int(line[10]),
+        int(line[11]),
+    )
     return corrected
 
 
@@ -381,9 +394,9 @@ def _is_sorted(array: np.ndarray) -> bool:
     return (array == np.sort(array)).all()
 
 
-def _extrapolate_position(last_pos: np.ndarray,
-                          last_mom: np.ndarray,
-                          desired_time: np.ndarray) -> np.ndarray:
+def _extrapolate_position(
+    last_pos: np.ndarray, last_mom: np.ndarray, desired_time: np.ndarray
+) -> np.ndarray:
     """
     Extrapolate the position using the last known momentum.
 
@@ -416,9 +429,12 @@ def _extrapolate_position(last_pos: np.ndarray,
     return desired_pos
 
 
-def _extrapolate_momentum(known_time: np.ndarray, known_mom: np.ndarray,
-                          desired_time: np.ndarray, poly_fit_deg: int
-                          ) -> np.ndarray:
+def _extrapolate_momentum(
+    known_time: np.ndarray,
+    known_mom: np.ndarray,
+    desired_time: np.ndarray,
+    poly_fit_deg: int,
+) -> np.ndarray:
     """
     Extrapolate the momentum.
 
@@ -448,7 +464,8 @@ def _extrapolate_momentum(known_time: np.ndarray, known_mom: np.ndarray,
     for time in range(n_time_subdivisions):
         for axis in range(3):
             for deg in range(poly_fit_deg + 1):
-                desired_mom[time, axis] += polynom[deg, axis] \
-                    * desired_time[time]**deg
+                desired_mom[time, axis] += (
+                    polynom[deg, axis] * desired_time[time] ** deg
+                )
 
     return desired_mom

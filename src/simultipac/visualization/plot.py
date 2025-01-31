@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Store some generic helper functions for plotting."""
-import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
+import numpy as np
 from matplotlib.axes._axes import Axes
+from matplotlib.figure import Figure
 
-import simulia_multipactor_lib.loaders.loader_cst as lcst
+import simultipac.loaders.loader_cst as lcst
 
 
-def plot_dict_of_arrays(data: dict,
-                        map_id: dict,
-                        key_data: str,
-                        title: str | None = None,
-                        x_label: str | None = None,
-                        y_label: str | None = None,
-                        yscale: str | None = None,
-                        l_plot_kwargs: dict | list[dict] | None = None
-                        ) -> tuple[Figure, list[Axes]]:
+def plot_dict_of_arrays(
+    data: dict,
+    map_id: dict,
+    key_data: str,
+    title: str | None = None,
+    x_label: str | None = None,
+    y_label: str | None = None,
+    yscale: str | None = None,
+    l_plot_kwargs: dict | list[dict] | None = None,
+) -> tuple[Figure, list[Axes]]:
     """
     Plot 2D data for every set of parameters.
 
@@ -54,7 +55,7 @@ def plot_dict_of_arrays(data: dict,
     """
     fig, axx = create_fig_if_not_exists(1, sharex=True, num=1)
     if title is not None:
-        axx[0].set_title(title, {'fontsize': 10})
+        axx[0].set_title(title, {"fontsize": 10})
     if x_label is not None:
         axx[-1].set_xlabel(x_label)
 
@@ -74,32 +75,37 @@ def plot_dict_of_arrays(data: dict,
         l_plot_kwargs = [l_plot_kwargs for _id in map_id.keys()]
 
     for (_id, val), kwargs in zip(map_id.items(), l_plot_kwargs):
-        axx.plot(data[_id][key_data][:, 0], data[_id][key_data][:, 1],
-                 label=val, **kwargs)
+        axx.plot(
+            data[_id][key_data][:, 0],
+            data[_id][key_data][:, 1],
+            label=val,
+            **kwargs,
+        )
     axx.legend()
 
     return fig, axx
 
 
-def plot_dict_of_floats(data: dict,
-                        key_ydata: str,
-                        *args,
-                        title: str | None = None,
-                        x_label: str | None = None,
-                        y_label: str | None = None,
-                        yscale: str | None = None,
-                        save_data: bool = False,
-                        save_path: str | None = None
-                        ) -> tuple[Figure, list[Axes]]:
+def plot_dict_of_floats(
+    data: dict,
+    key_ydata: str,
+    *args,
+    title: str | None = None,
+    x_label: str | None = None,
+    y_label: str | None = None,
+    yscale: str | None = None,
+    save_data: bool = False,
+    save_path: str | None = None,
+) -> tuple[Figure, list[Axes]]:
     """
     Plot ``key_ydata`` as a function of first arg, for every other args.
     """
     if len(args) > 2:
-        raise NotImplementedError('Not implemented')
+        raise NotImplementedError("Not implemented")
 
     fig, axx = create_fig_if_not_exists(1, sharex=True, num=2)
     if title is not None:
-        axx[0].set_title(title, {'fontsize': 10})
+        axx[0].set_title(title, {"fontsize": 10})
     if x_label is not None:
         axx[-1].set_xlabel(x_label)
 
@@ -111,14 +117,15 @@ def plot_dict_of_floats(data: dict,
     if yscale is not None:
         axx.set_yscale(yscale)
 
-    plot_data = lcst.get_values(data, key_ydata, *args, to_numpy=True,
-                                ins_param=True)
+    plot_data = lcst.get_values(
+        data, key_ydata, *args, to_numpy=True, ins_param=True
+    )
 
-    x_data = plot_data[1:, 0]   # first of args
+    x_data = plot_data[1:, 0]  # first of args
     y_data = plot_data[1:, 1:]  # key_ydata
-    z_data = plot_data[0, 1:]   # second of args
+    z_data = plot_data[0, 1:]  # second of args
     for i in range(y_data.shape[1]):
-        axx.plot(x_data, y_data[:, i], label=f"{z_data[i]}", marker='o')
+        axx.plot(x_data, y_data[:, i], label=f"{z_data[i]}", marker="o")
 
         if save_data:
             assert save_path is not None
@@ -132,12 +139,13 @@ def plot_dict_of_floats(data: dict,
 # =============================================================================
 # Generic plot helpers
 # =============================================================================
-def create_fig_if_not_exists(axnum: int | list[int],
-                             sharex: bool = False,
-                             num: int = 1,
-                             clean_fig: bool = False,
-                             **kwargs,
-                             ) -> tuple[Figure, list[Axes]]:
+def create_fig_if_not_exists(
+    axnum: int | list[int],
+    sharex: bool = False,
+    num: int = 1,
+    clean_fig: bool = False,
+    **kwargs,
+) -> tuple[Figure, list[Axes]]:
     """
     Check if figures were already created, create it if not.
 

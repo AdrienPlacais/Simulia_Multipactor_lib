@@ -32,7 +32,7 @@ def part_mesh_intersections(
     all_distances : np.ndarray(n, m)
         Indicates distances between collisions and ``origins``.
     impact_angles : np.ndarray(n, m)
-        Impact angle of every particle with every mesh cell (is np.NaN if there
+        Impact angle of every particle with every mesh cell (is np.nan if there
         was no collision).
 
     """

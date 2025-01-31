@@ -11,17 +11,18 @@ from typing import Any
 import numpy as np
 from matplotlib.figure import Figure
 
-from simulia_multipactor_lib.particle_monitor.collisions.vedo_mesh_collisions \
-    import part_mesh_intersections
-from simulia_multipactor_lib.particle_monitor.particle_monitor import \
-    ParticleMonitor
-from simulia_multipactor_lib.visualization.plot import create_fig_if_not_exists
+from simultipac.particle_monitor.collisions.vedo_mesh_collisions import (
+    part_mesh_intersections,
+)
+from simultipac.particle_monitor.particle_monitor import ParticleMonitor
+from simultipac.visualization.plot import create_fig_if_not_exists
 
 
-def plot_emission_energies(particles: ParticleMonitor,
-                           bins: int = 1000,
-                           hist_range: tuple[float, float] = (0., 1e4),
-                           ) -> Figure:
+def plot_emission_energies(
+    particles: ParticleMonitor,
+    bins: int = 1000,
+    hist_range: tuple[float, float] = (0.0, 1e4),
+) -> Figure:
     """
     Plot the emission energies sorted by source id as a histogram.
 
@@ -47,20 +48,22 @@ def plot_emission_energies(particles: ParticleMonitor,
     axes[1].set_ylabel("Emitted electrons")
 
     for i in range(2):
-        emission_energies = particles.emission_energies(source_id=i,
-                                                        to_numpy=True)
-        counts, bins = np.histogram(emission_energies,
-                                    bins=bins,
-                                    range=hist_range)
+        emission_energies = particles.emission_energies(
+            source_id=i, to_numpy=True
+        )
+        counts, bins = np.histogram(
+            emission_energies, bins=bins, range=hist_range
+        )
         axes[i].hist(bins[:-1], bins, weights=counts)
         axes[i].grid(True)
     return fig
 
 
-def plot_collision_energies(particles: ParticleMonitor,
-                            bins: int = 1000,
-                            hist_range: tuple[float, float] = (0., 1e4),
-                            ) -> Figure:
+def plot_collision_energies(
+    particles: ParticleMonitor,
+    bins: int = 1000,
+    hist_range: tuple[float, float] = (0.0, 1e4),
+) -> Figure:
     """
     Plot all the collision energies as histogram.
 
@@ -84,23 +87,24 @@ def plot_collision_energies(particles: ParticleMonitor,
     axes[0].set_xlabel("Collision energy [eV]")
     axes[0].set_ylabel("All electrons")
 
-    collision_energies = particles.collision_energies(to_numpy=True,
-                                                      extrapolation=False,
-                                                      remove_alive_at_end=True)
+    collision_energies = particles.collision_energies(
+        to_numpy=True, extrapolation=False, remove_alive_at_end=True
+    )
 
-    counts, bins = np.histogram(collision_energies,
-                                bins=bins,
-                                range=hist_range)
+    counts, bins = np.histogram(
+        collision_energies, bins=bins, range=hist_range
+    )
     axes[0].hist(bins[:-1], bins, weights=counts)
     axes[0].grid(True)
     return fig
 
 
-def plot_collision_angles(particle_monitor: ParticleMonitor,
-                          bins: int = 100,
-                          hist_range: tuple[float, float] = (0., 90.),
-                          **kwargs,
-                          ) -> Figure:
+def plot_collision_angles(
+    particle_monitor: ParticleMonitor,
+    bins: int = 100,
+    hist_range: tuple[float, float] = (0.0, 90.0),
+    **kwargs,
+) -> Figure:
     """Compute and plot a particles impact angle histogram.
 
     Parameters
@@ -124,21 +128,22 @@ def plot_collision_angles(particle_monitor: ParticleMonitor,
     axes[0].set_xlabel(r"Impact angle $\theta$ [deg]")
     axes[0].set_ylabel("Distribution all electrons")
 
-    collision_angles = [particle.collision_angle
-                        for particle in particle_monitor.values()]
+    collision_angles = [
+        particle.collision_angle for particle in particle_monitor.values()
+    ]
 
-    counts, bins = np.histogram(np.rad2deg(collision_angles),
-                                bins=bins,
-                                range=hist_range)
+    counts, bins = np.histogram(
+        np.rad2deg(collision_angles), bins=bins, range=hist_range
+    )
     axes[0].hist(bins[:-1], bins, weights=counts)
     axes[0].grid(True)
     return fig
 
 
 # Do the same function but in 3D
-def plot_trajectories(particles: ParticleMonitor,
-                      particle_id: list[int],
-                      mesh: Any = None) -> Figure:
+def plot_trajectories(
+    particles: ParticleMonitor, particle_id: list[int], mesh: Any = None
+) -> Figure:
     """Plot trajectories of particles with the desired ``pid``.
 
     Parameters
@@ -167,53 +172,59 @@ def plot_trajectories(particles: ParticleMonitor,
     if mesh is not None:
         raise NotImplementedError("Plot of mesh not implemented yet.")
 
-    particles_to_plot = {pid: part for pid, part in particles.items()
-                         if pid in particle_id}
+    particles_to_plot = {
+        pid: part for pid, part in particles.items() if pid in particle_id
+    }
 
     projections = {
-        'xy': lambda pos: pos[:, :2],
-        'yz': lambda pos: pos[:, 1:],
-        'xz': lambda pos: pos[:, [0, 2]],
+        "xy": lambda pos: pos[:, :2],
+        "yz": lambda pos: pos[:, 1:],
+        "xz": lambda pos: pos[:, [0, 2]],
     }
     for i, (projection_name, projection) in enumerate(projections.items()):
         axes[i].set_xlabel(projection_name[0] + " [mm]")
         axes[i].set_ylabel(projection_name[1] + " [mm]")
-        axes[i].set_aspect('equal', adjustable='box')
+        axes[i].set_aspect("equal", adjustable="box")
 
         for part in particles_to_plot.values():
             projected_pos = projection(part.pos)
-            line, = axes[i].plot(projected_pos[:, 0], projected_pos[:, 1],
-                                 marker='o')
+            (line,) = axes[i].plot(
+                projected_pos[:, 0], projected_pos[:, 1], marker="o"
+            )
 
             if part.extrapolated_pos is not None:
                 projected_pos = projection(part.extrapolated_pos)
-                axes[i].plot(projected_pos[:, 0], projected_pos[:, 1], ls='--',
-                             c=line.get_color())
+                axes[i].plot(
+                    projected_pos[:, 0],
+                    projected_pos[:, 1],
+                    ls="--",
+                    c=line.get_color(),
+                )
     return fig
 
 
-def plot_impact_density_distribution(particles: ParticleMonitor,
-                                     mesh: Any) -> Figure:
+def plot_impact_density_distribution(
+    particles: ParticleMonitor, mesh: Any
+) -> Figure:
     raise NotImplementedError
-    fig, axes = create_fig_if_not_exists(1, num=5, **{'projection': '3d',
-                                                      'proj_type': 'ortho'})
+    fig, axes = create_fig_if_not_exists(
+        1, num=5, **{"projection": "3d", "proj_type": "ortho"}
+    )
     axes.set_xlabel(r"$x$")
     axes.set_ylabel(r"$y$")
     axes.set_zlabel(r"$z$")
 
     last_known_position = particles.last_known_position(
-        to_numpy=True,
-        remove_alive_at_end=True)
+        to_numpy=True, remove_alive_at_end=True
+    )
     last_known_direction = particles.last_known_direction(
-        to_numpy=True,
-        normalize=True,
-        remove_alive_at_end=True)
+        to_numpy=True, normalize=True, remove_alive_at_end=True
+    )
 
     # collisions has shape (n, m)
     collisions, _, _ = part_mesh_intersections(
-        origins=last_known_position,
-        directions=last_known_direction,
-        mesh=mesh)
+        origins=last_known_position, directions=last_known_direction, mesh=mesh
+    )
     collisions_per_cell = collisions.sum(axis=0)
     collision_density = collisions_per_cell / mesh.areas
     collision_density /= np.max(collision_density)
