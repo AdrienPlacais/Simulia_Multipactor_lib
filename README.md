@@ -12,35 +12,27 @@ In particular:
 
 # Installation
 ## Requirements
-You will need a recent version of Python (at least 3.11).
-
-The `vedo` module is necessary to study collisions of particles (ParticleMonitor) with walls (impact energy, impact angle).
-If you manage your distribution with `pip`, refer to: https://vedo.embl.es/docs/vedo.html#install-and-test
-
-If you manage your installation with `conda`, run:
-```
-conda create -n vedo_env -c conda-forge python=3.11
-conda activate vedo_env
-conda install -c conda-forge jupyter numpy matplotlib pandas scipy vedo
-```
-Warning: in the latter case, all your packages must be installed from the `conda-forge` source, which is not the default.
-You may also want to `conda install -c conda-forge spyder` to have an IDE.
-And `conda install -c conda-forge jupyter` to run `.ipynb` examples.
-
-Remember to run `conda activate vedo_env` to activate this environment.
-More explanations in [this Spyder video](https://www.youtube.com/watch?v=Ul79ihg41Rs).
+You will need a recent version of Python (at least 3.12).
 
 ## Installation
-Go to where you want the package to be installed:
-``cd ~/my/python/packages/``
+### Simple installation:
+```
+pip install simultipac
+```
 
-Clone the `git` repository (you can also download it as `.zip`, but you will not get any update):
-``git clone git@github.com:AdrienPlacais/Simulia_Multipactor_lib.git``
+> [!WARNING]
+> The package is not on PyPI yet, prefer building from source.
+
+### Building form source
+#. Navigate to the library installation folder.
+#. `git clone git@github.com:AdrienPlacais/Simulia_Multipactor_lib.git` (or download it a `zip`).
+#. Navigate to `Simulia_Multipactor_lib`
+#. Create a dedicated python environment.
+#. `pip install -e .`
 
 # How to use
 ## Documentation
 Documentation is available at [this link](https://adrienplacais.github.io/Simulia_Multipactor_lib/html/index.html).
-It was integrated following [this tutorial](https://daler.github.io/sphinxdoc-test/includeme.html).
 
 ## Tutorial
 Examples are provided in the `examples` folder and in the documentation (work in progress).
