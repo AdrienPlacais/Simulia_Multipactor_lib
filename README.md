@@ -24,11 +24,11 @@ pip install simultipac
 > The package is not on PyPI yet, prefer building from source.
 
 ### Building form source
-#. Navigate to the library installation folder.
-#. `git clone git@github.com:AdrienPlacais/Simulia_Multipactor_lib.git` (or download it a `zip`).
-#. Navigate to `Simulia_Multipactor_lib`
-#. Create a dedicated python environment.
-#. `pip install -e .`
+1. Navigate to the library installation folder.
+2. `git clone git@github.com:AdrienPlacais/Simulia_Multipactor_lib.git` (or download it a `zip`).
+3. Navigate to `Simulia_Multipactor_lib`
+4. Create a dedicated python environment.
+5. `pip install -e .`
 
 # How to use
 ## Documentation
