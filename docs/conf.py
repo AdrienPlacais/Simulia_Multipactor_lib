@@ -95,7 +95,7 @@ intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/docs", None),
     "python": ("https://docs.python.org/3", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
-    # "vedo": ("https://docs.embl.es/docs/", None),
+    "vedo": ("https://vedo.embl.es/docs/", None),
 }
 
 # Parameters for sphinx-autodoc-typehints
