@@ -11,7 +11,10 @@ Modernize and package the library.
 
 ## [2.0.1] -- unreleased
 
+### Changed
+
 - UI is more natural.
+- Use `logging` module instead of color printed messages.
 
 ## [2.0.0] -- 2025-01-31
 
