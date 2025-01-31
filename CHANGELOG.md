@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Modernize and package the library.
 
-## [2.1.0] -- unreleased
+## [2.0.1] -- unreleased
 
 - UI is more natural.
 
@@ -17,7 +17,7 @@ Modernize and package the library.
 
 ### Changed
 
-- Library is properly packaged.
+- Library is properly packaged. New module name is `simultipac` for consistency.
 - Documentation is hosted on read the docs and automatically updated.
 
 <!-- ## [0.0.0] 1312-01-01 -->
