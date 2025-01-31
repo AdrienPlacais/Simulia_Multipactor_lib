@@ -13,11 +13,11 @@ Modernize and package the library.
 
 - UI is more natural.
 
-## [2.0.0] -- unreleased
+## [2.0.0] -- 2025-01-31
 
 ### Changed
 
-- Library is properly packaged. New module name is `simultipac` for consistency.
+- Library is properly packaged. New module name is `simultipac`.
 - Documentation is hosted on read the docs and automatically updated.
 
 <!-- ## [0.0.0] 1312-01-01 -->
