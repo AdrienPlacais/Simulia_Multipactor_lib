@@ -18,13 +18,12 @@ I dropped it as with too much unkowns, any model can fit anything.
 
 """
 
+import logging
 import warnings
 
 import numpy as np
 from scipy.ndimage import uniform_filter1d
 from scipy.optimize import OptimizeWarning, curve_fit
-
-from simultipac.helper.helper import printc
 
 warnings.simplefilter("error", OptimizeWarning)
 
@@ -49,7 +48,7 @@ def fit_all(
 
         val[f"{key_part} (model)"] = modelled
         if fit_parameters is None:
-            print(f"Skipped {map_id[key]}")
+            logging.info(f"Skipped {map_id[key]}")
             val["alfa (model)"] = np.nan
             continue
 
@@ -78,7 +77,7 @@ def fit_all_spark(
 
         population_evolution[f"{key_part} (model)"] = modelled
         if fit_parameters is None:
-            print(f"Skipped {population_evolution[key_eacc]}")
+            logging.info(f"Skipped {population_evolution[key_eacc]}")
             population_evolution["alfa (model)"] = np.nan
             continue
 
@@ -116,9 +115,9 @@ def _model_1_log(time: np.array, *args) -> np.array:
 
 def _model_1_printer(*args):
     """Pretty print the parameters."""
-    print("Optimized with:")
-    print(f"\tN_0   = {args[0]}")
-    print(f"\talfa  = {args[1]} 1/ns")
+    logging.info("Optimized with:")
+    logging.info(f"\tN_0   = {args[0]}")
+    logging.info(f"\talfa  = {args[1]} 1/ns")
 
 
 # =============================================================================
@@ -183,11 +182,7 @@ def _fit_single(
     idx_end = np.where(data[:, 1])[0][-1]
     t_start = data[idx_end, 0] - fitting_range
     if t_start < 0.0:
-        printc(
-            "exp_growth._fit_single warning:",
-            "fitting range larger",
-            "than simulation time!",
-        )
+        logging.warning("Fitting range larger than simulation time!")
     idx_start = np.argmin(np.abs(data[:, 0] - t_start))
     data_to_fit = np.column_stack(
         (
@@ -201,11 +196,9 @@ def _fit_single(
         # We get the number of points spanning over one period
         i_width = np.argmin(np.abs(data[:, 0] - period))
         if i_width < 5:
-            printc(
-                "exp_growth._fit_single warning:",
-                "i_width is too small.",
-                "Check that period and data[:, 0] have same units.",
-                "Consider reducing the fitting range.",
+            logging.warning(
+                "i_width is too small. Check that period and data[:, 0] have "
+                "same units. Consider reducing the fitting range."
             )
 
         # https://stackoverflow.com/a/43200476/12188681
@@ -301,17 +294,15 @@ def _fit_single_spark(
         idx_end = min(
             idx_end, np.argmin(np.abs(population_evolution[:, 1] - 10.0))
         )
-        print(idx_end, e_acc)
+        logging.info(idx_end, e_acc)
 
     t_start = population_evolution[idx_end, 0] - fitting_range
 
     t_lim = 5.0 * period
     if t_start < t_lim:
-        printc(
-            "exp_growth._fit_single_spark warning:",
-            f"E_acc={e_acc:.2e} ",
-            "fitting range too large w.r.t simulation time! I set it to a",
-            f"higher value {t_lim:2f}ns.",
+        logging.warning(
+            f"E_acc={e_acc:.2e} fitting range too large w.r.t simulation time!"
+            f" I set it to a higher value {t_lim:2f}ns."
         )
         t_start = t_lim
 

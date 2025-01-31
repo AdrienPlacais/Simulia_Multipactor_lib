@@ -1,5 +1,7 @@
 """Store some generic helper functions for plotting."""
 
+import logging
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes._axes import Axes
@@ -209,4 +211,4 @@ def _savefig(fig: Figure, filepath: str) -> None:
     """Save the figure."""
     # fig.tight_layout()
     fig.savefig(filepath)
-    print(f"plot._savefig info: Fig. saved in {filepath}")
+    logging.info(f"Fig. saved in {filepath}")

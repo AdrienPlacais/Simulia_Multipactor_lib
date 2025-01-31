@@ -1,5 +1,4 @@
-r"""
-Define all the functions to import CST data.
+r"""Define all the functions to import CST data.
 
 The main function is :func:`get_parameter_sweep_auto_export`. It works with the
 Template Based Post-Processing ``Save Export Folder during Parameter Sweep``
@@ -20,13 +19,12 @@ https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
 
 import ast
 import itertools as it
+import logging
 import os
 from pathlib import Path
 from typing import Any
 
 import numpy as np
-
-from simultipac.helper.helper import printc
 
 
 # =============================================================================
@@ -334,11 +332,7 @@ def get_values(
 
         if _id == -1:
             if warn_missing:
-                printc(
-                    "loader_cst.get_values warning",
-                    "no value found for",
-                    f"the parameters {__c}.",
-                )
+                logging.warning(f"No value found for the parameters {__c}.")
             continue
 
         out[i] = data[_id][key_data]

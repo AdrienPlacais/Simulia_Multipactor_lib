@@ -1,5 +1,6 @@
 """Define :class:`Particle`, created by reading CST ParticleMonitor files."""
 
+import logging
 import math
 
 import numpy as np
@@ -326,14 +327,14 @@ class Particle:  # pylint: disable=too-many-instance-attributes
             )
 
         if warn_no_collision and collision_point.shape[0] == 0:
-            print(f"No collision for particle {self.particle_id}.")
+            logging.info(f"No collision for particle {self.particle_id}.")
             return
 
         if collision_point.shape[0] > 1:
             collision_point = collision_point[0, :]
             collision_cell = collision_cell[0, np.newaxis]
             if warn_multiple_collisions:
-                print(
+                logging.warning(
                     "More than one collision for particle "
                     f"{self.particle_id}. Only considering the first."
                 )

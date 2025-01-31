@@ -7,4 +7,8 @@ studies.
 
 import importlib.metadata
 
+from simultipac.util.log_manager import set_up_logging
+
 __version__ = importlib.metadata.version("simultipac")
+
+set_up_logging("Simultipac")
