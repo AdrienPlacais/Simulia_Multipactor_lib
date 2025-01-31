@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Define functions to be used everywhere in the subpackage."""
+
 import numpy as np
 
 
@@ -56,7 +55,7 @@ stltool.py#L47
 
     """
     collisions = np.full((m_mesh), True)
-    distances = np.zeros((m_mesh))
+    distances = np.zeros(m_mesh)
     impact_angles = np.full((m_mesh), np.nan)
 
     # Check if intersection line/plane or if they are just parallel

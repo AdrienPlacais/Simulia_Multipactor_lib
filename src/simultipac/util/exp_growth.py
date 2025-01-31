@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 r"""
 Define exponential growth models as well as fitting functions.
 
@@ -19,6 +17,7 @@ Other approaches that have been tried:
 I dropped it as with too much unkowns, any model can fit anything.
 
 """
+
 import warnings
 
 import numpy as np

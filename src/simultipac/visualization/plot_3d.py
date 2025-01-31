@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Handle 3d visualisation plots with ``vedo`` library."""
+
 from collections.abc import Sequence
 
 import vedo

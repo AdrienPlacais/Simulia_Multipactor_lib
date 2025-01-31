@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Define functions to study collisions with a ``Mesh`` from ``vedo`` package.
 
 For that we use the ``vedo`` built-in methods.
 
 """
+
 import numpy as np
 import vedo
 

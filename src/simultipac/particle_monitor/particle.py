@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Define :class:`Particle`, created by reading CST ParticleMonitor files."""
+
 import math
 
 import numpy as np
@@ -128,13 +127,13 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         """Ensure that mass and charge did not evolve during simulation."""
         isconstant, constant = _get_constant(self._masses)
         if not isconstant:
-            raise IOError("Variation of mass during simulation.")
+            raise OSError("Variation of mass during simulation.")
         self.mass = constant
         self.mass_eV = constant * clight**2 / qelem
 
         isconstant, constant = _get_constant(self._charges)
         if not isconstant:
-            raise IOError("Variation of charge during simulation.")
+            raise OSError("Variation of charge during simulation.")
         self.charge = constant
 
     def _some_values_to_array(self) -> None:
@@ -242,7 +241,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         poly_fit_deg = 2
 
         if poly_fit_deg >= n_time_steps_for_polynom_fitting:
-            raise IOError(
+            raise OSError(
                 f"You need at least {poly_fit_deg + 1} momentum and "
                 "time step(s) to extrapolate momentum with a degree "
                 f"{poly_fit_deg} polynom."

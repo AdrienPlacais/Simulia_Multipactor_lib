@@ -1,11 +1,10 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Define basic functions to treat data from :class:`.ParticleMonitor` object.
 
 In particular, plotthe emission energy, the collision energy or the
 trajectories of the particles.
 
 """
+
 from typing import Any
 
 import numpy as np

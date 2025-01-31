@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 r"""
 Define all the functions to import CST data.
 
@@ -19,6 +17,7 @@ https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
     Evaluate expressions such as ``param2 = 2 * param1``
 
 """
+
 import ast
 import itertools as it
 import os
@@ -145,7 +144,7 @@ def _parameters_file_to_dict(filepath: Path) -> dict[str, float | str]:
 
     """
     parameters = {}
-    with open(filepath, "r") as file:
+    with open(filepath) as file:
         for line in file:
             line = line.split("=")
             parameters[line[0]] = line[1].strip()
@@ -426,7 +425,7 @@ def particle_monitor(
     """Load a single Particle Monitor file."""
     n_header = 6
 
-    with open(filepath, "r", encoding="utf-8") as file:
+    with open(filepath, encoding="utf-8") as file:
         particles_info = tuple(
             tuple(line.split(delimiter))
             for i, line in enumerate(file)

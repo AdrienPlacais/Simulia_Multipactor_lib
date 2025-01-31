@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Define functions to load data from SPARK3D.
 
 .. note::
@@ -10,18 +8,20 @@
     every simulation.
 
 """
+
 from pathlib import Path
 
 import numpy as np
 
 
-def load_population_evolution(filepath: Path,
-                              e_acc: np.ndarray,
-                              key_part: str = 'Particle vs. Time',
-                              key_eacc: str = 'E_acc in MV per m',
-                              key_power: str = 'power_rms',
-                              **kwargs,
-                              ) -> tuple[dict, np.ndarray]:
+def load_population_evolution(
+    filepath: Path,
+    e_acc: np.ndarray,
+    key_part: str = "Particle vs. Time",
+    key_eacc: str = "E_acc in MV per m",
+    key_power: str = "power_rms",
+    **kwargs,
+) -> tuple[dict, np.ndarray]:
     """Get population evolution data from SPARK3D simulation.
 
     We infer the format of the data from the extension of ``filepath``. If it
@@ -60,29 +60,34 @@ None]]
     """
     filetype = filepath.suffix
     if filetype == ".txt":
-        return _get_population_evolution_txt(filepath,
-                                             e_acc,
-                                             key_part=key_part,
-                                             key_eacc=key_eacc,
-                                             key_power=key_power,
-                                             **kwargs)
+        return _get_population_evolution_txt(
+            filepath,
+            e_acc,
+            key_part=key_part,
+            key_eacc=key_eacc,
+            key_power=key_power,
+            **kwargs,
+        )
     if filetype == ".csv":
-        return _get_population_evolution_csv(filepath,
-                                             e_acc,
-                                             key_part=key_part,
-                                             key_eacc=key_eacc,
-                                             key_power=key_power,
-                                             **kwargs)
-    raise IOError(f"{filetype = } not recognized.")
+        return _get_population_evolution_csv(
+            filepath,
+            e_acc,
+            key_part=key_part,
+            key_eacc=key_eacc,
+            key_power=key_power,
+            **kwargs,
+        )
+    raise OSError(f"{filetype = } not recognized.")
 
 
-def _get_population_evolution_csv(filepath: Path,
-                                  e_acc: np.ndarray,
-                                  key_part: str,
-                                  key_eacc: str,
-                                  key_power: str,
-                                  delimiter: str = ' ',
-                                  ) -> tuple[dict, np.ndarray]:
+def _get_population_evolution_csv(
+    filepath: Path,
+    e_acc: np.ndarray,
+    key_part: str,
+    key_eacc: str,
+    key_power: str,
+    delimiter: str = " ",
+) -> tuple[dict, np.ndarray]:
     """Get population evolution data from a SPARK3D manual export.
 
     Right-click on ``Multipactor results``, ``Export to CSV``.
@@ -94,36 +99,40 @@ def _get_population_evolution_csv(filepath: Path,
     n_param = len(e_acc)
 
     # Create a list of arrays
-    population_evolutions = [np.column_stack((raw_data[:, 0] * 1e9,
-                             raw_data[:, i]))
-                             for i in range(1, n_param + 1)]
+    population_evolutions = [
+        np.column_stack((raw_data[:, 0] * 1e9, raw_data[:, i]))
+        for i in range(1, n_param + 1)
+    ]
 
     # For consistency with CST import, we remove the end of MP simulations
     # (population = 0)
     for i, population_evolution in enumerate(population_evolutions):
-        idx_to_remove = np.argwhere(population_evolution[:, 1] == 0.)
+        idx_to_remove = np.argwhere(population_evolution[:, 1] == 0.0)
         if idx_to_remove.size > 0:
             last_idx = idx_to_remove[0][0]
             population_evolutions[i] = population_evolution[:last_idx]
 
     complete_population_evolutions = {
-        i: {key_eacc: single_e_acc,
+        i: {
+            key_eacc: single_e_acc,
             key_power: None,
             key_part: population_evolution,
-            }
-        for i, (single_e_acc, population_evolution)
-        in enumerate(zip(e_acc, population_evolutions), start=1)
+        }
+        for i, (single_e_acc, population_evolution) in enumerate(
+            zip(e_acc, population_evolutions), start=1
+        )
     }
     return complete_population_evolutions, parameters
 
 
-def _get_population_evolution_txt(filepath: Path,
-                                  e_acc: np.ndarray,
-                                  key_part: str,
-                                  key_eacc: str,
-                                  key_power: str,
-                                  delimiter: str = '\t',
-                                  ) -> tuple[dict, np.ndarray]:
+def _get_population_evolution_txt(
+    filepath: Path,
+    e_acc: np.ndarray,
+    key_part: str,
+    key_eacc: str,
+    key_power: str,
+    delimiter: str = "\t",
+) -> tuple[dict, np.ndarray]:
     r"""
     Get population evolution, auto export from SPARK3D.
 
@@ -147,5 +156,6 @@ def _get_population_evolution_txt(filepath: Path,
         complete_population_evolutions[i] = {
             key_eacc: e_acc[i - 1],
             key_power: power_rms,
-            key_part: pop_evol}
+            key_part: pop_evol,
+        }
     return complete_population_evolutions, parameters

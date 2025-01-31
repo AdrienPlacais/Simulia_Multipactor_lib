@@ -1,32 +1,34 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 # # Particle Monitor: WR75 study case
 # In this script, we showcase how the particle monitor data from CST can be treated. Source `.cst` file for the electromagnetic and PIC solvers are provided.
 
 # In[2]:
 
 
-from pathlib import Path
 import random
+from pathlib import Path
 
 import vedo
 
 from simultipac.particle_monitor.particle_monitor import ParticleMonitor
-from simultipac.particle_monitor.studies import plot_emission_energies, plot_collision_energies, plot_collision_angles
-from simultipac.particle_monitor.studies import plot_collision_energies
-from simultipac.visualization.plot_3d import plot_structure_and_some_trajectories
+from simultipac.particle_monitor.studies import (
+    plot_collision_angles,
+    plot_collision_energies,
+    plot_emission_energies,
+)
+from simultipac.visualization.plot_3d import (
+    plot_structure_and_some_trajectories,
+)
 
 # To output interactive 3d in .html (needs k3d library):
-vedo.settings.default_backend= 'k3d'
+vedo.settings.default_backend = "k3d"
 # would be the best but plotting raises error:
 # TraitError: The 'point_size' trait of a Points instance expected a float or a dict, not the float64 0.0.
 
 # To output interactive 3d that does not appear in .html:
-vedo.settings.default_backend= 'vtk'
+vedo.settings.default_backend = "vtk"
 
 # To output non-interactive 2d only, but that creates an image in .html:
-vedo.settings.default_backend= '2d'
+vedo.settings.default_backend = "2d"
 
 
 # ## Loading files
@@ -56,8 +58,10 @@ my_particle_monitor = ParticleMonitor(folder, delimiter=delimiter)
 
 
 bins = 200  # Number of histogram bins
-hist_range = (0., 1e2)  # Range of the histogram
-fig = plot_emission_energies(my_particle_monitor, bins=bins, hist_range=hist_range)
+hist_range = (0.0, 1e2)  # Range of the histogram
+fig = plot_emission_energies(
+    my_particle_monitor, bins=bins, hist_range=hist_range
+)
 
 
 # ## Plotting collision energies
@@ -67,8 +71,10 @@ fig = plot_emission_energies(my_particle_monitor, bins=bins, hist_range=hist_ran
 
 
 bins = 1000
-hist_range = (0., 2e2)
-fig = plot_collision_energies(my_particle_monitor, bins=bins, hist_range=hist_range)
+hist_range = (0.0, 2e2)
+fig = plot_collision_energies(
+    my_particle_monitor, bins=bins, hist_range=hist_range
+)
 
 
 # ## Plotting impact angles
@@ -95,9 +101,9 @@ my_mesh.alpha(0.3)
 # In[ ]:
 
 
-my_particle_monitor.compute_collision_angles(my_mesh,
-                                             warn_multiple_collisions=False,
-                                             warn_no_collision=True)
+my_particle_monitor.compute_collision_angles(
+    my_mesh, warn_multiple_collisions=False, warn_no_collision=True
+)
 
 
 # Collision angles are computed thanks to the extrapolated position. Here, the extrapolated position is outside of the rectangular waveguide, so the trajectory crosses several cells; we only keep the impacted cell with the lowest ID, which is not very very rigorous. Will be changed in a latter update.
@@ -108,24 +114,28 @@ my_particle_monitor.compute_collision_angles(my_mesh,
 
 
 bins = 200
-hist_range = (0., 90.)
-fig = plot_collision_angles(my_particle_monitor, bins=bins, hist_range=hist_range)
+hist_range = (0.0, 90.0)
+fig = plot_collision_angles(
+    my_particle_monitor, bins=bins, hist_range=hist_range
+)
 
 
 # ## Plotting the trajectories
-# 
+#
 # We can also plot some trajectories. First of all, we define `pid_to_plot`, a list of integers which correspond to the identifier (`pid`) of the particle to plot. Here, we will plot the trajectories of 15 random particles.
 
 # In[ ]:
 
 
 number_of_particles_to_plot = 15
-pid_to_plot = random.sample(list(my_particle_monitor.keys()), number_of_particles_to_plot)
+pid_to_plot = random.sample(
+    list(my_particle_monitor.keys()), number_of_particles_to_plot
+)
 
 veplot1 = vedo.Plotter()
-lines, points = plot_structure_and_some_trajectories(my_particle_monitor,
-                                              pid_to_plot,
-                                              add_extrapolated_position=False)
+lines, points = plot_structure_and_some_trajectories(
+    my_particle_monitor, pid_to_plot, add_extrapolated_position=False
+)
 veplot1 += [my_mesh, lines, points]
 
 
@@ -154,12 +164,14 @@ stl_file = Path(example_data, "Particle_Monitor", "tesla.stl")
 my_mesh = vedo.load(str(stl_file)).alpha(0.3)
 
 number_of_particles_to_plot = 25
-pid_to_plot = random.sample(list(my_particle_monitor.keys()), number_of_particles_to_plot)
+pid_to_plot = random.sample(
+    list(my_particle_monitor.keys()), number_of_particles_to_plot
+)
 
 veplot2 = vedo.Plotter()
-lines, points = plot_structure_and_some_trajectories(my_particle_monitor,
-                                                     pid_to_plot,
-                                                     add_extrapolated_position=False)
+lines, points = plot_structure_and_some_trajectories(
+    my_particle_monitor, pid_to_plot, add_extrapolated_position=False
+)
 veplot2 += [my_mesh, lines, points]
 
 
@@ -169,4 +181,3 @@ veplot2 += [my_mesh, lines, points]
 
 
 veplot2.show()
-

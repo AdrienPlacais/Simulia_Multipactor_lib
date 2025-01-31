@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Define :class:`ParticleMonitor`.
 
 This dictionary-based  object holds :class:`Particle` objects. Keys of the
@@ -9,6 +7,7 @@ dictionary are the particle id of the :class:`Particle`.
     Raise error when folder is not found.
 
 """
+
 import os
 from collections.abc import Generator
 from pathlib import Path
