@@ -7,6 +7,10 @@ from pathlib import Path
 import numpy as np
 
 
+class ShapeMismatchError(Exception):
+    """Raise error when ``population`` and ``time`` have different shapes."""
+
+
 class SimulationResults(ABC):
     """Store a single simulation results."""
 
@@ -43,8 +47,17 @@ class SimulationResults(ABC):
         self.p_rms = p_rms
         self.time = time
         self.population = population
+        self._check_consistent_shapes()
         if trim_trailing:
             self._trim_trailing()
+
+    def _check_consistent_shapes(self) -> None:
+        """Raise an error if ``time`` and ``population`` have diff shapes."""
+        if self.time.shape == self.population.shape:
+            return
+        raise ShapeMismatchError(
+            f"{self.time.shape = } but {self.population.shape = }"
+        )
 
     def _trim_trailing(self) -> None:
         """Remove data for which population is null."""
@@ -53,6 +66,7 @@ class SimulationResults(ABC):
             return
         last_idx = idx_to_remove[0][0]
         self.population = self.population[:last_idx]
+        self.time = self.time[:last_idx]
 
 
 class SimulationResultsFactory(ABC):
