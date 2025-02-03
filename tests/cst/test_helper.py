@@ -49,3 +49,20 @@ half=1/2
     ):
         assert _parameters_file_to_dict(Path("dummy.txt")) == expected
         assert mock_debug.call_count == 2
+
+
+def test_3d_files_are_skipped() -> None:
+    """Check that ``mmdd_xx`` loading does not load 3d data."""
+    mock_foldercontent = [
+        ("mmdd-xxxxxxx", ["Particle Info [PIC]", "3d"], []),
+        ("mmdd-xxxxxxx/Particle Info [PIC]", [], []),
+        ("mmdd-xxxxxxx/3d", [], ["e_field.m3d", "b_field.m3d"]),
+    ]
+    with (
+        patch("os.walk", return_value=mock_foldercontent),
+        patch("logging.debug") as mock_debug,
+        patch("logging.info") as mock_info,
+    ):
+        mmdd_xxxxxxx_folder_to_dict(Path("/path/to/dummy/"))
+        mock_debug.assert_called_once()
+        mock_info.assert_called_once()
