@@ -32,7 +32,7 @@ docs = [
    "sphinx-tabs>=3.4,<4",
    "sphinxcontrib-bibtex>=2.6,<3",
 ]
-test = ["pytest>=8.3.2, <9"]
+test = ["pytest>=8.3.2, <9", "pytest-mock>=3.14, <4"]
 
 [project.urls]
 changelog = "https://github.com/AdrienPlacais/Simulia_Multipactor_lib/blob/main/CHANGELOG.md"
