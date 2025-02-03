@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 import numpy as np
 import pytest
 
-from simultipac.simulation_results.spark3d_results import (
+from simultipac.spark3d.simulation_results import (
     Spark3DResults,
     Spark3DResultsFactory,
 )
