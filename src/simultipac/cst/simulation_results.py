@@ -1,0 +1,124 @@
+"""Define an object to store CST simulation results.
+
+.. note::
+    As for now, it can only load data stored in a single file. For Position
+    Monitor exports (one file = one time step), see dedicated package
+    ``PositionMonitor``.
+
+.. todo::
+    Evaluate expressions such as ``param2 = 2 * param1``
+
+"""
+
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+
+from simultipac.cst.helper import get_id, mmdd_xxxxxxx_folder_to_dict
+from simultipac.simulation_results.simulation_results import (
+    SimulationResults,
+    SimulationResultsFactory,
+)
+
+
+class MissingFileError(Exception):
+    """Error raised when a mandatory CST file was not found."""
+
+
+class CSTResults(SimulationResults):
+    """Store a single CST simulation results."""
+
+    def __init__(
+        self,
+        id: int,
+        e_acc: float,
+        p_rms: float | None,
+        time: np.ndarray,
+        population: np.ndarray,
+        trim_trailing: bool = False,
+        parameters: dict[str, float | bool | str] | None = None,
+        **kwargs,
+    ) -> None:
+        """Instantiate object, with additional ``parameters`` attributes.
+
+        ``parameters`` is used to store CST simulation parameters: value of
+        magnetic field, simulation flag, etc.
+
+        """
+        self.parameters: dict[str, Any] = (
+            {} if parameters is None else parameters
+        )
+        return super().__init__(
+            id, e_acc, p_rms, time, population, trim_trailing, **kwargs
+        )
+
+
+class CSTResultsFactory(SimulationResultsFactory):
+    """Define an object to easily instantiate :class:`.CSTResults`.
+
+    .. todo::
+        Handle when the accelerating field is not stored in the
+        :file:`E_acc in MV per m.txt` but another.
+
+    """
+
+    mandatory = (
+        "E_acc in MV per m.txt",
+        "Parameters.txt",
+        "Particle vs. Time.txt",
+    )
+
+    def _from_simulation_folder(
+        self, folderpath: Path, delimiter: str = "\t"
+    ) -> CSTResults:
+        """Instantiate results from a :file:`mmdd-xxxxxxx` folder.
+
+        The expected structure is the following::
+
+            | mmdd-xxxxxxx
+            | ├── 'Adimensional e.txt'
+            | ├── 'Adimensional h.txt'
+            | ├── 'E_acc in MV per m.txt'           # Mandatory
+            | ├──  Parameters.txt                   # Mandatory
+            | ├── 'ParticleInfo [PIC]'
+            | │   ├── 'Emitted Secondaries.txt'
+            | │   └── 'Particle vs. Time.txt'       # Mandatory
+            | ├── 'TD Number of mesh cells.txt'
+            | └── 'TD Total solver time.txt'
+
+        Non-mandatory files data will be loaded in the ``parameters``
+        attribute.
+
+        Parameters
+        ----------
+        folderpath : Path
+            Path to a :file:`mmdd-xxxxxxx` folder, holding the results of a
+            single simulation among a parametric simulation export.
+        delimiter : str, optional
+            Delimiter between two columns. The default is a tab character.
+
+        """
+        id = get_id(folderpath)
+        raw_results = mmdd_xxxxxxx_folder_to_dict(folderpath, delimiter)
+
+        for key in self.mandatory:
+            if key not in raw_results:
+                raise MissingFileError("{key} file was not found.")
+        e_acc = raw_results.pop("E_acc in MV per m.txt")
+        part_time = raw_results.pop("Particle vs. Time.txt")
+        time, population = part_time[:, 0], part_time[:, 1]
+        results = CSTResults(
+            id=id, e_acc=e_acc, p_rms=None, time=time, population=population
+        )
+        return results
+
+    def from_simulation_folders(
+        self, master_folder: Path, delimiter: str = "\t"
+    ) -> list[CSTResults]:
+        """Load all :file:`mmdd-xxxxxxx` folders in ``master_folder``."""
+        folders = list(master_folder.iterdir())
+        return [
+            self._from_simulation_folder(folder, delimiter)
+            for folder in folders
+        ]
