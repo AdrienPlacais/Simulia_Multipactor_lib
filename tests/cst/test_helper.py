@@ -3,6 +3,7 @@
 from pathlib import Path
 from unittest.mock import mock_open, patch
 
+import numpy as np
 import pytest
 
 from simultipac.cst.helper import (
@@ -51,7 +52,7 @@ half=1/2
         assert mock_debug.call_count == 2
 
 
-def test_3d_files_are_skipped() -> None:
+def test_mmdd_xxxxxxx_3d_files_are_skipped() -> None:
     """Check that ``mmdd_xx`` loading does not load 3d data."""
     mock_foldercontent = [
         ("mmdd-xxxxxxx", ["Particle Info [PIC]", "3d"], []),
@@ -68,15 +69,51 @@ def test_3d_files_are_skipped() -> None:
         mock_info.assert_called_once()
 
 
-def test_hidden_files_are_skipped() -> None:
+def test_mmdd_xxxxxxx_hidden_files_are_skipped() -> None:
     """Check that hidden files are not loaded."""
     mock_foldercontent = [
-        ("mmdd-xxxxxxx", ["Particle Info [PIC]", "3d"], [".keep"]),
-        ("mmdd-xxxxxxx/Particle Info [PIC]", [], []),
+        ("mmdd-xxxxxxx", ["Particle Info [PIC]"], [".keep"]),
+        ("mmdd-xxxxxxx/Particle Info [PIC]", [], [".keep"]),
     ]
     with (
         patch("os.walk", return_value=mock_foldercontent),
         patch("logging.debug") as mock_debug,
     ):
         mmdd_xxxxxxx_folder_to_dict(Path("/path/to/dummy/"))
-        mock_debug.assert_called_once()
+        assert mock_debug.call_count == 2
+
+
+def test_mmdd_xxxxxxx_normal_behavior() -> None:
+    """Test that data matches expectation."""
+    mock_foldercontent = [
+        ("mmdd-xxxxxxx", ["Particle Info [PIC]"], ["mock_array.txt"]),
+        (
+            "mmdd-xxxxxxx/Particle Info [PIC]",
+            [],
+            ["mock_int.txt", "mock_float.txt"],
+        ),
+    ]
+    loadtxt_values = (
+        np.array([[0.0, 1000], [1.0, 1200], [2.0, 1900]]),
+        np.array(5),
+        np.array(42.0),
+    )
+    expected = {
+        "mock_array": np.array([[0.0, 1000], [1.0, 1200], [2.0, 1900]]),
+        "mock_int": 5.0,
+        "mock_float": 42.0,
+    }
+    with (
+        patch("os.walk", return_value=mock_foldercontent),
+        patch("numpy.loadtxt", side_effect=loadtxt_values),
+    ):
+        returned = mmdd_xxxxxxx_folder_to_dict(Path("dummy.txt"))
+        assert returned.keys() == expected.keys()
+        for key, value in returned.items():
+            expected_val = expected[key]
+            if not isinstance(value, np.ndarray):
+                assert value == expected_val and type(value) == type(
+                    expected_val
+                )
+                continue
+            np.testing.assert_allclose(value, expected_val)
