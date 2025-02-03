@@ -11,6 +11,7 @@
 """
 
 from pathlib import Path
+from pprint import pformat
 from typing import Any
 
 import numpy as np
@@ -43,7 +44,7 @@ class CSTResults(SimulationResults):
         """Instantiate object, with additional ``parameters`` attributes.
 
         ``parameters`` is used to store CST simulation parameters: value of
-        magnetic field, simulation flag, etc.
+        magnetic field, etc.
 
         """
         self.parameters: dict[str, Any] = (
@@ -129,14 +130,21 @@ class CSTResultsFactory(SimulationResultsFactory):
         id = get_id(folderpath)
         raw_results = mmdd_xxxxxxx_folder_to_dict(folderpath, delimiter)
 
-        for key in self.mandatory_files:
-            if key not in raw_results:
-                raise MissingFileError("{key} file was not found.")
+        for filename in self.mandatory_files:
+            if no_extension(filename) not in raw_results:
+                raise MissingFileError(
+                    f"{filename = } was not found. However, I found "
+                    f"{pformat(list(raw_results.keys()))}"
+                )
 
-        e_acc = raw_results.pop("E_acc in MV per m.txt")
-        part_time = raw_results.pop("Particle vs. Time.txt")
+        e_acc = raw_results.pop(no_extension(self._e_acc_file))
+        part_time = raw_results.pop(no_extension(self._time_population_file))
         time, population = part_time[:, 0], part_time[:, 1]
-        p_rms = raw_results.pop(self._p_rms_file) if self._p_rms_file else None
+        p_rms = (
+            raw_results.pop(no_extension(self._p_rms_file))
+            if self._p_rms_file
+            else None
+        )
         results = CSTResults(
             id=id, e_acc=e_acc, p_rms=p_rms, time=time, population=population
         )
@@ -151,3 +159,8 @@ class CSTResultsFactory(SimulationResultsFactory):
             self._from_simulation_folder(folder, delimiter)
             for folder in folders
         ]
+
+
+def no_extension(filename: str) -> str:
+    """Remove extension from string corresponding to filename."""
+    return ".".join(filename.split(".")[:-1])
