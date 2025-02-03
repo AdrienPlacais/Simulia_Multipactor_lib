@@ -1,8 +1,6 @@
 """Define a base object to store a multipactor simulation results."""
 
-from abc import ABC, abstractmethod
-from collections.abc import Sequence
-from pathlib import Path
+from abc import ABC
 
 import numpy as np
 
