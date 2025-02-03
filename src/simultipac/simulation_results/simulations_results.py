@@ -2,10 +2,14 @@
 
 import bisect
 from pathlib import Path
-from typing import Iterator, Literal
+from typing import Iterator, Literal, Self
 
-from simultipac.simulation_results.simulation_results import SimulationResults
-from simultipac.simulation_results.spark3d_results import Spark3DResultsFactory
+from simultipac.cst.simulation_results import CSTResultsFactory
+from simultipac.simulation_results.simulation_results import (
+    SimulationResults,
+    SimulationResultsFactory,
+)
+from simultipac.spark3d.simulation_results import Spark3DResultsFactory
 
 
 class UnsupportedToolError(Exception):
@@ -27,18 +31,16 @@ class SimulationsResults:
         """Load all files in the given folder."""
         paths = folder.glob("**/*")
         files = (x for x in paths if x.is_file())
-
-        if tool == "SPARK3D":
-            results = ()
+        raise NotImplementedError
 
     def _results_factory(
-        self, tool: Literal["CST", "SPARK3D"]
-    ) -> ResultsFactory:
+        self, tool: Literal["CST", "SPARK3D"], **kwargs
+    ) -> SimulationResultsFactory:
         """Get the proper results factory."""
         if tool == "SPARK3D":
-            return Spark3DResultsFactory
+            return Spark3DResultsFactory(**kwargs)
         if tool == "CST":
-            raise NotImplementedError
+            return CSTResultsFactory(**kwargs)
         raise UnsupportedToolError
 
     def add(self, result: SimulationResults) -> None:
