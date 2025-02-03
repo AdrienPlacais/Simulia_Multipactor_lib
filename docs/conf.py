@@ -75,9 +75,7 @@ exclude_patterns = [
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "sphinx_rtd_theme"
-html_theme_options = {
-    "display_version": True,
-}
+html_theme_options = {}
 html_static_path = ["_static"]
 
 # -- Check that there is no broken link --------------------------------------
