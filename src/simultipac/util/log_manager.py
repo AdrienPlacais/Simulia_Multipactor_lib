@@ -122,7 +122,7 @@ def set_up_logging(
     console_log_level: str = "INFO",
     console_log_color: bool = True,
     console_log_line_template: str = "%(color_on)s[%(levelname)-8s] [%(filename)-20s]%(color_off)s %(message)s",
-    logfile_file: Path = Path("eemilib.log"),
+    logfile_file: Path = Path("simultipac.log"),
     logfile_log_level: str = "INFO",
     logfile_log_color: bool = False,
     logfile_line_template: str = "%(color_on)s[%(asctime)s] [%(levelname)-8s] [%(filename)-20s]%(color_off)s %(message)s",
@@ -166,7 +166,7 @@ def main():
         console_log_output="stdout",
         console_log_level="warning",
         console_log_color=True,
-        logfile_file=Path("eemilib.log"),
+        logfile_file=Path("simultipac.log"),
         logfile_log_level="INFO",
         logfile_log_color=False,
     ):
