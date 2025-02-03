@@ -48,7 +48,7 @@ def mmdd_xxxxxxx_folder_to_dict(
 
     Corresponding output will look like:
 
-    .. code-blok:: python
+    .. code-block:: python
 
         dic = {
             'Adimensional e': 4.2,
