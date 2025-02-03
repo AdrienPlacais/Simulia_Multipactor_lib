@@ -152,3 +152,8 @@ def _parameters_file_to_dict(filepath: Path) -> dict[str, float | str]:
             continue
 
     return parameters
+
+
+def no_extension(filename: str) -> str:
+    """Remove extension from string corresponding to filename."""
+    return os.path.splitext(filename)[0]

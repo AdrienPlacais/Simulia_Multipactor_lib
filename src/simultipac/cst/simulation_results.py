@@ -16,7 +16,11 @@ from typing import Any
 
 import numpy as np
 
-from simultipac.cst.helper import get_id, mmdd_xxxxxxx_folder_to_dict
+from simultipac.cst.helper import (
+    get_id,
+    mmdd_xxxxxxx_folder_to_dict,
+    no_extension,
+)
 from simultipac.simulation_results.simulation_results import (
     SimulationResults,
     SimulationResultsFactory,
@@ -159,8 +163,3 @@ class CSTResultsFactory(SimulationResultsFactory):
             self._from_simulation_folder(folder, delimiter)
             for folder in folders
         ]
-
-
-def no_extension(filename: str) -> str:
-    """Remove extension from string corresponding to filename."""
-    return ".".join(filename.split(".")[:-1])
