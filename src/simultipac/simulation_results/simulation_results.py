@@ -61,7 +61,7 @@ class SimulationResults(ABC):
 
     def _trim_trailing(self) -> None:
         """Remove data for which population is null."""
-        idx_to_remove = np.argwhere(self.population[:, 1] == 0.0)
+        idx_to_remove = np.argwhere(self.population == 0.0)
         if idx_to_remove.size == 0:
             return
         last_idx = idx_to_remove[0][0]
