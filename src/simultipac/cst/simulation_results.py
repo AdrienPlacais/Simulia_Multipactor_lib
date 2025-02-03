@@ -108,16 +108,16 @@ class CSTResultsFactory(SimulationResultsFactory):
 
         The expected structure is the following::
 
-            | mmdd-xxxxxxx
-            | ├── 'Adimensional e.txt'
-            | ├── 'Adimensional h.txt'
-            | ├── 'E_acc in MV per m.txt'           # Mandatory
-            | ├──  Parameters.txt                   # Mandatory
-            | ├── 'ParticleInfo [PIC]'
-            | │   ├── 'Emitted Secondaries.txt'
-            | │   └── 'Particle vs. Time.txt'       # Mandatory
-            | ├── 'TD Number of mesh cells.txt'
-            | └── 'TD Total solver time.txt'
+            mmdd-xxxxxxx
+            ├── 'Adimensional e.txt'
+            ├── 'Adimensional h.txt'
+            ├── 'E_acc in MV per m.txt'           # Mandatory
+            ├──  Parameters.txt                   # Mandatory
+            ├── 'ParticleInfo [PIC]'
+            │   ├── 'Emitted Secondaries.txt'
+            │   └── 'Particle vs. Time.txt'       # Mandatory
+            ├── 'TD Number of mesh cells.txt'
+            └── 'TD Total solver time.txt'
 
         Non-mandatory files data will be loaded in the ``parameters``
         attribute.

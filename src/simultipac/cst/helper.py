@@ -35,16 +35,16 @@ def mmdd_xxxxxxx_folder_to_dict(
 
     The expected structure should look like::
 
-        | mmdd-xxxxxxx
-        | ├── 'Adimensional e.txt'
-        | ├── 'Adimensional h.txt'
-        | ├── 'E_acc in MV per m.txt'
-        | ├──  Parameters.txt
-        | ├── 'ParticleInfo [PIC]'
-        | │   ├── 'Emitted Secondaries.txt'
-        | │   └── 'Particle vs. Time.txt'
-        | ├── 'TD Number of mesh cells.txt'
-        | └── 'TD Total solver time.txt'
+        mmdd-xxxxxxx
+        ├── 'Adimensional e.txt'
+        ├── 'Adimensional h.txt'
+        ├── 'E_acc in MV per m.txt'
+        ├──  Parameters.txt
+        ├── 'ParticleInfo [PIC]'
+        │   ├── 'Emitted Secondaries.txt'
+        │   └── 'Particle vs. Time.txt'
+        ├── 'TD Number of mesh cells.txt'
+        └── 'TD Total solver time.txt'
 
     Corresponding output will look like:
 
