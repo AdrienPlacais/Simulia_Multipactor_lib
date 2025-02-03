@@ -1,9 +1,15 @@
 """Define a set of simulation results."""
 
 import bisect
-from typing import Iterator
+from pathlib import Path
+from typing import Iterator, Literal
 
 from simultipac.simulation_results.simulation_results import SimulationResults
+from simultipac.simulation_results.spark3d_results import Spark3DResultsFactory
+
+
+class UnsupportedToolError(Exception):
+    """Raise for simulation tool different from SPARK3D or CST."""
 
 
 class SimulationsResults:
@@ -14,6 +20,27 @@ class SimulationsResults:
         self._results_by_id: dict[int, SimulationResults] = {}
         self._results_sorted_acc_field: list[SimulationResults] = []
 
+    @classmethod
+    def from_folder(
+        cls, folder: Path, tool: Literal["CST", "SPARK3D"]
+    ) -> Self:
+        """Load all files in the given folder."""
+        paths = folder.glob("**/*")
+        files = (x for x in paths if x.is_file())
+
+        if tool == "SPARK3D":
+            results = ()
+
+    def _results_factory(
+        self, tool: Literal["CST", "SPARK3D"]
+    ) -> ResultsFactory:
+        """Get the proper results factory."""
+        if tool == "SPARK3D":
+            return Spark3DResultsFactory
+        if tool == "CST":
+            raise NotImplementedError
+        raise UnsupportedToolError
+
     def add(self, result: SimulationResults) -> None:
         """Add a new :class:`SimulationResults` instance."""
         if result.id in self._results_by_id:
@@ -23,7 +50,7 @@ class SimulationsResults:
 
         self._results_by_id[result.id] = result
         bisect.insort(
-            self._results_sorted_acc_field, result, key=lambda r: r.acc_field
+            self._results_sorted_acc_field, result, key=lambda r: r.e_acc
         )
 
     def get_by_id(self, result_id: int) -> SimulationResults | None:

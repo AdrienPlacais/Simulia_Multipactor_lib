@@ -1,6 +1,8 @@
 """Define a base object to store a multipactor simulation results."""
 
-from abc import ABC
+from abc import ABC, abstractmethod
+from collections.abc import Sequence
+from pathlib import Path
 
 import numpy as np
 
@@ -51,3 +53,13 @@ class SimulationResults(ABC):
             return
         last_idx = idx_to_remove[0][0]
         self.population = self.population[:last_idx]
+
+
+class SimulationResultsFactory(ABC):
+    """Easily create :class:`.SimulationResults`."""
+
+    @abstractmethod
+    def from_file(
+        self, filepath: Path, e_acc: np.ndarray, delimiter: str = " ", **kwargs
+    ) -> Sequence[SimulationResults]:
+        """Load a file and create associate :class:`.SimulationResults`."""
