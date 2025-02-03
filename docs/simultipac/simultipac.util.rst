@@ -13,3 +13,4 @@ Submodules
    :maxdepth: 5
 
    simultipac.util.exp_growth
+   simultipac.util.log_manager

@@ -12,9 +12,11 @@ Subpackages
 .. toctree::
    :maxdepth: 5
 
-   simultipac.helper
+   simultipac.cst
    simultipac.loaders
    simultipac.particle_monitor
+   simultipac.simulation_results
+   simultipac.spark3d
    simultipac.util
    simultipac.visualization
 
