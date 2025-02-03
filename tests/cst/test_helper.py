@@ -66,3 +66,17 @@ def test_3d_files_are_skipped() -> None:
         mmdd_xxxxxxx_folder_to_dict(Path("/path/to/dummy/"))
         mock_debug.assert_called_once()
         mock_info.assert_called_once()
+
+
+def test_hidden_files_are_skipped() -> None:
+    """Check that hidden files are not loaded."""
+    mock_foldercontent = [
+        ("mmdd-xxxxxxx", ["Particle Info [PIC]", "3d"], [".keep"]),
+        ("mmdd-xxxxxxx/Particle Info [PIC]", [], []),
+    ]
+    with (
+        patch("os.walk", return_value=mock_foldercontent),
+        patch("logging.debug") as mock_debug,
+    ):
+        mmdd_xxxxxxx_folder_to_dict(Path("/path/to/dummy/"))
+        mock_debug.assert_called_once()
