@@ -136,6 +136,8 @@ def _parameters_file_to_dict(filepath: Path) -> dict[str, float | str]:
     parameters = {}
     with open(filepath) as file:
         for line in file:
+            if not line.strip():
+                continue
             line = line.split("=")
             parameters[line[0]] = line[1].strip()
 
