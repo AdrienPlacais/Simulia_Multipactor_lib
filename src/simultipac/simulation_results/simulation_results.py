@@ -22,6 +22,7 @@ class SimulationResults(ABC):
         time: np.ndarray,
         population: np.ndarray,
         trim_trailing: bool = False,
+        **kwargs,
     ) -> None:
         """Instantiate, post-process.
 
@@ -71,9 +72,3 @@ class SimulationResults(ABC):
 
 class SimulationResultsFactory(ABC):
     """Easily create :class:`.SimulationResults`."""
-
-    @abstractmethod
-    def from_file(
-        self, filepath: Path, e_acc: np.ndarray, delimiter: str = " ", **kwargs
-    ) -> Sequence[SimulationResults]:
-        """Load a file and create associate :class:`.SimulationResults`."""
