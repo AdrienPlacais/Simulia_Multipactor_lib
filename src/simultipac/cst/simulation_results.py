@@ -55,19 +55,46 @@ class CSTResults(SimulationResults):
 
 
 class CSTResultsFactory(SimulationResultsFactory):
-    """Define an object to easily instantiate :class:`.CSTResults`.
+    """Define an object to easily instantiate :class:`.CSTResults`."""
 
-    .. todo::
-        Handle when the accelerating field is not stored in the
-        :file:`E_acc in MV per m.txt` but another.
+    _parameters_file = "Parameters.txt"
+    _time_population_file = "Particle vs. Time.txt"
 
-    """
+    def __init__(
+        self,
+        *args,
+        e_acc_file: str = "E_acc in MV per m.txt",
+        p_rms_file: str | None = None,
+        **kwargs,
+    ) -> None:
+        """Instantiate object.
 
-    mandatory = (
-        "E_acc in MV per m.txt",
-        "Parameters.txt",
-        "Particle vs. Time.txt",
-    )
+        If necessary, override default ``e_acc`` filename.
+
+        Parameters
+        ----------
+        e_acc_file : str, optional
+            Name of the file where the value of the accelerating field in MV/m
+            is written. If not provided, we use default
+            ``"E_acc in MV per m.txt"``. Note that this file must exist.
+        e_acc_file : str, optional
+            Name of the file where the value of the RMS power in W is written.
+            If not provided, we do not load RMS power.
+
+        """
+        self._e_acc_file = e_acc_file
+        self._p_rms_file = p_rms_file
+
+        return super().__init__(*args, **kwargs)
+
+    @property
+    def mandatory_files(self) -> tuple[str, str, str]:
+        """Give the name of the mandatory files."""
+        return (
+            self._e_acc_file,
+            self._parameters_file,
+            self._time_population_file,
+        )
 
     def _from_simulation_folder(
         self, folderpath: Path, delimiter: str = "\t"
@@ -102,14 +129,16 @@ class CSTResultsFactory(SimulationResultsFactory):
         id = get_id(folderpath)
         raw_results = mmdd_xxxxxxx_folder_to_dict(folderpath, delimiter)
 
-        for key in self.mandatory:
+        for key in self.mandatory_files:
             if key not in raw_results:
                 raise MissingFileError("{key} file was not found.")
+
         e_acc = raw_results.pop("E_acc in MV per m.txt")
         part_time = raw_results.pop("Particle vs. Time.txt")
         time, population = part_time[:, 0], part_time[:, 1]
+        p_rms = raw_results.pop(self._p_rms_file) if self._p_rms_file else None
         results = CSTResults(
-            id=id, e_acc=e_acc, p_rms=None, time=time, population=population
+            id=id, e_acc=e_acc, p_rms=p_rms, time=time, population=population
         )
         return results
 
