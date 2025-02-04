@@ -76,11 +76,11 @@ class Spark3DResultsFactory(SimulationResultsFactory):
             return self._from_txt(
                 filepath=filepath, e_acc=e_acc, delimiter=delimiter, **kwargs
             )
-        if filetype == ".csv.":
+        if filetype == ".csv":
             return self._from_csv(
                 filepath=filepath, e_acc=e_acc, delimiter=delimiter, **kwargs
             )
-        raise OSError("SPARK3D files must be CSV or TXT.")
+        raise OSError(f"SPARK3D files must be CSV or TXT. I got {filetype = }")
 
     def _from_txt(
         self, filepath: Path, e_acc: np.ndarray, delimiter: str = " ", **kwargs
