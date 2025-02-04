@@ -11,7 +11,7 @@ factory = SimulationsResultsFactory("CST")
 results: SimulationsResults = factory.create(
     master_folder=Path("cst/Export_Parametric"),
 )
-idx_to_plot = (0, 5, 10)
+idx_to_plot = (0, 5, 90)
 axes = results.plot(x="time", y="population", idx_to_plot=idx_to_plot)
 
 results.fit_alpha(fitting_periods=5, model="classic")
