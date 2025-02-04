@@ -1,5 +1,4 @@
-r"""
-Define exponential growth models as well as fitting functions.
+r"""Define exponential growth models as well as fitting functions.
 
 Currently, only one exponential growth model is implemented:
 
@@ -49,11 +48,11 @@ def fit_all(
         val[f"{key_part} (model)"] = modelled
         if fit_parameters is None:
             logging.info(f"Skipped {map_id[key]}")
-            val["alfa (model)"] = np.nan
+            val["alpha (model)"] = np.nan
             continue
 
         # Keep only what really interests us
-        val["alfa (model)"] = fit_parameters[1]
+        val["alpha (model)"] = fit_parameters[1]
 
 
 def fit_all_spark(
@@ -78,11 +77,11 @@ def fit_all_spark(
         population_evolution[f"{key_part} (model)"] = modelled
         if fit_parameters is None:
             logging.info(f"Skipped {population_evolution[key_eacc]}")
-            population_evolution["alfa (model)"] = np.nan
+            population_evolution["alpha (model)"] = np.nan
             continue
 
         # Keep only what really interests us
-        population_evolution["alfa (model)"] = fit_parameters[1]
+        population_evolution["alpha (model)"] = fit_parameters[1]
 
 
 # =============================================================================
@@ -96,7 +95,7 @@ def _select_model(str_model: str):
     model_log = _model_1_log
     model_printer = _model_1_printer
     n_args = 2
-    #          N_0    alfa
+    #          N_0    alpha
     bounds = ([1e-10, -10.0], [np.inf, 10.0])
     initial_values = [None, -9.0]
 
@@ -117,7 +116,7 @@ def _model_1_printer(*args):
     """Pretty print the parameters."""
     logging.info("Optimized with:")
     logging.info(f"\tN_0   = {args[0]}")
-    logging.info(f"\talfa  = {args[1]} 1/ns")
+    logging.info(f"\talpha  = {args[1]} 1/ns")
 
 
 # =============================================================================
