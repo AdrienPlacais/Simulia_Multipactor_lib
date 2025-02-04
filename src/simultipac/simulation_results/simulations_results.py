@@ -61,9 +61,11 @@ class SimulationsResults:
         self,
         x: str,
         y: str,
-        idx_to_plot: Collection[int] | None = None,
-        axes: Any | None = None,
+        idx_to_plot: Iterable[int] | None = None,
         plotter: Plotter | None = None,
+        axes: Any | None = None,
+        autolabel: bool = True,
+        **kwargs,
     ) -> Any:
         """Plot ``y`` vs ``x`` using ``plotter.plot()`` method.
 
@@ -73,7 +75,14 @@ class SimulationsResults:
         """
         if plotter is None:
             plotter = self._plotter
-        raise NotImplementedError
+        if idx_to_plot is None:
+            idx_to_plot = (results.id for results in self._results)
+        axes = None
+        for idx in idx_to_plot:
+            axes = self._results[idx].plot(
+                x=x, y=y, axes=axes, autolabel=autolabel, **kwargs
+            )
+        return axes
 
     def fit_alpha(
         self, fitting_periods: int, model: str = "classic", **kwargs
