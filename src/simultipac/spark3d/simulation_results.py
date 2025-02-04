@@ -110,13 +110,11 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         filepath : Path
             Path to the file to load.
         e_acc : np.ndarray
-            Accelerating field values in MV/m.
+            Accelerating field values in V/m.
         delimiter : str, optional
             Delimiter between columns. The default is a space.
 
         """
-        e_acc *= 1e6
-
         raw_data = np.loadtxt(filepath, delimiter=delimiter)
         raw_data[:, 2] *= 1e9
 
@@ -171,13 +169,11 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         filepath : Path
             Path to the file to load.
         e_acc : np.ndarray
-            Accelerating field values in MV/m.
+            Accelerating field values in V/m.
         delimiter : str, optional
             Delimiter between columns. The default is a space.
 
         """
-        e_acc *= 1e6
-
         raw_data = np.loadtxt(filepath, delimiter=delimiter)
         time = raw_data[:, 0] * 1e9
         p_rms = None
