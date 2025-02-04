@@ -65,7 +65,7 @@ def test_mmdd_xxxxxxx_3d_files_are_skipped() -> None:
         patch("logging.info") as mock_info,
     ):
         mmdd_xxxxxxx_folder_to_dict(Path("/path/to/dummy/"))
-        mock_debug.assert_called_once()
+        assert mock_debug.call_count == 2
         mock_info.assert_called_once()
 
 
@@ -80,7 +80,7 @@ def test_mmdd_xxxxxxx_hidden_files_are_skipped() -> None:
         patch("logging.debug") as mock_debug,
     ):
         mmdd_xxxxxxx_folder_to_dict(Path("/path/to/dummy/"))
-        assert mock_debug.call_count == 2
+        assert mock_debug.call_count == 3
 
 
 def test_mmdd_xxxxxxx_normal_behavior() -> None:
