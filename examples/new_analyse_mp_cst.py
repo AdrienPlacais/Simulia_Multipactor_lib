@@ -9,7 +9,7 @@ from simultipac.simulation_results.simulations_results import (
 
 factory = SimulationsResultsFactory("CST")
 results: SimulationsResults = factory.create(
-    folderpath=Path("cst/Export_Parametric"),
+    master_folder=Path("cst/Export_Parametric"),
 )
 idx_to_plot = (0, 5, 10)
 axes = results.plot(x="time", y="population", idx_to_plot=idx_to_plot)
