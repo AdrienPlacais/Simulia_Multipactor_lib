@@ -13,7 +13,10 @@ Modernize and package the library.
 
 ### Changed
 
-- UI is more natural.
+- UI is more natural. In particular:
+    - Simulation results are stored in appropriate `SimulationResults`; a bunch of `SimulationResults` are stored to `SimulationsResults` objects.
+    - Factories allow easy creation of these objects.
+    - They have `plot` and `fit_alpha` methods.
 - Use `logging` module instead of color printed messages.
 
 ## [2.0.0] -- 2025-01-31
