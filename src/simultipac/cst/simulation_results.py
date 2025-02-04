@@ -15,7 +15,7 @@
 """
 
 import logging
-from collections.abc import Iterable
+from collections.abc import Sequence
 from pathlib import Path
 from pprint import pformat
 from typing import Any
@@ -85,7 +85,7 @@ class CSTResultsFactory(SimulationResultsFactory):
         self,
         *args,
         plotter: Plotter = DefaultPlotter(),
-        e_acc_parameter: Iterable[str] = (
+        e_acc_parameter: Sequence[str] = (
             "E_acc",
             "e_acc",
             "accelerating_field",
@@ -102,7 +102,7 @@ class CSTResultsFactory(SimulationResultsFactory):
         ----------
         plotter : Plotter
             Object to plot data.
-        e_acc_parameter : Iterable[str], optional
+        e_acc_parameter : Sequence[str], optional
             The possible names of the accelerating field in
             :file:`Parameters.txt`; we try all of them sequentially, and resort
             to taking it from a file if it was not successful. You can pass in
@@ -125,7 +125,7 @@ class CSTResultsFactory(SimulationResultsFactory):
     def mandatory_files(self) -> set[str]:
         """Give the name of the mandatory files."""
         mandatory = {self._parameters_file, self._time_population_file}
-        if self._e_acc_parameter is None:
+        if len(self._e_acc_parameter) == 0:
             mandatory.add(self._e_acc_file_mv_m)
         return mandatory
 
