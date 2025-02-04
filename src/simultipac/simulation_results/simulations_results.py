@@ -191,13 +191,22 @@ class SimulationsResultsFactory:
 
         """
         if self._tool == "CST":
-            assert master_folder is not None and master_folder.is_dir()
+            assert (
+                master_folder is not None
+            ), "You must provide the path to the CST mmdd-xxxxxxx folders"
+            assert master_folder.is_dir(), f"{master_folder = } must exist"
             factory = CSTResultsFactory(plotter=plotter, **kwargs)
             return factory.from_simulation_folders(master_folder=master_folder)
 
         if self._tool == "SPARK3D":
-            assert filepath is not None and filepath.is_file()
-            assert isinstance(e_acc, np.ndarray)
+            assert (
+                filepath is not None
+            ), "You must provide the path to the SPARK3D file results."
+            assert filepath.is_file(), f"{filepath = } must exist"
+            assert isinstance(e_acc, np.ndarray), (
+                "You must provide an array of accelerating fields. You gave "
+                f"{e_acc = }"
+            )
             factory = Spark3DResultsFactory(plotter=plotter, **kwargs)
             return factory.from_file(filepath, e_acc=e_acc)
         raise NotImplementedError(f"The tool {self._tool} is not implemented.")
