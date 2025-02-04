@@ -1,5 +1,6 @@
 """Define a base object to store a multipactor simulation results."""
 
+import logging
 from abc import ABC
 from typing import Any, Literal
 
@@ -30,6 +31,7 @@ class SimulationResults(ABC):
         population: np.ndarray,
         plotter: Plotter = DefaultPlotter(),
         trim_trailing: bool = False,
+        alpha: float | None = None,
         **kwargs,
     ) -> None:
         """Instantiate, post-process.
@@ -51,6 +53,9 @@ class SimulationResults(ABC):
         trim_trailing : bool, optional
             To remove the last simulation points, when the population is 0.
             Used with SPARK3D (``CSV`` import) for consistency with CST.
+        alpha : float | None, optional
+            Exponential growth factor in 1/ns. In general, you will not want to
+            set it yourself, use :meth:`SimulationResults.fit_alpha` instead.
 
         """
         self.id = id
@@ -62,6 +67,7 @@ class SimulationResults(ABC):
         self._check_consistent_shapes()
         if trim_trailing:
             self._trim_trailing()
+        self._alpha = alpha
 
     def __str__(self) -> str:
         """Print minimal info on current simulation."""
@@ -83,6 +89,21 @@ class SimulationResults(ABC):
         last_idx = idx_to_remove[0][0]
         self.population = self.population[:last_idx]
         self.time = self.time[:last_idx]
+
+    @property
+    def alpha(self) -> float:
+        """Return the exponential growth factor in 1/ns."""
+        if self._alpha is not None:
+            return self._alpha
+        logging.warning(
+            "Exponential growth factor not calculated yet. Returnin NaN."
+        )
+        return np.nan
+
+    @alpha.setter
+    def alpha(self, value: float) -> None:
+        """Set the value of exponential growh factor in 1/ns."""
+        self._alpha = value
 
     def fit_alpha(
         self, fitting_periods: int, model: str = "classic", **kwargs
