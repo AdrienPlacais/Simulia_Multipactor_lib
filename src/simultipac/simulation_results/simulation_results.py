@@ -63,6 +63,10 @@ class SimulationResults(ABC):
         if trim_trailing:
             self._trim_trailing()
 
+    def __str__(self) -> str:
+        """Print minimal info on current simulation."""
+        return f"Sim. #{self.id}, E_acc = {self.e_acc:.3e} V/m"
+
     def _check_consistent_shapes(self) -> None:
         """Raise an error if ``time`` and ``population`` have diff shapes."""
         if self.time.shape == self.population.shape:
@@ -92,6 +96,8 @@ class SimulationResults(ABC):
         y: str,
         plotter: Plotter | None = None,
         axes: Any | None = None,
+        autolabel: bool = True,
+        **kwargs,
     ) -> Any:
         """Plot ``y`` vs ``x`` using ``plotter.plot()`` method.
 
@@ -101,7 +107,14 @@ class SimulationResults(ABC):
         """
         if plotter is None:
             plotter = self._plotter
-        raise NotImplementedError
+        data = self._to_pandas(x, y)
+
+        label = None
+        if autolabel:
+            label = str(self)
+
+        axes = plotter.plot(data, x=x, y=y, axes=axes, label=label, **kwargs)
+        return axes
 
     def _to_pandas(self, *args: str) -> pd.DataFrame:
         """Concatenate all attribute arrays which name is in ``args`` to a df.
