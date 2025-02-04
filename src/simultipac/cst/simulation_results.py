@@ -8,8 +8,13 @@
 .. todo::
     Evaluate expressions such as ``param2 = 2 * param1``
 
+.. todo::
+    Allow to have P_rms instead of E_acc; E_acc does not make a lot of sense in
+    a lot of cases.
+
 """
 
+import logging
 from pathlib import Path
 from pprint import pformat
 from typing import Any
@@ -79,7 +84,8 @@ class CSTResultsFactory(SimulationResultsFactory):
         self,
         *args,
         plotter: Plotter = DefaultPlotter(),
-        e_acc_file: str = "E_acc in MV per m.txt",
+        e_acc_parameter: str | None = "E_acc",
+        e_acc_file_mv_m: str = "E_acc in MV per m.txt",
         p_rms_file: str | None = None,
         **kwargs,
     ) -> None:
@@ -91,27 +97,31 @@ class CSTResultsFactory(SimulationResultsFactory):
         ----------
         plotter : Plotter
             Object to plot data.
-        e_acc_file : str, optional
+        e_acc_parameter : str, optional
+            The name of the accelerating field in :file:`Parameters.txt`, in
+            V/m. You can set it to ``None`` to force the use of
+            ``e_acc_file_mv_m``.
+        e_acc_file_mv_m : str, optional
             Name of the file where the value of the accelerating field in MV/m
-            is written. If not provided, we use default
-            ``"E_acc in MV per m.txt"``. Note that this file must exist.
+            is written. This is a fallback, we prefer getting accelerating
+            field from the :file:`Parameters.txt` file.
         e_acc_file : str, optional
             Name of the file where the value of the RMS power in W is written.
             If not provided, we do not load RMS power.
 
         """
-        self._e_acc_file = e_acc_file
+        self._e_acc_parameter = e_acc_parameter
+        self._e_acc_file_mv_m = e_acc_file_mv_m
         self._p_rms_file = p_rms_file
         return super().__init__(*args, plotter=plotter, **kwargs)
 
     @property
-    def mandatory_files(self) -> tuple[str, str, str]:
+    def mandatory_files(self) -> set[str]:
         """Give the name of the mandatory files."""
-        return (
-            self._e_acc_file,
-            self._parameters_file,
-            self._time_population_file,
-        )
+        mandatory = {self._parameters_file, self._time_population_file}
+        if self._e_acc_parameter is None:
+            mandatory.add(self._e_acc_file_mv_m)
+        return mandatory
 
     def _from_simulation_folder(
         self, folderpath: Path, delimiter: str = "\t"
@@ -123,7 +133,7 @@ class CSTResultsFactory(SimulationResultsFactory):
             mmdd-xxxxxxx
             ├── 'Adimensional e.txt'
             ├── 'Adimensional h.txt'
-            ├── 'E_acc in MV per m.txt'           # Mandatory
+            ├── 'E_acc in MV per m.txt'           # Mandatory if E_acc not in :file:`Parameters.txt`
             ├──  Parameters.txt                   # Mandatory
             ├── 'ParticleInfo [PIC]'
             │   ├── 'Emitted Secondaries.txt'
@@ -153,7 +163,7 @@ class CSTResultsFactory(SimulationResultsFactory):
                     f"found {pformat(list(raw_results.keys()))}"
                 )
 
-        e_acc = raw_results.pop(no_extension(self._e_acc_file))
+        e_acc = self._pop_e_acc(raw_results, folderpath)
         part_time = raw_results.pop(no_extension(self._time_population_file))
         time, population = part_time[:, 0], part_time[:, 1]
         p_rms = (
@@ -170,6 +180,32 @@ class CSTResultsFactory(SimulationResultsFactory):
             plotter=self._plotter,
         )
         return results
+
+    def _pop_e_acc(self, raw_results: dict[str, Any], folder: Path) -> float:
+        """Pop the value of the accelerating field from ``raw_results.``
+
+        First, we try to get it from the :file:`Parameters.txt` under the name
+        ``self._e_acc_parameter``. If it does not exist or
+        ``self._e_acc_parameter`` is ``None``, we look into the
+        ``self._e_acc_file_mv_m`` file.
+
+        """
+        if self._e_acc_parameter is not None:
+            e_acc = raw_results[no_extension(self._parameters_file)].pop(
+                self._e_acc_parameter, None
+            )
+            if e_acc is not None:
+                return e_acc
+        if self._e_acc_file_mv_m is not None:
+            e_acc = raw_results.pop(no_extension(self._e_acc_file_mv_m), None)
+            if e_acc is not None:
+                return e_acc * 1e-6
+
+        raise ValueError(
+            f"Could not find accelerating field in {folder}. Tried to look for"
+            f" {self._e_acc_parameter = } key in Parameters.txt, and then for "
+            f"a file named {self._e_acc_file_mv_m = }"
+        )
 
     def from_simulation_folders(
         self, master_folder: Path, delimiter: str = "\t"
