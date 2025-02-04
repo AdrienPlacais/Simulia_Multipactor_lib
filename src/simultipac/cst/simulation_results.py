@@ -15,6 +15,7 @@
 """
 
 import logging
+from collections.abc import Iterable
 from pathlib import Path
 from pprint import pformat
 from typing import Any
@@ -84,7 +85,11 @@ class CSTResultsFactory(SimulationResultsFactory):
         self,
         *args,
         plotter: Plotter = DefaultPlotter(),
-        e_acc_parameter: str | None = "E_acc",
+        e_acc_parameter: Iterable[str] = (
+            "E_acc",
+            "e_acc",
+            "accelerating_field",
+        ),
         e_acc_file_mv_m: str = "E_acc in MV per m.txt",
         p_rms_file: str | None = None,
         **kwargs,
@@ -97,10 +102,11 @@ class CSTResultsFactory(SimulationResultsFactory):
         ----------
         plotter : Plotter
             Object to plot data.
-        e_acc_parameter : str, optional
-            The name of the accelerating field in :file:`Parameters.txt`, in
-            V/m. You can set it to ``None`` to force the use of
-            ``e_acc_file_mv_m``.
+        e_acc_parameter : Iterable[str], optional
+            The possible names of the accelerating field in
+            :file:`Parameters.txt`; we try all of them sequentially, and resort
+            to taking it from a file if it was not successful. You can pass in
+            an empty tuple to force the use of the file.
         e_acc_file_mv_m : str, optional
             Name of the file where the value of the accelerating field in MV/m
             is written. This is a fallback, we prefer getting accelerating
@@ -184,21 +190,28 @@ class CSTResultsFactory(SimulationResultsFactory):
     def _pop_e_acc(self, raw_results: dict[str, Any], folder: Path) -> float:
         """Pop the value of the accelerating field from ``raw_results.``
 
-        First, we try to get it from the :file:`Parameters.txt` under the name
-        ``self._e_acc_parameter``. If it does not exist or
-        ``self._e_acc_parameter`` is ``None``, we look into the
+        First, we try to get it from the :file:`Parameters.txt` under the names
+        listed in ``self._e_acc_parameter``. If was not found, we look into the
         ``self._e_acc_file_mv_m`` file.
 
         """
-        if self._e_acc_parameter is not None:
-            e_acc = raw_results[no_extension(self._parameters_file)].pop(
-                self._e_acc_parameter, None
-            )
+        parameters = raw_results[no_extension(self._parameters_file)]
+        for name in self._e_acc_parameter:
+            e_acc = parameters.pop(name, None)
             if e_acc is not None:
+                logging.debug(
+                    f"{folder}: took accelerating field from {name} in "
+                    f"{self._parameters_file}."
+                )
                 return e_acc
+
         if self._e_acc_file_mv_m is not None:
             e_acc = raw_results.pop(no_extension(self._e_acc_file_mv_m), None)
             if e_acc is not None:
+                logging.debug(
+                    f"{folder}: took accelerating field from "
+                    "{self._e_acc_file_mv_m} file. Multiplied it by 1e6."
+                )
                 return e_acc * 1e-6
 
         raise ValueError(
