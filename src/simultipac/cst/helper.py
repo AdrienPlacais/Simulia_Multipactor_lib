@@ -82,6 +82,7 @@ def mmdd_xxxxxxx_folder_to_dict(
     """
     dic = {}
 
+    logging.debug(f"Starting exploration of {folderpath = }")
     for root, _, files in os.walk(folderpath):
         if os.path.split(root)[-1] == "3d":
             logging.info(
