@@ -1,9 +1,11 @@
 """Define tests for the ABC :class:`.SimulationResults`."""
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from simultipac.simulation_results.simulation_results import (
+    MissingDataError,
     ShapeMismatchError,
     SimulationResults,
 )
@@ -67,3 +69,40 @@ def test_shape_mismatch_error() -> None:
         SimulationResults(
             id=4, e_acc=5.0, p_rms=2.0, time=time, population=population
         )
+
+
+def test_to_pandas() -> None:
+    """Check normal behavior of ``to_pandas`` method."""
+    time = np.array([0, 1, 2, 3])
+    population = np.array([1000, 1200, 1500, 10000])
+    e_acc = 5.0
+    result = SimulationResults(
+        id=1, e_acc=e_acc, p_rms=2.0, time=time, population=population
+    )
+    expected = pd.DataFrame(
+        {"time": time, "population": population, "e_acc": np.full(4, e_acc)}
+    )
+    returned = result._to_pandas("time", "population", "e_acc")
+    pd.testing.assert_frame_equal(expected, returned)
+
+
+def test_to_pandas_with_missing() -> None:
+    """Check erroneous behavior of ``to_pandas`` method."""
+    time = np.array([0, 1, 2, 3])
+    population = np.array([1000, 1200, 1500, 10000])
+    result = SimulationResults(
+        id=1, e_acc=5.0, p_rms=2.0, time=time, population=population
+    )
+    with pytest.raises(MissingDataError):
+        result._to_pandas("dummy")
+
+
+def test_to_pandas_with_float() -> None:
+    """Check erroneous behavior of ``to_pandas`` method."""
+    time = np.array([0, 1, 2, 3])
+    population = np.array([1000, 1200, 1500, 10000])
+    result = SimulationResults(
+        id=1, e_acc=5.0, p_rms=2.0, time=time, population=population
+    )
+    with pytest.raises(ValueError):
+        result._to_pandas("e_acc")

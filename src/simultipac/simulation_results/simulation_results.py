@@ -4,6 +4,7 @@ from abc import ABC
 from typing import Any
 
 import numpy as np
+import pandas as pd
 
 from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
@@ -11,6 +12,10 @@ from simultipac.plotter.plotter import Plotter
 
 class ShapeMismatchError(Exception):
     """Raise error when ``population`` and ``time`` have different shapes."""
+
+
+class MissingDataError(Exception):
+    """Error raised when trying to access non-existing data."""
 
 
 class SimulationResults(ABC):
@@ -97,6 +102,46 @@ class SimulationResults(ABC):
         if plotter is None:
             plotter = self._plotter
         raise NotImplementedError
+
+    def _to_pandas(self, *args: str) -> pd.DataFrame:
+        """Concatenate all attribute arrays which name is in ``args`` to a df.
+
+        Parameters
+        ----------
+        args : str
+            Name of arguments as saved in current objects. Example:
+                ``"population"``, ``"time"``...
+
+        Returns
+        -------
+        pd.DataFrame
+            Concatenates all desired data.
+
+        Raises
+        ------
+        MissingDataError:
+            If a string in ``args`` does not correspond to any attribute in
+            ``self`` (or if corresponding value is ``None``).
+        ValueError:
+            If all the ``args`` are a single value (float/int/bool).
+
+        """
+        data: dict[str, float | np.ndarray] = {
+            arg: value
+            for arg in args
+            if (value := getattr(self, arg, None)) is not None
+        }
+        if len(data) == len(args):
+            try:
+                return pd.DataFrame(data)
+            except ValueError as e:
+                raise ValueError(
+                    "Foats/ints/bools are not gettable with this method if "
+                    f"no array is asked at the same time.\n{e}"
+                )
+
+        missing = [arg for arg in args if getattr(self, arg, None) is None]
+        raise MissingDataError(f"{missing} not found in {self}")
 
 
 class SimulationResultsFactory(ABC):
