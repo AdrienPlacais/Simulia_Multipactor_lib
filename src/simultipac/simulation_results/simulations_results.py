@@ -63,7 +63,7 @@ class SimulationsResults:
         y: str,
         idx_to_plot: Iterable[int] | None = None,
         plotter: Plotter | None = None,
-        label: str | Literal["auto"] | None = None,
+        label: str | Literal["auto"] | None = "auto",
         grid: bool = True,
         axes: Any | None = None,
         **kwargs,
