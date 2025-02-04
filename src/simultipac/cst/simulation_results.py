@@ -21,6 +21,8 @@ from simultipac.cst.helper import (
     mmdd_xxxxxxx_folder_to_dict,
     no_extension,
 )
+from simultipac.plotter.default import DefaultPlotter
+from simultipac.plotter.plotter import Plotter
 from simultipac.simulation_results.simulation_results import (
     SimulationResults,
     SimulationResultsFactory,
@@ -41,6 +43,7 @@ class CSTResults(SimulationResults):
         p_rms: float | None,
         time: np.ndarray,
         population: np.ndarray,
+        plotter: Plotter = DefaultPlotter(),
         trim_trailing: bool = False,
         parameters: dict[str, float | bool | str] | None = None,
         **kwargs,
@@ -55,7 +58,14 @@ class CSTResults(SimulationResults):
             {} if parameters is None else parameters
         )
         return super().__init__(
-            id, e_acc, p_rms, time, population, trim_trailing, **kwargs
+            id,
+            e_acc,
+            p_rms,
+            time,
+            population,
+            plotter=plotter,
+            trim_trailing=trim_trailing,
+            **kwargs,
         )
 
 
@@ -68,6 +78,7 @@ class CSTResultsFactory(SimulationResultsFactory):
     def __init__(
         self,
         *args,
+        plotter: Plotter = DefaultPlotter(),
         e_acc_file: str = "E_acc in MV per m.txt",
         p_rms_file: str | None = None,
         **kwargs,
@@ -78,6 +89,8 @@ class CSTResultsFactory(SimulationResultsFactory):
 
         Parameters
         ----------
+        plotter : Plotter
+            Object to plot data.
         e_acc_file : str, optional
             Name of the file where the value of the accelerating field in MV/m
             is written. If not provided, we use default
@@ -89,8 +102,7 @@ class CSTResultsFactory(SimulationResultsFactory):
         """
         self._e_acc_file = e_acc_file
         self._p_rms_file = p_rms_file
-
-        return super().__init__(*args, **kwargs)
+        return super().__init__(*args, plotter=plotter, **kwargs)
 
     @property
     def mandatory_files(self) -> tuple[str, str, str]:
@@ -150,7 +162,12 @@ class CSTResultsFactory(SimulationResultsFactory):
             else None
         )
         results = CSTResults(
-            id=id, e_acc=e_acc, p_rms=p_rms, time=time, population=population
+            id=id,
+            e_acc=e_acc,
+            p_rms=p_rms,
+            time=time,
+            population=population,
+            plotter=self._plotter,
         )
         return results
 
@@ -160,6 +177,6 @@ class CSTResultsFactory(SimulationResultsFactory):
         """Load all :file:`mmdd-xxxxxxx` folders in ``master_folder``."""
         folders = list(master_folder.iterdir())
         return [
-            self._from_simulation_folder(folder, delimiter)
+            self._from_simulation_folder(folder, delimiter=delimiter)
             for folder in folders
         ]

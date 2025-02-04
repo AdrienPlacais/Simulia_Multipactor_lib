@@ -1,14 +1,16 @@
 """Define a set of simulation results."""
 
 import bisect
+from collections.abc import Collection, Iterable, Sequence
 from pathlib import Path
-from typing import Iterator, Literal, Self
+from typing import Any, Iterator, Literal
+
+import numpy as np
 
 from simultipac.cst.simulation_results import CSTResultsFactory
-from simultipac.simulation_results.simulation_results import (
-    SimulationResults,
-    SimulationResultsFactory,
-)
+from simultipac.plotter.default import DefaultPlotter
+from simultipac.plotter.plotter import Plotter
+from simultipac.simulation_results.simulation_results import SimulationResults
 from simultipac.spark3d.simulation_results import Spark3DResultsFactory
 
 
@@ -19,29 +21,17 @@ class UnsupportedToolError(Exception):
 class SimulationsResults:
     """Store multiple :class:`.SimulationResults` with retrieval methods."""
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        simulations_results: Iterable[SimulationResults],
+        plotter: Plotter,
+    ) -> None:
         """Instantiate object."""
         self._results_by_id: dict[int, SimulationResults] = {}
         self._results_sorted_acc_field: list[SimulationResults] = []
-
-    @classmethod
-    def from_folder(
-        cls, folder: Path, tool: Literal["CST", "SPARK3D"]
-    ) -> Self:
-        """Load all files in the given folder."""
-        paths = folder.glob("**/*")
-        files = (x for x in paths if x.is_file())
-        raise NotImplementedError
-
-    def _results_factory(
-        self, tool: Literal["CST", "SPARK3D"], **kwargs
-    ) -> SimulationResultsFactory:
-        """Get the proper results factory."""
-        if tool == "SPARK3D":
-            return Spark3DResultsFactory(**kwargs)
-        if tool == "CST":
-            return CSTResultsFactory(**kwargs)
-        raise UnsupportedToolError
+        # Should populate other dictionaries too
+        self._results = [x for x in simulations_results]
+        self._plotter = plotter
 
     def add(self, result: SimulationResults) -> None:
         """Add a new :class:`SimulationResults` instance."""
@@ -66,3 +56,148 @@ class SimulationsResults:
     def __iter__(self) -> Iterator[SimulationResults]:
         """Allow iteration over stored results."""
         return iter(self._results_sorted_acc_field)
+
+    def plot(
+        self,
+        x: str,
+        y: str,
+        idx_to_plot: Collection[int] | None = None,
+        axes: Any | None = None,
+        plotter: Plotter | None = None,
+    ) -> Any:
+        """Plot ``y`` vs ``x`` using ``plotter.plot()`` method.
+
+        If ``axes`` is provided, add the plots on top of it. If ``idx_to_plot``
+        is provided, plot only the corresponding :class:`.SimulationResults`.
+
+        """
+        if plotter is None:
+            plotter = self._plotter
+        raise NotImplementedError
+
+    def fit_alpha(
+        self, fitting_periods: int, model: str = "classic", **kwargs
+    ) -> None:
+        """Fit exp growth factor of every :class:`.SimulationResults`."""
+        for results in self._results:
+            results.fit_alpha(
+                fitting_periods=fitting_periods, model=model, **kwargs
+            )
+
+    def save(
+        self,
+        filepath: Path | str,
+        *to_save: str,
+        delimiter: str = "\t",
+        **kwargs,
+    ) -> None:
+        """Concatenate all data named ``to_save`` and save it to a file."""
+        raise NotImplementedError
+
+
+class SimulationsResultsFactory:
+    """An object to create a :class:`.SimulationsResults`."""
+
+    def __init__(
+        self,
+        tool: Literal["SPARK3D", "CST"],
+        plotter: Plotter = DefaultPlotter(),
+        *args,
+        **kwargs,
+    ) -> None:
+        """Create the object."""
+        self._tool = tool
+        self._plotter = plotter
+
+    def create(
+        self,
+        *,
+        filepath: Path | None = None,
+        master_folder: Path | None = None,
+        e_acc: np.ndarray | None = None,
+        **kwargs,
+    ) -> SimulationsResults:
+        """Create all the objects.
+
+        Parameters
+        ----------
+        plotter : Plotter
+            An object to plot data.
+        filepath : Path | None
+            Filepath to a ``TXT`` or ``CSV`` file for SPARK3D.
+        master_folder : Path | None
+            Filepath to the folder holding all the ``mmdd-xxxxxxx`` folders for
+            CST.
+        e_acc : np.ndarray | None
+            The accelerating fields, used by SPARK3D.
+        kwargs :
+            Keyword arguments passed to the appropriate subclass of
+            :class:`.SimulationResultsFactory`.
+
+        Returns
+        -------
+        SimulationsResults
+            A concatenation of the individual simulations.
+
+        """
+        individual_simulation_results = self._create_individual(
+            filepath=filepath,
+            master_folder=master_folder,
+            e_acc=e_acc,
+            plotter=self._plotter,
+            **kwargs,
+        )
+        simulations_results = SimulationsResults(
+            individual_simulation_results,
+            plotter=self._plotter,
+        )
+        return simulations_results
+
+    def _create_individual(
+        self,
+        *,
+        plotter: Plotter,
+        filepath: Path | None = None,
+        master_folder: Path | None = None,
+        e_acc: np.ndarray | None = None,
+        **kwargs,
+    ) -> Sequence[SimulationResults]:
+        """Create several individual :class:`.SimulationResults`.
+
+        Parameters
+        ----------
+        plotter : Plotter
+            An object to plot data.
+        filepath : Path | None
+            Filepath to a ``TXT`` or ``CSV`` file for SPARK3D.
+        master_folder : Path | None
+            Filepath to the folder holding all the ``mmdd-xxxxxxx`` folders for
+            CST.
+        e_acc : np.ndarray | None
+            The accelerating fields, used by SPARK3D.
+        kwargs :
+            Keyword arguments passed to the appropriate subclass of
+            :class:`.SimulationResultsFactory`.
+
+        Returns
+        -------
+        Sequence[SimulationResults]
+            The individual :class:`.SimulationResults`.
+
+        Raises
+        ------
+        NotImplementedError:
+            When ``self._tool`` is not in ``("CST", "SPARK3D")``.
+
+        """
+        if self._tool == "CST":
+            assert master_folder is not None and master_folder.is_dir()
+            factory = CSTResultsFactory(plotter=plotter, **kwargs)
+            return factory.from_simulation_folders(master_folder=master_folder)
+
+        if self._tool == "SPARK3D":
+            assert filepath is not None and filepath.is_file()
+            assert isinstance(e_acc, np.ndarray)
+            factory = Spark3DResultsFactory(plotter=plotter, **kwargs)
+            return factory.from_file(filepath, e_acc=e_acc)
+        raise NotImplementedError(f"The tool {self._tool} is not implemented.")

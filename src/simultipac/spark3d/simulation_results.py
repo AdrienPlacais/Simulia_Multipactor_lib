@@ -4,6 +4,8 @@ from pathlib import Path
 
 import numpy as np
 
+from simultipac.plotter.default import DefaultPlotter
+from simultipac.plotter.plotter import Plotter
 from simultipac.simulation_results.simulation_results import (
     SimulationResults,
     SimulationResultsFactory,
@@ -13,9 +15,57 @@ from simultipac.simulation_results.simulation_results import (
 class Spark3DResults(SimulationResults):
     """Store a single SPARK3D simulation results."""
 
+    def __init__(
+        self,
+        id: int,
+        e_acc: float,
+        p_rms: float | None,
+        time: np.ndarray,
+        population: np.ndarray,
+        plotter: Plotter = DefaultPlotter(),
+        trim_trailing: bool = False,
+        **kwargs,
+    ) -> None:
+        """Instantiate, post-process.
+
+        Parameters
+        ----------
+        id : int
+            Unique simulation identifier.
+        e_acc : float
+            Accelerating field in V/m.
+        p_rms : float | None
+            RMS power in W.
+        time : np.ndarray
+            Time in ns.
+        population : np.ndarray
+            Evolution of population with time. Same shape as ``time``.
+        plotter : Plotter, optional
+            An object allowing to plot data.
+        trim_trailing : bool, optional
+            To remove the last simulation points, when the population is 0.
+            Used with SPARK3D (``CSV`` import) for consistency with CST.
+
+        """
+        super().__init__(
+            id,
+            e_acc,
+            p_rms,
+            time,
+            population,
+            plotter=plotter,
+            trim_trailing=trim_trailing,
+            **kwargs,
+        )
+
 
 class Spark3DResultsFactory(SimulationResultsFactory):
     """Define an object to easily instantiate :class:`.Spark3DResults`."""
+
+    def __init__(
+        self, plotter: Plotter = DefaultPlotter(), *args, **kwargs
+    ) -> None:
+        super().__init__(plotter, *args, **kwargs)
 
     def from_file(
         self, filepath: Path, e_acc: np.ndarray, delimiter: str = " ", **kwargs
@@ -85,6 +135,7 @@ class Spark3DResultsFactory(SimulationResultsFactory):
                     p_rms=power,
                     time=time,
                     population=num_elec,
+                    plotter=self._plotter,
                 )
             )
 
@@ -142,6 +193,7 @@ class Spark3DResultsFactory(SimulationResultsFactory):
                     p_rms=p_rms,
                     time=time,
                     population=population,
+                    plotter=self._plotter,
                     trim_trailing=True,
                 )
             )

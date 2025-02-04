@@ -1,8 +1,12 @@
 """Define a base object to store a multipactor simulation results."""
 
 from abc import ABC
+from typing import Any
 
 import numpy as np
+
+from simultipac.plotter.default import DefaultPlotter
+from simultipac.plotter.plotter import Plotter
 
 
 class ShapeMismatchError(Exception):
@@ -19,6 +23,7 @@ class SimulationResults(ABC):
         p_rms: float | None,
         time: np.ndarray,
         population: np.ndarray,
+        plotter: Plotter = DefaultPlotter(),
         trim_trailing: bool = False,
         **kwargs,
     ) -> None:
@@ -36,6 +41,8 @@ class SimulationResults(ABC):
             Time in ns.
         population : np.ndarray
             Evolution of population with time. Same shape as ``time``.
+        plotter : Plotter, optional
+            An object allowing to plot data.
         trim_trailing : bool, optional
             To remove the last simulation points, when the population is 0.
             Used with SPARK3D (``CSV`` import) for consistency with CST.
@@ -46,6 +53,7 @@ class SimulationResults(ABC):
         self.p_rms = p_rms
         self.time = time
         self.population = population
+        self._plotter = plotter
         self._check_consistent_shapes()
         if trim_trailing:
             self._trim_trailing()
@@ -67,6 +75,35 @@ class SimulationResults(ABC):
         self.population = self.population[:last_idx]
         self.time = self.time[:last_idx]
 
+    def fit_alpha(
+        self, fitting_periods: int, model: str = "classic", **kwargs
+    ) -> None:
+        """Fit exp growth factor."""
+        raise NotImplementedError
+
+    def plot(
+        self,
+        x: str,
+        y: str,
+        plotter: Plotter | None = None,
+        axes: Any | None = None,
+    ) -> Any:
+        """Plot ``y`` vs ``x`` using ``plotter.plot()`` method.
+
+        If ``axes`` is provided, add the plots on top of it. If ``idx_to_plot``
+        is provided, plot only the corresponding :class:`.SimulationResults`.
+
+        """
+        if plotter is None:
+            plotter = self._plotter
+        raise NotImplementedError
+
 
 class SimulationResultsFactory(ABC):
     """Easily create :class:`.SimulationResults`."""
+
+    def __init__(
+        self, plotter: Plotter = DefaultPlotter(), *args, **kwargs
+    ) -> None:
+        """Instantiate object."""
+        self._plotter = plotter
