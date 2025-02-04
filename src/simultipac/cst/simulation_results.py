@@ -149,8 +149,8 @@ class CSTResultsFactory(SimulationResultsFactory):
         for filename in self.mandatory_files:
             if no_extension(filename) not in raw_results:
                 raise MissingFileError(
-                    f"{filename = } was not found. However, I found "
-                    f"{pformat(list(raw_results.keys()))}"
+                    f"{filename = } was not found in {folderpath}. However, I "
+                    f"found {pformat(list(raw_results.keys()))}"
                 )
 
         e_acc = raw_results.pop(no_extension(self._e_acc_file))
