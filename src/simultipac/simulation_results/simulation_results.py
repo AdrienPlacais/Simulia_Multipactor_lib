@@ -1,7 +1,7 @@
 """Define a base object to store a multipactor simulation results."""
 
 from abc import ABC
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 import pandas as pd
@@ -95,25 +95,47 @@ class SimulationResults(ABC):
         x: str,
         y: str,
         plotter: Plotter | None = None,
+        label: str | Literal["auto"] | None = None,
+        grid: bool = True,
         axes: Any | None = None,
-        autolabel: bool = True,
         **kwargs,
     ) -> Any:
         """Plot ``y`` vs ``x`` using ``plotter.plot()`` method.
 
-        If ``axes`` is provided, add the plots on top of it. If ``idx_to_plot``
-        is provided, plot only the corresponding :class:`.SimulationResults`.
+        Parameters
+        ----------
+        x, y : str
+            Name of properties to plot.
+        plotter : Plotter | None, optional
+            Object to use for plot. If not provided, we use ``self._plotter``.
+        label : str | Literal["auto"] | None, optional
+            If provided, overrides the legend. Useful when several simulations
+            are shown on the same plot. Use the magic keyword ``"auto"`` to
+            legend with a short description of current object.
+        grid : bool, optional
+            If grid should be plotted. Default is True.
+        axes : Axes | NDArray[Any] | None, optional
+            Axes to re-use, if provided. The default is None (plot on new
+            axis).
+        kwargs :
+            Other keyword arguments passed to the :meth:`.Plotter.plot` method.
+
+        Returns
+        -------
+        Any
+            Objects created by the :meth:`.Plotter.plot`.
 
         """
         if plotter is None:
             plotter = self._plotter
         data = self._to_pandas(x, y)
 
-        label = None
-        if autolabel:
+        if label == "auto":
             label = str(self)
 
-        axes = plotter.plot(data, x=x, y=y, axes=axes, label=label, **kwargs)
+        axes = plotter.plot(
+            data, x=x, y=y, grid=grid, axes=axes, label=label, **kwargs
+        )
         return axes
 
     def _to_pandas(self, *args: str) -> pd.DataFrame:

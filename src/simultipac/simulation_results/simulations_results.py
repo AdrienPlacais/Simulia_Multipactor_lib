@@ -1,7 +1,7 @@
 """Define a set of simulation results."""
 
 import bisect
-from collections.abc import Collection, Iterable, Sequence
+from collections.abc import Iterable, Sequence
 from pathlib import Path
 from typing import Any, Iterator, Literal
 
@@ -63,14 +63,38 @@ class SimulationsResults:
         y: str,
         idx_to_plot: Iterable[int] | None = None,
         plotter: Plotter | None = None,
+        label: str | Literal["auto"] | None = None,
+        grid: bool = True,
         axes: Any | None = None,
-        autolabel: bool = True,
         **kwargs,
     ) -> Any:
-        """Plot ``y`` vs ``x`` using ``plotter.plot()`` method.
+        """Recursively call :meth:`.SimulationResults.plot`.
 
-        If ``axes`` is provided, add the plots on top of it. If ``idx_to_plot``
-        is provided, plot only the corresponding :class:`.SimulationResults`.
+        Parameters
+        ----------
+        x, y : str
+            Name of properties to plot.
+        idx_to_plot : Iterable[int] | None, optional
+            If provided, plot only the :class:`.SimulationResult` with those
+            ids.
+        plotter : Plotter | None, optional
+            Object to use for plot. If not provided, we use ``self._plotter``.
+        label : str | Literal["auto"] | None, optional
+            If provided, overrides the legend. Useful when several simulations
+            are shown on the same plot. Use the magic keyword ``"auto"`` to
+            legend with a short description of current object.
+        grid : bool, optional
+            If grid should be plotted. Default is True.
+        axes : Axes | NDArray[Any] | None, optional
+            Axes to re-use, if provided. The default is None (plot on new
+            axis).
+        kwargs :
+            Other keyword arguments passed to the :meth:`.Plotter.plot` method.
+
+        Returns
+        -------
+        Any
+            Objects created by the :meth:`.Plotter.plot`.
 
         """
         if plotter is None:
@@ -80,7 +104,13 @@ class SimulationsResults:
         axes = None
         for idx in idx_to_plot:
             axes = self._results[idx].plot(
-                x=x, y=y, axes=axes, autolabel=autolabel, **kwargs
+                x=x,
+                y=y,
+                plotter=plotter,
+                label=label,
+                grid=grid,
+                axes=axes,
+                **kwargs,
             )
         return axes
 

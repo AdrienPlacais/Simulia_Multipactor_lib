@@ -22,7 +22,6 @@ class DefaultPlotter(Plotter):
         data: pd.DataFrame,
         x: str,
         y: str,
-        *args,
         grid: bool = True,
         axes: Axes | NDArray[Any] | None = None,
         xlabel: str | None = None,
@@ -43,12 +42,14 @@ class DefaultPlotter(Plotter):
         axes : Axes | NDArray[Any] | None, optional
             Axes to re-use, if provided. The default is None (plot on new
             axis).
-        xlabel, ylabel : str | None
+        xlabel, ylabel : str | None, optional
             Name of the labels. If not provided, we use the markdown equivalent
             of x/y, if defined in :data:`.markdown`.
-        label : str | None
+        label : str | None, optional
             If provided, overrides the legend. Useful when several simulations
             are shown on the same plot.
+        kwargs :
+            Other keyword passed to the ``pd.DataFrame.plot`` method.
 
         Returns
         -------
