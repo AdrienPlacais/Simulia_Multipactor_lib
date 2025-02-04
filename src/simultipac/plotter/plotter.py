@@ -10,7 +10,7 @@ class Plotter(ABC):
     """An object used to plot data."""
 
     @abstractmethod
-    def plot(self, data: pd.DataFrame, *args, **kwargs) -> Any:
+    def plot(self, data: pd.DataFrame, x: str, y: str, *args, **kwargs) -> Any:
         """Plot data and return axes object."""
 
     @abstractmethod
