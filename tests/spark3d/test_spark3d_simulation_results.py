@@ -17,11 +17,11 @@ def test_spark3d_results_initialization() -> None:
     time = np.array([0, 1, 2, 3], dtype=np.float64)
     population = np.array([10, 8, 5, 0], dtype=np.float64)
     result = Spark3DResults(
-        id=1, e_acc=5.0, p_rms=2.0, time=time, population=population
+        id=1, e_acc=5e6, p_rms=2.0, time=time, population=population
     )
 
     assert result.id == 1
-    assert result.e_acc == 5.0
+    assert result.e_acc == 5e6
     assert result.p_rms == 2.0
     assert np.array_equal(result.time, time)
     assert np.array_equal(result.population, population)
@@ -41,7 +41,7 @@ def test_spark3d_results_factory_from_txt(mocker: MagicMock) -> None:
     )
     mocker.patch("numpy.loadtxt", return_value=mock_data)
 
-    e_acc = np.array([1.0, 2.0])
+    e_acc = np.array([1e6, 2e6])
     results = factory._from_txt(Path("dummy.txt"), e_acc, delimiter=" ")
 
     assert len(results) == 2
@@ -63,7 +63,7 @@ def test_spark3d_results_factory_from_csv(mocker: MagicMock) -> None:
     )
     mocker.patch("numpy.loadtxt", return_value=mock_data)
 
-    e_acc = np.array([1.0, 2.0])
+    e_acc = np.array([1e6, 2e6])
     results = factory._from_csv(Path("dummy.csv"), e_acc, delimiter=" ")
 
     assert len(results) == 2
@@ -86,7 +86,7 @@ def test_spark3d_results_factory_from_csv_with_trim(mocker: MagicMock) -> None:
     )
     mocker.patch("numpy.loadtxt", return_value=mock_data)
 
-    e_acc = np.array([1.0, 2.0])
+    e_acc = np.array([1e6, 2e6])
     results = factory._from_csv(Path("dummy.csv"), e_acc, delimiter=" ")
 
     assert len(results) == 2
