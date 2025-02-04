@@ -102,12 +102,12 @@ def _select_model(str_model: str):
     return model, model_log, model_printer, n_args, bounds, initial_values
 
 
-def _model_1(time: np.array, *args) -> np.array:
+def _model_1(time: np.ndarray, *args) -> np.ndarray:
     """Exponential growth model."""
     return args[0] * np.exp(args[1] * time)
 
 
-def _model_1_log(time: np.array, *args) -> np.array:
+def _model_1_log(time: np.ndarray, *args) -> np.ndarray:
     """Exponential growth model but in log."""
     return np.log(args[0]) + args[1] * time
 
@@ -124,7 +124,7 @@ def _model_1_printer(*args):
 # =============================================================================
 def _fit_single(
     str_model: str,
-    data: np.array,
+    data: np.ndarray,
     period: float,
     fitting_range: float,
     running_mean: bool = True,
@@ -138,7 +138,7 @@ def _fit_single(
     ----------
     str_model : str
         Indicates what exp growth model should be used.
-    data : np.array
+    data : np.ndarray
         Holds time in ns in first column, number of electrons in second.
     period : float
         RF period in ns.
@@ -252,7 +252,7 @@ def _fit_single_spark(
     ----------
     str_model : str
         Indicates what exp growth model should be used.
-    population_evolution : np.array
+    population_evolution : np.ndarray
         Holds time in ns in first column, number of electrons in second.
     fitting_range : float
         Time over which the exp growth is searched. Longer is better, but you
@@ -265,7 +265,7 @@ def _fit_single_spark(
 
     Returns
     -------
-    modelled : np.array
+    modelled : np.ndarray
         Holds time in first column, modelled number of electrons in second.
     fit_parameters : tuple or None
         Holds all exp growth model parameters, as well as the time at which the
