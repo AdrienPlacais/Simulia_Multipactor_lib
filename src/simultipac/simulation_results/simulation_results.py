@@ -79,7 +79,7 @@ class SimulationResults(ABC):
     def __str__(self) -> str:
         """Print minimal info on current simulation."""
         info = [f"Sim. #{self.id}", f"E_acc = {self.e_acc:.3e} V/m"]
-        if self._exp_growth_parameters is None:
+        if len(self._exp_growth_parameters) == 0:
             return ", ".join(info)
         info.append(r"$\alpha = $" + f"{self.alpha} ns^-1")
         return ", ".join(info)
