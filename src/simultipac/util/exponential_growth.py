@@ -176,7 +176,7 @@ def fit_alpha(
 
     fit_args = _to_fit(time, population, fitting_range, log_fit=log_fit)
     fit_func, fit_time, fit_pop = fit_args
-    exp_growth_parameters["t_0"] = fit_time[0]
+    exp_growth_parameters["t_0"] = float(fit_time[0])
 
     if running_mean:
         width = _n_points_in_a_period(fit_time, period)
@@ -202,8 +202,8 @@ def fit_alpha(
         logging.info(f"Fit failed, returnin NaN parameters.\n{e}")
         return exp_growth_parameters
 
-    exp_growth_parameters["n_0"] = result[0]
-    exp_growth_parameters["alpha"] = result[1]
+    exp_growth_parameters["n_0"] = float(result[0])
+    exp_growth_parameters["alpha"] = float(result[1])
     return exp_growth_parameters
 
 
