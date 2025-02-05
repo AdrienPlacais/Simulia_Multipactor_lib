@@ -122,7 +122,7 @@ class SimulationResults(ABC):
             [1e-10, -10.0],
             [np.inf, 10.0],
         ),
-        initial_values: list[float | None] = [None, -9.0],
+        initial_values: list[float] = [0.0, 0.0],
         **kwargs,
     ) -> None:
         """Fit exp growth factor.
@@ -146,7 +146,7 @@ class SimulationResults(ABC):
         bounds : tuple[list[float], list[float]], optional
             Upper bound and lower bound for the two variables: initial number
             of electrons, exp growth factor.
-        initial_values: list[float | None], optional
+        initial_values: list[float], optional
             Initial values for the two variables: initial number of electrons,
             exp growth factor.
 
