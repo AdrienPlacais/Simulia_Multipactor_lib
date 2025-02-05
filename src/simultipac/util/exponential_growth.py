@@ -269,7 +269,13 @@ def _indexes_for_fit(
     """
     if fitting_range <= 0.0:
         raise ValueError(f"Cannot perform a fit on {fitting_range = }")
-    idx_end = np.where(population == 0)[0][0]
+
+    null_population_indexes = np.where(population == 0)[0]
+
+    idx_end = len(time) - 1
+    if len(null_population_indexes) > 0:
+        idx_end = null_population_indexes[0] - 1
+
     final_time = float(time[idx_end])
 
     start_time = final_time - fitting_range
@@ -288,7 +294,7 @@ def _indexes_for_fit(
             f"{fitting_range = }?"
         )
     logging.debug(f"Fit will be performed from index {idx_start} to {idx_end}")
-    return range(idx_start, idx_end)
+    return range(idx_start, idx_end + 1)
 
 
 def _n_points_in_a_period(
@@ -303,11 +309,12 @@ def _n_points_in_a_period(
     n_points = np.argmin(np.abs(time - period))
     if not isinstance(n_points, int):
         n_points = int(n_points)
+    logging.critical(f"{n_points = }, {len(time) = }")
     if n_points < min_points_per_period:
         logging.warning(
-            f"There are {n_points} data points per RF period, which may be too "
+            f"There are {n_points} data points per RF period, which may be too"
             " low for the running mean routine. Maybe time (final value: "
-            f"{time[-1]}) and {period = } have different units?"
+            f"{time[-1]:.2e}) and {period = :.2e} have different units?"
         )
     return n_points
 
