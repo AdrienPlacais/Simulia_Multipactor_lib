@@ -1,13 +1,10 @@
 """Define a default plotter."""
 
-from collections.abc import Sequence
 from typing import Any
 
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import vedo
 from matplotlib.axes import Axes
+from matplotlib.typing import ColorType
 from numpy.typing import NDArray
 
 from simultipac.constants import markdown
@@ -28,7 +25,7 @@ class DefaultPlotter(Plotter):
         ylabel: str | None = None,
         label: str | None = None,
         **kwargs,
-    ) -> Axes | NDArray[Any]:
+    ) -> tuple[Axes | NDArray[Any], ColorType]:
         """Plot 2D data.
 
         Parameters
@@ -53,8 +50,10 @@ class DefaultPlotter(Plotter):
 
         Returns
         -------
-        Axes | NDArray[Any]
+        axes : Axes | NDArray[Any]
             Objects created by the ``pd.DataFrame.plot`` method.
+        color : ColorType
+            Color used for the plot.
 
         """
         if xlabel is None:
@@ -72,7 +71,18 @@ class DefaultPlotter(Plotter):
             **kwargs,
         )
         assert axes is not None
-        return axes
+        color = self._get_color_from_last_plot(axes)
+        return axes, color
+
+    def _get_color_from_last_plot(
+        self, axes: Axes | NDArray[Any]
+    ) -> ColorType:
+        """Get the color used for the last plot."""
+        ax = axes if isinstance(axes, Axes) else axes[-1]
+        assert isinstance(ax, Axes)
+        lines = ax.get_lines()
+        color = lines[-1].get_color()
+        return color
 
     def plot_3d(self, *args, **kwargs) -> Any:
         """Create a 3D plot."""

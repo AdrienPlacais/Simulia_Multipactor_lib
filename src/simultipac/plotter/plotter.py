@@ -21,7 +21,7 @@ class Plotter(ABC):
         ylabel: str | None = None,
         label: str | None = None,
         **kwargs,
-    ) -> Any:
+    ) -> tuple[Any, Any]:
         """Plot 2D data.
 
         Parameters
@@ -48,6 +48,8 @@ class Plotter(ABC):
         -------
         Any
             Axis objects.
+        Any
+            Color used for the plot.
 
         """
 

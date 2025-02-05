@@ -75,6 +75,7 @@ class SimulationResults(ABC):
         )
         self._period: float | None = period
         self._modelled_population: np.ndarray | None = None
+        self._color: Any = None
 
     def __str__(self) -> str:
         """Print minimal info on current simulation."""
@@ -229,9 +230,18 @@ class SimulationResults(ABC):
         if label == "auto":
             label = str(self)
 
-        axes = plotter.plot(
-            data, x=x, y=y, grid=grid, axes=axes, label=label, **kwargs
+        axes, color = plotter.plot(
+            data,
+            x=x,
+            y=y,
+            grid=grid,
+            axes=axes,
+            label=label,
+            color=self._color,
+            **kwargs,
         )
+        if self._color is None:
+            self._color = color
         return axes
 
     def _to_pandas(self, *args: str) -> pd.DataFrame:
