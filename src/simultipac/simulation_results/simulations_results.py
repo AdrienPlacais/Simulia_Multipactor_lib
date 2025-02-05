@@ -121,12 +121,53 @@ class SimulationsResults:
         return axes
 
     def fit_alpha(
-        self, fitting_periods: int, model: str = "classic", **kwargs
+        self,
+        fitting_periods: int,
+        running_mean: bool = True,
+        log_fit: bool = True,
+        minimum_final_number_of_electrons: int = 0,
+        bounds: tuple[list[float], list[float]] = (
+            [1e-10, -10.0],
+            [np.inf, 10.0],
+        ),
+        initial_values: list[float | None] = [None, -9.0],
+        **kwargs,
     ) -> None:
-        """Fit exp growth factor of every :class:`.SimulationResults`."""
-        for results in self._results:
-            results.fit_alpha(
-                fitting_periods=fitting_periods, model=model, **kwargs
+        """Fit exp growth factor.
+
+        Parameters
+        ----------
+        fitting_periods : int
+            Number of periods over which the exp growth is searched. Longer is
+            better, but you do not want to start the fit before the exp growth
+            starts.
+        running_mean : bool, optional
+            To tell if you want to average the number of particles over one
+            period. Highly recommended. The default is True.
+        log_fit : bool, optional
+            To perform the fit on :func:`exp_growth_log` rather than
+            :func:`exp_growth`. The default is True, as it generally shows
+            better convergence.
+        minimum_final_number_of_electrons : int, optional
+            Under this final number of electrons, we do no bother finding the
+            exp growth factor and set all fit parameters to ``NaN``.
+        bounds : tuple[list[float], list[float]], optional
+            Upper bound and lower bound for the two variables: initial number
+            of electrons, exp growth factor.
+        initial_values: list[float | None], optional
+            Initial values for the two variables: initial number of electrons,
+            exp growth factor.
+
+        """
+        for result in self._results:
+            result.fit_alpha(
+                fitting_periods=fitting_periods,
+                running_mean=running_mean,
+                log_fit=log_fit,
+                minimum_final_number_of_electrons=minimum_final_number_of_electrons,
+                bounds=bounds,
+                initial_values=initial_values,
+                **kwargs,
             )
 
     def save(
