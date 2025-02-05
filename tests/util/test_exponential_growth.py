@@ -101,6 +101,19 @@ def test_n_points_in_a_period() -> None:
     assert n_points == points_per_period
 
 
+def test_n_points_in_a_period_not_starting_0() -> None:
+    """Test _n_points_in_a_period function."""
+    points_per_period = 10
+    periods = 100
+    period = 1.0
+    t_0 = 143
+    time = t_0 + np.linspace(0, periods * period, periods * points_per_period)
+
+    n_points = _n_points_in_a_period(time, period)
+
+    assert n_points == points_per_period
+
+
 def test_n_points_in_a_period_not_enough_points(mocker: MagicMock) -> None:
     """Test _n_points_in_a_period function."""
     points_per_period = 10

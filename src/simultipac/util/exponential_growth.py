@@ -306,7 +306,7 @@ def _n_points_in_a_period(
     ``min_points_per_period``.
 
     """
-    n_points = np.argmin(np.abs(time - period))
+    n_points = np.argmin(np.abs(time - time[0] - period))
     if not isinstance(n_points, int):
         n_points = int(n_points)
     logging.critical(f"{n_points = }, {len(time) = }")
