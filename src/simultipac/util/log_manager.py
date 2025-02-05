@@ -69,11 +69,15 @@ def _console_handler(
 
 
 def _file_handler(
-    file: Path, level: str, color: bool, line_template: str
+    file: Path,
+    level: str,
+    color: bool,
+    line_template: str,
+    mode: Literal["a", "w"] = "w",
 ) -> logging.Handler | Literal[False]:
     """Set up the file handler."""
     try:
-        logfile_handler = logging.FileHandler(file, mode="a")
+        logfile_handler = logging.FileHandler(file, mode=mode)
     except Exception as e:
         print(f"Failed to set up log file: {e}")
         return False
@@ -126,6 +130,7 @@ def set_up_logging(
     logfile_log_level: str = "INFO",
     logfile_log_color: bool = False,
     logfile_line_template: str = "%(color_on)s[%(asctime)s] [%(levelname)-8s] [%(filename)-20s]%(color_off)s %(message)s",
+    logfile_mode: Literal["a", "w"] = "w",
 ) -> bool:
     """Set up logging with both console and file handlers."""
     # Remove previous logger
@@ -150,6 +155,7 @@ def set_up_logging(
         logfile_log_level,
         logfile_log_color,
         logfile_line_template,
+        mode=logfile_mode,
     )
     if not logfile_handler:
         return False
