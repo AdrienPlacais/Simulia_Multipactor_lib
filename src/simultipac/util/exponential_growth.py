@@ -309,7 +309,6 @@ def _n_points_in_a_period(
     n_points = np.argmin(np.abs(time - time[0] - period))
     if not isinstance(n_points, int):
         n_points = int(n_points)
-    logging.critical(f"{n_points = }, {len(time) = }")
     if n_points < min_points_per_period:
         logging.warning(
             f"There are {n_points} data points per RF period, which may be too"
