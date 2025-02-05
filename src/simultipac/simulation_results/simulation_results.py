@@ -31,7 +31,6 @@ class SimulationResults(ABC):
         population: np.ndarray,
         plotter: Plotter = DefaultPlotter(),
         trim_trailing: bool = False,
-        alpha: float | None = None,
         **kwargs,
     ) -> None:
         """Instantiate, post-process.
@@ -53,9 +52,6 @@ class SimulationResults(ABC):
         trim_trailing : bool, optional
             To remove the last simulation points, when the population is 0.
             Used with SPARK3D (``CSV`` import) for consistency with CST.
-        alpha : float | None, optional
-            Exponential growth factor in 1/ns. In general, you will not want to
-            set it yourself, use :meth:`SimulationResults.fit_alpha` instead.
 
         """
         self.id = id
@@ -67,7 +63,7 @@ class SimulationResults(ABC):
         self._check_consistent_shapes()
         if trim_trailing:
             self._trim_trailing()
-        self._alpha = alpha
+        self._alpha = None
 
     def __str__(self) -> str:
         """Print minimal info on current simulation."""
