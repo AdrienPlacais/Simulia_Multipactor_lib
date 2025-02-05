@@ -130,9 +130,9 @@ def _fit_single(
     running_mean: bool = True,
     print_fit_parameters: bool = False,
     skip_obvious: bool = True,
+    minimum_final_number_of_electrons: int = 0,
 ) -> tuple[np.ndarray, tuple[float, ...] | None]:
-    """
-    Perform the exponential growth fitting on a single parameter.
+    """Perform the exponential growth fitting on a single parameter.
 
     Parameters
     ----------
