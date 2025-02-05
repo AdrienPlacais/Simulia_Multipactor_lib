@@ -2,7 +2,7 @@
 
 import logging
 from abc import ABC
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 
 import numpy as np
 import pandas as pd
@@ -10,6 +10,9 @@ import pandas as pd
 from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
 from simultipac.util.exponential_growth import ExpGrowthParameters, fit_alpha
+
+DATA_0D = Literal["id", "e_acc", "p_rms", "alpha"]
+DATA_1D = Literal["time", "population", "modelled_population"]
 
 
 class ShapeMismatchError(Exception):
@@ -71,6 +74,7 @@ class SimulationResults(ABC):
             {}
         )
         self._period: float | None = period
+        self._modelled_population: np.ndarray | None = None
 
     def __str__(self) -> str:
         """Print minimal info on current simulation."""
@@ -159,10 +163,27 @@ class SimulationResults(ABC):
             **kwargs,
         )
 
+    @property
+    def modelled_population(self) -> np.ndarray:
+        """Define evolution of population, as modelled."""
+        if self._modelled_population is not None:
+            return self._modelled_population
+        if self._exp_growth_parameters is None:
+            raise ValueError(
+                "Cannot model population evolution if fit not performed."
+            )
+        model = self._exp_growth_parameters["model"]
+        assert isinstance(model, Callable)
+        self._modelled_population = model(
+            self.time, **self._exp_growth_parameters
+        )
+        assert isinstance(self._modelled_population, np.ndarray)
+        return self._modelled_population
+
     def plot(
         self,
-        x: str,
-        y: str,
+        x: DATA_0D | DATA_1D,
+        y: DATA_0D | DATA_1D,
         plotter: Plotter | None = None,
         label: str | Literal["auto"] | None = None,
         grid: bool = True,
@@ -170,6 +191,8 @@ class SimulationResults(ABC):
         **kwargs,
     ) -> Any:
         """Plot ``y`` vs ``x`` using ``plotter.plot()`` method.
+
+        Plottable data is stored in :data:`DATA_0D` and :data:`DATA_1D`.
 
         Parameters
         ----------

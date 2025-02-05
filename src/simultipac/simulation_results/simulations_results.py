@@ -10,7 +10,11 @@ import numpy as np
 from simultipac.cst.simulation_results import CSTResultsFactory
 from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
-from simultipac.simulation_results.simulation_results import SimulationResults
+from simultipac.simulation_results.simulation_results import (
+    DATA_0D,
+    DATA_1D,
+    SimulationResults,
+)
 from simultipac.spark3d.simulation_results import Spark3DResultsFactory
 
 
@@ -59,8 +63,8 @@ class SimulationsResults:
 
     def plot(
         self,
-        x: str,
-        y: str,
+        x: DATA_0D | DATA_1D,
+        y: DATA_0D | DATA_1D,
         idx_to_plot: Iterable[int] | None = None,
         plotter: Plotter | None = None,
         label: str | Literal["auto"] | None = "auto",
@@ -69,6 +73,8 @@ class SimulationsResults:
         **kwargs,
     ) -> Any:
         """Recursively call :meth:`.SimulationResults.plot`.
+
+        Plottable data is stored in :data:`.DATA_0D` and :data:`.DATA_1D`.
 
         Parameters
         ----------
