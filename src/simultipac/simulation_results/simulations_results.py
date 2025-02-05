@@ -107,7 +107,7 @@ class SimulationsResults:
             plotter = self._plotter
         if idx_to_plot is None:
             idx_to_plot = (results.id for results in self._results)
-        axes = None
+
         for idx in idx_to_plot:
             axes = self._results[idx].plot(
                 x=x,
