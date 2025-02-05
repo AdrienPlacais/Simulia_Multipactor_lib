@@ -51,6 +51,7 @@ class CSTResults(SimulationResults):
         population: np.ndarray,
         plotter: Plotter = DefaultPlotter(),
         trim_trailing: bool = False,
+        period: float | None = None,
         parameters: dict[str, float | bool | str] | None = None,
         **kwargs,
     ) -> None:
@@ -71,6 +72,7 @@ class CSTResults(SimulationResults):
             population,
             plotter=plotter,
             trim_trailing=trim_trailing,
+            period=period,
             **kwargs,
         )
 
@@ -85,6 +87,7 @@ class CSTResultsFactory(SimulationResultsFactory):
         self,
         *args,
         plotter: Plotter = DefaultPlotter(),
+        freq_ghz: float | None = None,
         e_acc_parameter: Sequence[str] = (
             "E_acc",
             "e_acc",
@@ -102,6 +105,9 @@ class CSTResultsFactory(SimulationResultsFactory):
         ----------
         plotter : Plotter
             Object to plot data.
+        freq_ghz : float | None, optional
+            RF frequency in GHz. Used to compute RF period, which is mandatory
+            for exp growth fitting.
         e_acc_parameter : Sequence[str], optional
             The possible names of the accelerating field in
             :file:`Parameters.txt`; we try all of them sequentially, and resort
@@ -119,7 +125,9 @@ class CSTResultsFactory(SimulationResultsFactory):
         self._e_acc_parameter = e_acc_parameter
         self._e_acc_file_mv_m = e_acc_file_mv_m
         self._p_rms_file = p_rms_file
-        return super().__init__(*args, plotter=plotter, **kwargs)
+        return super().__init__(
+            *args, plotter=plotter, freq_ghz=freq_ghz, **kwargs
+        )
 
     @property
     def mandatory_files(self) -> set[str]:
@@ -184,6 +192,7 @@ class CSTResultsFactory(SimulationResultsFactory):
             time=time,
             population=population,
             plotter=self._plotter,
+            period=self._period,
         )
         return results
 

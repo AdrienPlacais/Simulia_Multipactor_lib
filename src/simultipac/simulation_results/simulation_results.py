@@ -9,6 +9,7 @@ import pandas as pd
 
 from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
+from simultipac.util.exponential_growth import ExpGrowthParameters, fit_alpha
 
 
 class ShapeMismatchError(Exception):
@@ -31,6 +32,7 @@ class SimulationResults(ABC):
         population: np.ndarray,
         plotter: Plotter = DefaultPlotter(),
         trim_trailing: bool = False,
+        period: float | None = None,
         **kwargs,
     ) -> None:
         """Instantiate, post-process.
@@ -52,6 +54,8 @@ class SimulationResults(ABC):
         trim_trailing : bool, optional
             To remove the last simulation points, when the population is 0.
             Used with SPARK3D (``CSV`` import) for consistency with CST.
+        period : float | None, optional
+            RF period in ns. Mandatory for exponential growth fits.
 
         """
         self.id = id
@@ -63,7 +67,10 @@ class SimulationResults(ABC):
         self._check_consistent_shapes()
         if trim_trailing:
             self._trim_trailing()
-        self._alpha = None
+        self._exp_growth_parameters: ExpGrowthParameters | dict[str, float] = (
+            {}
+        )
+        self._period: float | None = period
 
     def __str__(self) -> str:
         """Print minimal info on current simulation."""
@@ -89,23 +96,68 @@ class SimulationResults(ABC):
     @property
     def alpha(self) -> float:
         """Return the exponential growth factor in 1/ns."""
-        if self._alpha is not None:
-            return self._alpha
+        alpha = self._exp_growth_parameters.get("alpha", None)
+        if alpha is not None:
+            return alpha
         logging.warning(
             "Exponential growth factor not calculated yet. Returnin NaN."
         )
         return np.nan
 
-    @alpha.setter
-    def alpha(self, value: float) -> None:
-        """Set the value of exponential growh factor in 1/ns."""
-        self._alpha = value
-
     def fit_alpha(
-        self, fitting_periods: int, model: str = "classic", **kwargs
+        self,
+        fitting_periods: int,
+        running_mean: bool = True,
+        log_fit: bool = True,
+        minimum_final_number_of_electrons: int = 0,
+        bounds: tuple[list[float], list[float]] = (
+            [1e-10, -10.0],
+            [np.inf, 10.0],
+        ),
+        initial_values: list[float | None] = [None, -9.0],
+        **kwargs,
     ) -> None:
-        """Fit exp growth factor."""
-        raise NotImplementedError
+        """Fit exp growth factor.
+
+        Parameters
+        ----------
+        fitting_periods : int
+            Number of periods over which the exp growth is searched. Longer is
+            better, but you do not want to start the fit before the exp growth
+            starts.
+        running_mean : bool, optional
+            To tell if you want to average the number of particles over one
+            period. Highly recommended. The default is True.
+        log_fit : bool, optional
+            To perform the fit on :func:`exp_growth_log` rather than
+            :func:`exp_growth`. The default is True, as it generally shows
+            better convergence.
+        minimum_final_number_of_electrons : int, optional
+            Under this final number of electrons, we do no bother finding the
+            exp growth factor and set all fit parameters to ``NaN``.
+        bounds : tuple[list[float], list[float]], optional
+            Upper bound and lower bound for the two variables: initial number
+            of electrons, exp growth factor.
+        initial_values: list[float | None], optional
+            Initial values for the two variables: initial number of electrons,
+            exp growth factor.
+
+        """
+        assert self._period is not None, "RF period is needed."
+        fitting_range = self._period * fitting_periods
+
+        self._exp_growth_parameters = fit_alpha(
+            self.time,
+            self.population,
+            fitting_range=fitting_range,
+            period=self._period,
+            running_mean=running_mean,
+            log_fit=log_fit,
+            minimum_final_number_of_electrons=minimum_final_number_of_electrons,
+            bounds=bounds,
+            initial_values=initial_values,
+            **kwargs,
+        )
 
     def plot(
         self,
@@ -200,7 +252,23 @@ class SimulationResultsFactory(ABC):
     """Easily create :class:`.SimulationResults`."""
 
     def __init__(
-        self, plotter: Plotter = DefaultPlotter(), *args, **kwargs
+        self,
+        plotter: Plotter = DefaultPlotter(),
+        freq_ghz: float | None = None,
+        *args,
+        **kwargs,
     ) -> None:
-        """Instantiate object."""
+        """Instantiate object.
+
+        Parameters
+        ----------
+        plotter : Plotter, optional
+            Object to create the plots.
+        freq_ghz : float | None, optional
+            RF frequency in GHz. Used to compute RF period, which is mandatory
+            for exp growth fitting.
+
+        """
         self._plotter = plotter
+        self._freq_ghz = freq_ghz
+        self._period = 1.0 / freq_ghz if freq_ghz is not None else None

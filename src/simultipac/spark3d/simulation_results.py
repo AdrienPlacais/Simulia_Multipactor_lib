@@ -24,6 +24,7 @@ class Spark3DResults(SimulationResults):
         population: np.ndarray,
         plotter: Plotter = DefaultPlotter(),
         trim_trailing: bool = False,
+        period: float | None = None,
         **kwargs,
     ) -> None:
         """Instantiate, post-process.
@@ -45,6 +46,8 @@ class Spark3DResults(SimulationResults):
         trim_trailing : bool, optional
             To remove the last simulation points, when the population is 0.
             Used with SPARK3D (``CSV`` import) for consistency with CST.
+        period : float | None, optional
+            RF period in ns. Mandatory for exponential growth fits.
 
         """
         super().__init__(
@@ -55,6 +58,7 @@ class Spark3DResults(SimulationResults):
             population,
             plotter=plotter,
             trim_trailing=trim_trailing,
+            period=period,
             **kwargs,
         )
 
@@ -63,9 +67,13 @@ class Spark3DResultsFactory(SimulationResultsFactory):
     """Define an object to easily instantiate :class:`.Spark3DResults`."""
 
     def __init__(
-        self, plotter: Plotter = DefaultPlotter(), *args, **kwargs
+        self,
+        plotter: Plotter = DefaultPlotter(),
+        freq_ghz: float | None = None,
+        *args,
+        **kwargs,
     ) -> None:
-        super().__init__(plotter, *args, **kwargs)
+        super().__init__(plotter, freq_ghz, *args, **kwargs)
 
     def from_file(
         self, filepath: Path, e_acc: np.ndarray, delimiter: str = " ", **kwargs
@@ -134,6 +142,7 @@ class Spark3DResultsFactory(SimulationResultsFactory):
                     time=time,
                     population=num_elec,
                     plotter=self._plotter,
+                    period=self._period,
                 )
             )
 
@@ -191,6 +200,7 @@ class Spark3DResultsFactory(SimulationResultsFactory):
                     population=population,
                     plotter=self._plotter,
                     trim_trailing=True,
+                    period=self._period,
                 )
             )
 
