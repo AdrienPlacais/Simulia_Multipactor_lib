@@ -277,7 +277,7 @@ class SimulationResults(ABC):
                 return pd.DataFrame(data)
             except ValueError as e:
                 raise ValueError(
-                    "Foats/ints/bools are not gettable with this method if "
+                    "Floats/ints/bools are not gettable with this method if "
                     f"no array is asked at the same time.\n{e}"
                 )
 
