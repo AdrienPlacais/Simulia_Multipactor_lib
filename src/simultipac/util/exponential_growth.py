@@ -33,6 +33,7 @@ class ExpGrowthParameters(TypedDict):
     n_0: float
     alpha: float
     t_0: float
+    model: Callable
 
 
 def exp_growth(
@@ -117,10 +118,11 @@ def fit_alpha(
     fitting_range: float,
     period: float,
     running_mean: bool = True,
+    log_fit: bool = True,
     minimum_final_number_of_electrons: int = 0,
     bounds: tuple[list[float], list[float]] = ([1e-10, -10.0], [np.inf, 10.0]),
     initial_values: list[float | None] = [None, -9.0],
-    log_fit: bool = True,
+    **kwargs,
 ) -> ExpGrowthParameters:
     """Perform the exponential growth fitting.
 
@@ -136,6 +138,10 @@ def fit_alpha(
     running_mean : bool, optional
         To tell if you want to average the number of particles over one period.
         Highly recommended. The default is True.
+    log_fit : bool, optional
+        To perform the fit on :func:`exp_growth_log` rather than
+        :func:`exp_growth`. The default is True, as it generally shows better
+        convergence.
     minimum_final_number_of_electrons : int, optional
         Under this final number of electrons, we do no bother finding the exp
         growth factor and return a ``NaN``.
@@ -145,18 +151,18 @@ def fit_alpha(
     initial_values: list[float | None], optional
         Initial values for the two variables: initial number of electrons, exp
         growth factor.
-    log_fit : bool, optional
-        To perform the fit on :func:`exp_growth_log` rather than
-        :func:`exp_growth`. The default is True, as it generally shows better
-        convergence.
+    kwargs :
+        Other keyword arguments passed to the ``curve_fit`` function.
 
     Returns
     -------
-    fit_parameters : ExpGrowthParameters
+    exp_growth_parameters : ExpGrowthParameters
         Holds the fit parameters.
 
     """
-    fit_parameters = ExpGrowthParameters(n_0=np.nan, alpha=np.nan, t_0=np.nan)
+    exp_growth_parameters = ExpGrowthParameters(
+        n_0=np.nan, alpha=np.nan, t_0=np.nan, model=exp_growth
+    )
     n_points = len(time)
     if len(population) != n_points:
         raise ValueError(f"{len(time) = } while {len(population) = }")
@@ -166,10 +172,11 @@ def fit_alpha(
             f"{final_number = } while {minimum_final_number_of_electrons = }. "
             "We return alpha = NaN."
         )
-        return fit_parameters
+        return exp_growth_parameters
 
     fit_args = _to_fit(time, population, fitting_range, log_fit=log_fit)
     fit_func, fit_time, fit_pop = fit_args
+    exp_growth_parameters["t_0"] = fit_time[0]
 
     if running_mean:
         width = _n_points_in_a_period(fit_time, period)
@@ -188,16 +195,16 @@ def fit_alpha(
             p0=initial_values,
             bounds=bounds,
             maxfev=5000,
+            **kwargs,
         )[0]
 
     except OptimizeWarning as e:
         logging.info(f"Fit failed, returnin NaN parameters.\n{e}")
-        return fit_parameters
+        return exp_growth_parameters
 
-    fit_parameters = ExpGrowthParameters(
-        n_0=result[0], alpha=result[1], t_0=fit_time[0]
-    )
-    return fit_parameters
+    exp_growth_parameters["n_0"] = result[0]
+    exp_growth_parameters["alpha"] = result[1]
+    return exp_growth_parameters
 
 
 def _to_fit(
