@@ -18,6 +18,7 @@ import logging
 import math
 import warnings
 from collections.abc import Callable
+from functools import partial
 from typing import TypedDict
 
 import numpy as np
@@ -43,7 +44,7 @@ def exp_growth(
     t_0: float = 0.0,
     **kwargs,
 ) -> np.ndarray:
-    """Exponential growth factor function.
+    r"""Exponential growth factor function.
 
     .. math::
         N(t) = N_0 \\mathrm{e}^{\\alpha (t-t_0)}
@@ -121,7 +122,7 @@ def fit_alpha(
     log_fit: bool = True,
     minimum_final_number_of_electrons: int = 0,
     bounds: tuple[list[float], list[float]] = ([1e-10, -10.0], [np.inf, 10.0]),
-    initial_values: list[float | None] = [None, -9.0],
+    initial_values: list[float] = [0.0, 0.0],
     **kwargs,
 ) -> ExpGrowthParameters:
     """Perform the exponential growth fitting.
@@ -182,10 +183,9 @@ def fit_alpha(
         width = _n_points_in_a_period(fit_time, period)
         population = _smoothen(fit_pop, width)
 
-    if initial_values[0] is None:
-        initial_values[0] = fit_pop[0]
-    if initial_values[0] < bounds[0][0]:
-        initial_values[0] = bounds[0][0]
+    bounds, initial_values = _design_space(
+        log_fit, fit_pop, bounds, initial_values
+    )
 
     try:
         result = curve_fit(
@@ -243,15 +243,14 @@ def _to_fit(
     indexes = _indexes_for_fit(time, population, fitting_range)
 
     fit_time = time[indexes]
+    t_0 = fit_time[0]
     fit_pop = population[indexes]
     if not log_fit:
-        return exp_growth, fit_time, fit_pop
+        fit_func = partial(exp_growth, t_0=t_0)
+        return fit_func, fit_time, fit_pop
 
-    return (
-        exp_growth_log,
-        fit_time,
-        np.log(fit_pop),
-    )
+    fit_func = partial(exp_growth_log, t_0=t_0)
+    return fit_func, fit_time, np.log(fit_pop)
 
 
 def _indexes_for_fit(
@@ -316,6 +315,29 @@ def _n_points_in_a_period(
             f"{time[-1]:.2e}) and {period = :.2e} have different units?"
         )
     return n_points
+
+
+def _design_space(
+    log_fit: bool,
+    fit_pop: np.ndarray,
+    bounds: tuple[list[float], list[float]] = ([1e-10, -10.0], [np.inf, 10.0]),
+    initial_values: list[float] = [0.0, 0.0],
+) -> tuple[tuple[list[float], list[float]], list[float]]:
+    """Set initial value and bounds.
+
+    As for now, only set the initial value of ``n_0`` to the population count
+    at the start of the fit.
+
+    .. note::
+        ``n_0`` is the actual population count, not the log of the pop count.
+
+    """
+    n_0 = fit_pop[0]
+    if log_fit:
+        n_0 = math.exp(fit_pop[0])
+
+    initial_values[0] = n_0
+    return bounds, initial_values
 
 
 def _smoothen(population: np.ndarray, width: int) -> np.ndarray:
