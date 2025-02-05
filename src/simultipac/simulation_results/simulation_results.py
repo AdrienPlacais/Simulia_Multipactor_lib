@@ -78,10 +78,10 @@ class SimulationResults(ABC):
 
     def __str__(self) -> str:
         """Print minimal info on current simulation."""
-        info = [f"Sim. #{self.id}", f"E_acc = {self.e_acc:.3e} V/m"]
+        info = [f"Sim. #{self.id}", f"E_acc = {self.e_acc:.2e} V/m"]
         if len(self._exp_growth_parameters) == 0:
             return ", ".join(info)
-        info.append(r"$\alpha = $" + f"{self.alpha} ns^-1")
+        info.append(r"$\alpha = $" + f"{self.alpha:.3f} ns^-1")
         return ", ".join(info)
 
     def _check_consistent_shapes(self) -> None:
