@@ -263,7 +263,8 @@ def _indexes_for_fit(
     """Determine the indexes on which the fit should be performed.
 
     The fit is performed over ``fitting_range``, ending at the last non-zero
-    population count.
+    population count (first zero-population count is excluded to avoid
+    messing with log(population)).
 
     """
     if fitting_range <= 0.0:
@@ -287,7 +288,7 @@ def _indexes_for_fit(
             f"{fitting_range = }?"
         )
     logging.debug(f"Fit will be performed from index {idx_start} to {idx_end}")
-    return range(idx_start, idx_end + 1)
+    return range(idx_start, idx_end)
 
 
 def _n_points_in_a_period(

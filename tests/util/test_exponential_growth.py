@@ -21,14 +21,14 @@ from simultipac.util.exponential_growth import (
 def test_indexes_for_fit() -> None:
     """Test _indexes_for_fit function."""
     time = np.linspace(0, 10, 11)
-    #                              |==============| fitting range
+    #                              |===========| fitting range
     population = np.array([10, 10, 9, 5, 3, 2, 1, 0, 0, 0, 0])
 
     indexes = _indexes_for_fit(
         time, population, fitting_range=5.0, minimum_number_of_points=0
     )
 
-    assert [i for i in indexes] == [2, 3, 4, 5, 6, 7]
+    assert [i for i in indexes] == [2, 3, 4, 5, 6]
 
 
 def test_indexes_for_fit_fitting_larger_than_simulation_warning(
@@ -36,7 +36,7 @@ def test_indexes_for_fit_fitting_larger_than_simulation_warning(
 ) -> None:
     """Test that a warning is raised if fitting range too big wrt sim time."""
     time = np.linspace(0, 10, 11)
-    #                  |==============| fitting range
+    #                  |===========| fitting range
     population = np.array([10, 10, 5, 0, 0, 0, 0, 0, 0, 0, 0])
     mock_warning = mocker.patch("logging.warning")
 
@@ -44,7 +44,7 @@ def test_indexes_for_fit_fitting_larger_than_simulation_warning(
         time, population, fitting_range=5.0, minimum_number_of_points=0
     )
 
-    assert [i for i in indexes] == [0, 1, 2, 3]
+    assert [i for i in indexes] == [0, 1, 2]
     mock_warning.assert_called_once()
 
 
@@ -53,7 +53,7 @@ def test_indexes_for_fit_fitting_not_enough_points_warning(
 ) -> None:
     """Test that a warning is raised if not enough points."""
     time = np.linspace(0, 10, 11)
-    #                          |=======| fitting range
+    #                          |===| fitting range
     population = np.array([10, 10, 5, 0, 0, 0, 0, 0, 0, 0, 0])
     mock_warning = mocker.patch("logging.warning")
 
@@ -61,7 +61,7 @@ def test_indexes_for_fit_fitting_not_enough_points_warning(
         time, population, fitting_range=2.0, minimum_number_of_points=5
     )
 
-    assert [i for i in indexes] == [1, 2, 3]
+    assert [i for i in indexes] == [1, 2]
     mock_warning.assert_called_once()
 
 
