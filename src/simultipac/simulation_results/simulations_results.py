@@ -188,12 +188,26 @@ class SimulationsResultsFactory:
         self,
         tool: Literal["SPARK3D", "CST"],
         plotter: Plotter = DefaultPlotter(),
+        freq_ghz: float | None = None,
         *args,
         **kwargs,
     ) -> None:
-        """Create the object."""
+        """Create object to easily generate simulation results.
+
+        Parameters
+        ----------
+        tool: str
+            Name of the tool.
+        plotter : Plotter, optional
+            Object to create the plots.
+        freq_ghz : float | None, optional
+            RF frequency in GHz. Used to compute RF period, which is mandatory
+            for exp growth fitting.
+
+        """
         self._tool = tool
         self._plotter = plotter
+        self._freq_ghz = freq_ghz
 
     def create(
         self,
@@ -231,6 +245,7 @@ class SimulationsResultsFactory:
             master_folder=master_folder,
             e_acc=e_acc,
             plotter=self._plotter,
+            freq_ghz=self._freq_ghz,
             **kwargs,
         )
         simulations_results = SimulationsResults(
@@ -281,7 +296,9 @@ class SimulationsResultsFactory:
                 master_folder is not None
             ), "You must provide the path to the CST mmdd-xxxxxxx folders"
             assert master_folder.is_dir(), f"{master_folder = } must exist"
-            factory = CSTResultsFactory(plotter=plotter, **kwargs)
+            factory = CSTResultsFactory(
+                plotter=plotter, freq_ghz=self._freq_ghz, **kwargs
+            )
             return factory.from_simulation_folders(master_folder=master_folder)
 
         if self._tool == "SPARK3D":
@@ -293,6 +310,8 @@ class SimulationsResultsFactory:
                 "You must provide an array of accelerating fields. You gave "
                 f"{e_acc = }"
             )
-            factory = Spark3DResultsFactory(plotter=plotter, **kwargs)
+            factory = Spark3DResultsFactory(
+                plotter=plotter, freq_ghz=self._freq_ghz, **kwargs
+            )
             return factory.from_file(filepath, e_acc=e_acc)
         raise NotImplementedError(f"The tool {self._tool} is not implemented.")
