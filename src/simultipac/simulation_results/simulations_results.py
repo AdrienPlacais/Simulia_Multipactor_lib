@@ -245,7 +245,6 @@ class SimulationsResultsFactory:
             master_folder=master_folder,
             e_acc=e_acc,
             plotter=self._plotter,
-            freq_ghz=self._freq_ghz,
             **kwargs,
         )
         simulations_results = SimulationsResults(
