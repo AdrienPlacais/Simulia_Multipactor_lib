@@ -76,12 +76,16 @@ class SimulationResults(ABC):
         self._color: Any = None
 
     def __str__(self) -> str:
-        """Print minimal info on current simulation."""
+        """Print info on current simulation."""
         info = [f"Sim. #{self.id}", f"E_acc = {self.e_acc:.2e} :unit:`V/m`"]
         if len(self._exp_growth_parameters) == 0:
             return ", ".join(info)
         info.append(r"$\alpha = $" + f"{self.alpha:.3f} :unit:`ns`^-1")
         return ", ".join(info)
+
+    def __repr__(self) -> str:
+        """Print minimal info on current simulation."""
+        return f"SimulationResults(id={self.id}, e_acc={self.e_acc:.2e})"
 
     def _check_consistent_shapes(self) -> None:
         """Raise an error if ``time`` and ``population`` have diff shapes."""
