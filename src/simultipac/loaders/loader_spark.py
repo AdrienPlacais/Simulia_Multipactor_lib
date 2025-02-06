@@ -34,7 +34,7 @@ def load_population_evolution(
     filepath : Path
         Path to the file to be loaded.
     e_acc : np.ndarray
-        Accelerating field values in MV/m.
+        Accelerating field values in :unit:`MV/m`.
     delimiter : str, optional
         Delimiter between columns. The default is a space.
     key_part : str, optional
@@ -51,11 +51,11 @@ def load_population_evolution(
     -------
     complete_population_evolutions : dict[int, dict[str, np.ndarray | float |\
 None]]
-        Holds evolution of electron population with time in ns. Keys are unique
+        Holds evolution of electron population with time in :unit:`ns`. Keys are unique
         integers, values are other dict holding accelerating field, evolution
         of population with time.
     parameters : np.ndarray
-        Array of accelerating fields in V/m.
+        Array of accelerating fields in :unit:`V/m`.
 
     """
     filetype = filepath.suffix
@@ -142,7 +142,7 @@ def _get_population_evolution_txt(
     """
     parameters = np.array(e_acc) * 1e6
     population_evolutions = np.loadtxt(filepath, delimiter=delimiter)
-    # Convert s into ns
+    # Convert s into :unit:`ns`
     population_evolutions[:, 2] *= 1e9
     complete_population_evolutions = {}
 

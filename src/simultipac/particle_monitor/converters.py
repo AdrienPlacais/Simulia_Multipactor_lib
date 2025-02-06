@@ -6,8 +6,7 @@ from simultipac.constants import clight, clight_in_mm_per_ns
 
 
 def adim_momentum_to_speed_m_per_s(mom: np.ndarray) -> np.ndarray:
-    """
-    Convert adim momentum to speed in m/s.
+    """Convert adim momentum to speed in :unit:`m/s`.
 
     From the Position Monitor files header:
 
@@ -28,7 +27,7 @@ def adim_momentum_to_speed_m_per_s(mom: np.ndarray) -> np.ndarray:
 
 
 def adim_momentum_to_speed_mm_per_ns(mom: np.ndarray) -> np.ndarray:
-    """Convert adim momentum to speed in mm/ns."""
+    """Convert adim momentum to speed in :unit:`mm/ns`."""
     if len(mom.shape) == 1:
         mom = np.expand_dims(mom, 0)
     speed_in_mm_per_ns = mom * clight_in_mm_per_ns
@@ -36,7 +35,7 @@ def adim_momentum_to_speed_mm_per_ns(mom: np.ndarray) -> np.ndarray:
 
 
 def adim_momentum_to_eV(mom: np.ndarray, mass_eV: float) -> np.ndarray:
-    """Convert adim momentum to energy in eV."""
+    """Convert adim momentum to energy in :unit:`eV`."""
     if len(mom.shape) == 1:
         mom = np.expand_dims(mom, 0)
     return 0.5 * np.linalg.norm(mom) ** 2 * mass_eV

@@ -1,14 +1,13 @@
 r"""Define exponential growth model as well as fitting function.
 
-Other approaches that have been tried:
 .. note::
     Other models that I tried:
 
     .. math::
-        N(t) = N_0 (1 + K \\cos{(\\omega_0 t + \\phi_0)}) \\mathrm{e}^{\\alpha t}
+        N(t) = N_0 (1 + K \cos{(\omega_0 t + \phi_0)}) \mathrm{e}^{\alpha t}
 
-        N(t) = N_0 (1 + K \\cos{(\\omega_0 t / T_{MP} + \\phi_0)})
-        \\mathrm{e}^{\\alpha t}
+        N(t) = N_0 (1 + K \cos{(\omega_0 t / T_{MP} + \phi_0)})
+        \mathrm{e}^{\alpha t}
 
     I dropped them as with too much unkowns, any model can fit anything.
 
@@ -29,12 +28,16 @@ warnings.simplefilter("error", OptimizeWarning)
 
 
 class ExpGrowthParameters(TypedDict):
-    """Define parameters for exp growth."""
+    """Define parameters for exp growth model."""
 
+    #: Number of electrons at ``t=t_0``.
     n_0: float
+    #: Exponential growth factor in :unit:`ns^{-1}`.
     alpha: float
+    #: Starting time of exponential growth,
     t_0: float
-    model: Callable
+    #: Exponential growth function.
+    model: Callable[[np.ndarray, float, float, float], np.ndarray]
 
 
 def exp_growth(
@@ -47,18 +50,19 @@ def exp_growth(
     r"""Exponential growth factor function.
 
     .. math::
-        N(t) = N_0 \\mathrm{e}^{\\alpha (t-t_0)}
+        N(t) = N_0 \mathrm{e}^{\alpha (t-t_0)}
 
     Parameters
     ----------
     time : np.ndarray
-        Time in ns.
+        Time in :unit:`ns`.
     n_0 : float
         Number of electrons at the start of the exponential growth.
     alpha : float
-        Exponential growth factor in 1/ns.
+        Exponential growth factor in :unit:`ns^{-1}`.
     t_0 : float, optional
-        Time at which the exponential growth starts, in ns. The default is 0.0.
+        Time at which the exponential growth starts, in :unit:`ns`. The
+        default is 0.0.
 
     Returns
     -------
@@ -83,7 +87,7 @@ def exp_growth_log(
     r"""Exponential growth factor function, in log form.
 
     .. math::
-        \\log{N(t)} = \log{N_0} + \\alpha (t-t_0)
+        \log{N(t)} = \log{N_0} + \alpha (t-t_0)
 
     In general, better results for the fit process than the classic
     :func:``exp_growth``.
@@ -91,13 +95,14 @@ def exp_growth_log(
     Parameters
     ----------
     time : np.ndarray
-        Time in ns.
+        Time in :unit:`ns`.
     n_0 : float
         Number of electrons at the start of the exponential growth.
     alpha : float
-        Exponential growth factor in 1/ns.
+        Exponential growth factor in :unit:`ns^{-1}`.
     t_0 : float, optional
-        Time at which the exponential growth starts, in ns. The default is 0.0.
+        Time at which the exponential growth starts, in :unit:`ns`. The default
+        is 0.0.
 
     Returns
     -------
@@ -130,7 +135,7 @@ def fit_alpha(
     Parameters
     ----------
     time : np.ndarray
-        Time in ns.
+        Time in :unit:`ns`.
     population : np.ndarray
         Evolution of electron population with time.
     fitting_range : float

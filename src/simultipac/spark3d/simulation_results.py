@@ -34,11 +34,11 @@ class Spark3DResults(SimulationResults):
         id : int
             Unique simulation identifier.
         e_acc : float
-            Accelerating field in V/m.
+            Accelerating field in :unit:`V/m`.
         p_rms : float | None
             RMS power in W.
         time : np.ndarray
-            Time in ns.
+            Time in :unit:`ns`.
         population : np.ndarray
             Evolution of population with time. Same shape as ``time``.
         plotter : Plotter, optional
@@ -47,7 +47,7 @@ class Spark3DResults(SimulationResults):
             To remove the last simulation points, when the population is 0.
             Used with SPARK3D (``CSV`` import) for consistency with CST.
         period : float | None, optional
-            RF period in ns. Mandatory for exponential growth fits.
+            RF period in :unit:`ns`. Mandatory for exponential growth fits.
 
         """
         super().__init__(
@@ -118,7 +118,7 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         filepath : Path
             Path to the file to load.
         e_acc : np.ndarray
-            Accelerating field values in V/m.
+            Accelerating field values in :unit:`V/m`.
         delimiter : str, optional
             Delimiter between columns. The default is a space.
 
@@ -178,7 +178,7 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         filepath : Path
             Path to the file to load.
         e_acc : np.ndarray
-            Accelerating field values in V/m.
+            Accelerating field values in :unit:`V/m`.
         delimiter : str, optional
             Delimiter between columns. The default is a space.
 

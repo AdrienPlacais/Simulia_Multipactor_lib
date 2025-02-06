@@ -114,9 +114,9 @@ class CSTResultsFactory(SimulationResultsFactory):
             to taking it from a file if it was not successful. You can pass in
             an empty tuple to force the use of the file.
         e_acc_file_mv_m : str, optional
-            Name of the file where the value of the accelerating field in MV/m
-            is written. This is a fallback, we prefer getting accelerating
-            field from the :file:`Parameters.txt` file.
+            Name of the file where the value of the accelerating field in
+            :unit:`MV/m` is written. This is a fallback, we prefer getting
+            accelerating field from the :file:`Parameters.txt` file.
         e_acc_file : str, optional
             Name of the file where the value of the RMS power in W is written.
             If not provided, we do not load RMS power.

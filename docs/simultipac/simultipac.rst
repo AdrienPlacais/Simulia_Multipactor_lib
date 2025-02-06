@@ -15,6 +15,7 @@ Subpackages
    simultipac.cst
    simultipac.loaders
    simultipac.particle_monitor
+   simultipac.plotter
    simultipac.simulation_results
    simultipac.spark3d
    simultipac.util

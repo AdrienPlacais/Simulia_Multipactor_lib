@@ -14,20 +14,24 @@ from simultipac.particle_monitor.converters import (
 
 
 class Particle:  # pylint: disable=too-many-instance-attributes
-    """Holds evolution of position (in mm) and adim momentum with time (ns).
+    """Holds evolution of position and adim momentum with time.
+
+    Position in :unit:`mm`, time in :unit:`ns`.
 
     Attributes
     ----------
     _posx, _posy, _posz : list[float]
         Position in m at each time step along each direction.
     pos : np.ndarray
-        Position in mm along the three directions stored in a single array.
+        Position in :unit:`mm` along the three directions stored in a single
+        array.
     _momx _momy, _momz : list[float]
         Adimensional momentum at each time step along each direction.
     mom : np.ndarray
         Adimensional momentum along three directions stored in a single array.
     extrapolated_pos : np.ndarray | None
-        Position in mm, extrapolated to refine the position of collision.
+        Position in :unit:`mm`, extrapolated to refine the position of
+        collision.
     extrapolated_mom : np.ndarray | None
         Adimensional momentum, extrapolated to refine the momentum of
         collision.
@@ -35,9 +39,9 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         Mass of particle at each time step. An error is raised if it changes
         between two files.
     mass : float
-        Mass of the particle in kg.
+        Mass of the particle in :unit:`kg`.
     mass_eV : float
-        Mass of the particle in eV.
+        Mass of the particle in :unit:`eV`.
     _charges : list[float] | np.ndarray
         Charge of particle at each time step. An error is raised if it changes
         between two files.
@@ -46,8 +50,8 @@ class Particle:  # pylint: disable=too-many-instance-attributes
     macro_charge : list[float] | np.ndarray
         Charge of the macro-particle.
     time : list[float] | np.ndarray
-        Holds the time steps in ns corresponding to every value of ``pos``,
-        ``mom``, etc.
+        Holds the time steps in :unit:`ns` corresponding to every value of
+        ``pos``, ``mom``, etc.
     particle_id : int
         Unique id for the particle.
     source_id : {0, 1}
@@ -145,8 +149,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.time = np.array(self.time)
 
     def _switch_to_mm_ns_units(self) -> None:
-        """
-        Change the system units to limit rounding errors.
+        """Change the system units to limit rounding errors.
 
         .. warning::
             In CST Particle Monitor files, the time is given in seconds *
@@ -155,7 +158,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
         """
         self.pos *= 1e3  # mm
-        self.time *= 1e18  # ns
+        self.time *= 1e18  # :unit:`ns`
         # I do not know why, but time is in s * 1e-18 (aka nanonanoseconds)
 
     def _sort_by_increasing_time_values(self) -> None:
@@ -176,8 +179,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self,
         extrapolation: bool = True,
     ) -> float | None:
-        """
-        Determine the impact energy in eV.
+        """Determine the impact energy in :unit:`eV`.
 
         Parameters
         ----------
@@ -188,7 +190,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         Returns
         -------
         energy: float
-            The last known energy in eV.
+            The last known energy in :unit:`eV`.
 
         Raises
         ------
@@ -197,8 +199,8 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         """
         if extrapolation:
             raise NotImplementedError(
-                "TODO: extrapolation of on last time "
-                " steps for better precision."
+                "TODO: extrapolation of on last time  steps for better "
+                "precision."
             )
         return adim_momentum_to_eV(self.mom[-1], self.mass_eV)
 
@@ -397,8 +399,7 @@ def _is_sorted(array: np.ndarray) -> bool:
 def _extrapolate_position(
     last_pos: np.ndarray, last_mom: np.ndarray, desired_time: np.ndarray
 ) -> np.ndarray:
-    """
-    Extrapolate the position using the last known momentum.
+    """Extrapolate the position using the last known momentum.
 
     This is a first-order approximation. We consider that the momentum is
     constant over `desired_time`. Not adapted to extrapolation on long time
@@ -435,8 +436,7 @@ def _extrapolate_momentum(
     desired_time: np.ndarray,
     poly_fit_deg: int,
 ) -> np.ndarray:
-    """
-    Extrapolate the momentum.
+    """Extrapolate the momentum.
 
     Parameters
     ----------

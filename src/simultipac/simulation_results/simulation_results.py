@@ -45,11 +45,11 @@ class SimulationResults(ABC):
         id : int
             Unique simulation identifier.
         e_acc : float
-            Accelerating field in V/m.
+            Accelerating field in :unit:`V/m`.
         p_rms : float | None
             RMS power in W.
         time : np.ndarray
-            Time in ns.
+            Time in :unit:`ns`.
         population : np.ndarray
             Evolution of population with time. Same shape as ``time``.
         plotter : Plotter, optional
@@ -58,7 +58,7 @@ class SimulationResults(ABC):
             To remove the last simulation points, when the population is 0.
             Used with SPARK3D (``CSV`` import) for consistency with CST.
         period : float | None, optional
-            RF period in ns. Mandatory for exponential growth fits.
+            RF period in :unit:`ns`. Mandatory for exponential growth fits.
 
         """
         self.id = id
@@ -79,10 +79,10 @@ class SimulationResults(ABC):
 
     def __str__(self) -> str:
         """Print minimal info on current simulation."""
-        info = [f"Sim. #{self.id}", f"E_acc = {self.e_acc:.2e} V/m"]
+        info = [f"Sim. #{self.id}", f"E_acc = {self.e_acc:.2e} :unit:`V/m`"]
         if len(self._exp_growth_parameters) == 0:
             return ", ".join(info)
-        info.append(r"$\alpha = $" + f"{self.alpha:.3f} ns^-1")
+        info.append(r"$\alpha = $" + f"{self.alpha:.3f} :unit:`ns`^-1")
         return ", ".join(info)
 
     def _check_consistent_shapes(self) -> None:

@@ -184,7 +184,7 @@ class ParticleMonitor(dict):
         Returns
         -------
         out : list[np.ndarray[np.float64]] | np.ndarray[np.float64]
-            Last known position in mm of every particle.
+            Last known position in :unit:`mm` of every particle.
 
         """
         subset = self

@@ -139,9 +139,9 @@ def _fit_single(
     str_model : str
         Indicates what exp growth model should be used.
     data : np.ndarray
-        Holds time in ns in first column, number of electrons in second.
+        Holds time in :unit:`ns` in first column, number of electrons in second.
     period : float
-        RF period in ns.
+        RF period in :unit:`ns`.
     fitting_range : float
         Time over which the exp growth is searched. Longer is better, but you
         do not want to start the fit before the exp growth starts.
@@ -253,7 +253,7 @@ def _fit_single_spark(
     str_model : str
         Indicates what exp growth model should be used.
     population_evolution : np.ndarray
-        Holds time in ns in first column, number of electrons in second.
+        Holds time in :unit:`ns` in first column, number of electrons in second.
     fitting_range : float
         Time over which the exp growth is searched. Longer is better, but you
         do not want to start the fit before the exp growth starts.
