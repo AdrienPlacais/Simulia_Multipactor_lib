@@ -23,6 +23,10 @@ class DuplicateIndexError(Exception):
     """Raise for simulation ID already existing."""
 
 
+class NonExistingIDError(Exception):
+    """Raise when asking a non-existent ID."""
+
+
 class SimulationsResults:
     """Store multiple :class:`.SimulationResults` with retrieval methods.
 
@@ -73,9 +77,12 @@ class SimulationsResults:
         self._results_by_id[result.id] = result
         bisect.insort(self._results, result, key=lambda r: r.e_acc)
 
-    def get_by_id(self, result_id: int) -> SimulationResults | None:
+    def get_by_id(self, result_id: int) -> SimulationResults:
         """Retrieve a :class:`SimulationResults` by its ID."""
-        return self._results_by_id.get(result_id)
+        result = self._results_by_id.get(result_id)
+        if result is not None:
+            return result
+        raise NonExistingIDError(f"No simulation results with ID {result_id}")
 
     @property
     def to_list(self) -> list[SimulationResults]:
@@ -87,6 +94,7 @@ class SimulationsResults:
         x: DATA_0D_t | DATA_1D_t,
         y: DATA_0D_t | DATA_1D_t,
         idx_to_plot: Iterable[int] | None = None,
+        id_to_plot: Iterable[int] | None = None,
         plotter: Plotter | None = None,
         label: str | Literal["auto"] | None = "auto",
         grid: bool = True,
@@ -103,8 +111,11 @@ class SimulationsResults:
         x, y : typing.DATA_0D_t | typing.DATA_1D_t
             Name of properties to plot.
         idx_to_plot : Iterable[int] | None, optional
-            If provided, plot only the :class:`.SimulationResult` with those
-            ids.
+            Positions in the list of :class:`.SimulationResults` sorted by
+            growing accelerating field / power. Not considered if
+            ``id_to_plot`` is provided.
+        id_to_plot : Iterable[int] | None, optional
+            ID attributes; takes preceedence over ``idx_to_plot``.
         plotter : Plotter | None, optional
             Object to use for plot. If not provided, we use :attr:`._plotter`.
         label : str | Literal["auto"] | None, optional
@@ -132,11 +143,9 @@ class SimulationsResults:
             )
         if plotter is None:
             plotter = self._plotter
-        if idx_to_plot is None:
-            idx_to_plot = (results.id for results in self)
 
-        for idx in idx_to_plot:
-            axes = self._results[idx].plot(
+        for result in self._to_plot(idx_to_plot, id_to_plot):
+            axes = result.plot(
                 x=x,
                 y=y,
                 plotter=plotter,
@@ -146,6 +155,32 @@ class SimulationsResults:
                 **kwargs,
             )
         return axes
+
+    def _to_plot(
+        self,
+        idx_to_plot: Iterable[int] | None = None,
+        id_to_plot: Iterable[int] | None = None,
+    ) -> Iterable[SimulationResults]:
+        """Give the :class:`.SimulationResults` to plot.
+
+        When ``idx_to_plot`` and ``idx_to_plot`` both are ``None``, we return
+        all the stored :class:`.SimulationResults`.
+
+        Parameters
+        ----------
+        idx_to_plot : Iterable[int] | None, optional
+            Positions in the list of :class:`.SimulationResults` sorted by
+            growing accelerating field / power. Not considered if
+            ``id_to_plot`` is provided.
+        id_to_plot : Iterable[int] | None, optional
+            ID attributes; takes preceedence over ``idx_to_plot``.
+
+        """
+        if id_to_plot is not None:
+            return (self.get_by_id(id) for id in id_to_plot)
+        if idx_to_plot is None:
+            idx_to_plot = range(len(self))
+        return (self._results[idx] for idx in idx_to_plot)
 
     def fit_alpha(
         self,
