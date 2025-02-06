@@ -1,6 +1,7 @@
 """Define a set of simulation results."""
 
 import bisect
+import logging
 from collections.abc import Iterable, Sequence
 from pathlib import Path
 from typing import Any, Iterator, Literal
@@ -12,32 +13,52 @@ from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
 from simultipac.simulation_results.simulation_results import SimulationResults
 from simultipac.spark3d.simulation_results import Spark3DResultsFactory
-from simultipac.typing import DATA_0D, DATA_1D, DATA_0D_t, DATA_1D_t
+from simultipac.typing import DATA_0D, DATA_0D_t, DATA_1D_t
 
 
 class UnsupportedToolError(Exception):
     """Raise for simulation tool different from SPARK3D or CST."""
 
 
+class DuplicateIndexError(Exception):
+    """Raise for simulation ID already existing."""
+
+
 class SimulationsResults:
-    """Store multiple :class:`.SimulationResults` with retrieval methods."""
+    """Store multiple :class:`.SimulationResults` with retrieval methods.
+
+    :class:`.SimulationResult` are stored in ``self`` in the order they are
+    given.
+
+    """
 
     def __init__(
         self,
         simulations_results: Iterable[SimulationResults],
-        plotter: Plotter,
+        plotter: Plotter = DefaultPlotter(),
     ) -> None:
         """Instantiate object."""
+        logging.critical("Creating object.")
         self._results_by_id: dict[int, SimulationResults] = {}
         self._results_sorted_acc_field: list[SimulationResults] = []
         # Should populate other dictionaries too
+        for x in simulations_results:
+            self.add(x)
         self._results = [x for x in simulations_results]
         self._plotter = plotter
+
+    def __iter__(self) -> Iterator[SimulationResults]:
+        """Allow iteration over stored results."""
+        return iter(self._results_sorted_acc_field)
+
+    def __len__(self) -> int:
+        """Return number of elements."""
+        return len(self._results_sorted_acc_field)
 
     def add(self, result: SimulationResults) -> None:
         """Add a new :class:`SimulationResults` instance."""
         if result.id in self._results_by_id:
-            raise ValueError(
+            raise DuplicateIndexError(
                 f"SimulationResult with id {result.id} already exists."
             )
 
@@ -53,10 +74,6 @@ class SimulationsResults:
     def get_sorted_by_acc_field(self) -> list[SimulationResults]:
         """Retrieve all results sorted by ``acc_field``."""
         return self._results_sorted_acc_field
-
-    def __iter__(self) -> Iterator[SimulationResults]:
-        """Allow iteration over stored results."""
-        return iter(self._results_sorted_acc_field)
 
     def plot(
         self,

@@ -19,9 +19,9 @@ class Spark3DResults(SimulationResults):
         self,
         id: int,
         e_acc: float,
-        p_rms: float | None,
         time: np.ndarray,
         population: np.ndarray,
+        p_rms: float | None = None,
         plotter: Plotter = DefaultPlotter(),
         trim_trailing: bool = False,
         period: float | None = None,
@@ -35,12 +35,12 @@ class Spark3DResults(SimulationResults):
             Unique simulation identifier.
         e_acc : float
             Accelerating field in :unit:`V/m`.
-        p_rms : float | None
-            RMS power in W.
         time : np.ndarray
             Time in :unit:`ns`.
         population : np.ndarray
             Evolution of population with time. Same shape as ``time``.
+        p_rms : float | None, optional
+            RMS power in W.
         plotter : Plotter, optional
             An object allowing to plot data.
         trim_trailing : bool, optional
@@ -51,11 +51,11 @@ class Spark3DResults(SimulationResults):
 
         """
         super().__init__(
-            id,
-            e_acc,
-            p_rms,
-            time,
-            population,
+            id=id,
+            e_acc=e_acc,
+            time=time,
+            population=population,
+            p_rms=p_rms,
             plotter=plotter,
             trim_trailing=trim_trailing,
             period=period,
@@ -138,9 +138,9 @@ class Spark3DResultsFactory(SimulationResultsFactory):
                 Spark3DResults(
                     id=i,
                     e_acc=this_e_acc,
-                    p_rms=power,
                     time=time,
                     population=num_elec,
+                    p_rms=power,
                     plotter=self._plotter,
                     period=self._period,
                 )
@@ -195,9 +195,9 @@ class Spark3DResultsFactory(SimulationResultsFactory):
                 Spark3DResults(
                     id=idx_col,
                     e_acc=this_e_acc,
-                    p_rms=p_rms,
                     time=time,
                     population=population,
+                    p_rms=p_rms,
                     plotter=self._plotter,
                     trim_trailing=True,
                     period=self._period,

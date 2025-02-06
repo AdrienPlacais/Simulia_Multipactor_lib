@@ -28,9 +28,9 @@ class SimulationResults(ABC):
         self,
         id: int,
         e_acc: float,
-        p_rms: float | None,
         time: np.ndarray,
         population: np.ndarray,
+        p_rms: float | None = None,
         plotter: Plotter = DefaultPlotter(),
         trim_trailing: bool = False,
         period: float | None = None,
@@ -44,12 +44,12 @@ class SimulationResults(ABC):
             Unique simulation identifier.
         e_acc : float
             Accelerating field in :unit:`V/m`.
-        p_rms : float | None
-            RMS power in :unit:`W`.
         time : np.ndarray
             Time in :unit:`ns`.
         population : np.ndarray
             Evolution of population with time. Same shape as ``time``.
+        p_rms : float | None, optional
+            RMS power in :unit:`W`.
         plotter : Plotter, optional
             An object allowing to plot data.
         trim_trailing : bool, optional

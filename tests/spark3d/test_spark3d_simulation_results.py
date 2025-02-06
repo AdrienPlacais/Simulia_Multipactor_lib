@@ -4,7 +4,6 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 import numpy as np
-import pytest
 
 from simultipac.spark3d.simulation_results import (
     Spark3DResults,
@@ -17,7 +16,7 @@ def test_spark3d_results_initialization() -> None:
     time = np.array([0, 1, 2, 3], dtype=np.float64)
     population = np.array([10, 8, 5, 0], dtype=np.float64)
     result = Spark3DResults(
-        id=1, e_acc=5e6, p_rms=2.0, time=time, population=population
+        id=1, e_acc=5e6, time=time, population=population, p_rms=2.0
     )
 
     assert result.id == 1

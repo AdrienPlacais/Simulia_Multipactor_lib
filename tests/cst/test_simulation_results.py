@@ -13,9 +13,9 @@ def test_cst_results_initialization() -> None:
     result = CSTResults(
         id=1,
         e_acc=5.0,
-        p_rms=2.0,
         time=time,
         population=population,
+        p_rms=2.0,
         parameters=parameters,
     )
 

@@ -46,9 +46,9 @@ class CSTResults(SimulationResults):
         self,
         id: int,
         e_acc: float,
-        p_rms: float | None,
         time: np.ndarray,
         population: np.ndarray,
+        p_rms: float | None | None = None,
         plotter: Plotter = DefaultPlotter(),
         trim_trailing: bool = False,
         period: float | None = None,
@@ -65,11 +65,11 @@ class CSTResults(SimulationResults):
             {} if parameters is None else parameters
         )
         return super().__init__(
-            id,
-            e_acc,
-            p_rms,
-            time,
-            population,
+            id=id,
+            e_acc=e_acc,
+            time=time,
+            population=population,
+            p_rms=p_rms,
             plotter=plotter,
             trim_trailing=trim_trailing,
             period=period,
@@ -188,9 +188,9 @@ class CSTResultsFactory(SimulationResultsFactory):
         results = CSTResults(
             id=id,
             e_acc=e_acc,
-            p_rms=p_rms,
             time=time,
             population=population,
+            p_rms=p_rms,
             plotter=self._plotter,
             period=self._period,
         )
