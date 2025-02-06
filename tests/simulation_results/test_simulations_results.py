@@ -72,3 +72,30 @@ def test_e_acc_sorting() -> None:
 
     expected = [r0, r1, r2, r3, r4]
     assert simulations_results.to_list == expected
+
+
+def test_get_by_id() -> None:
+    """Test :meth:`.SimulationsResults._get_by_id`."""
+    time = np.linspace(0, 10, 11)
+    pop = time
+    unsorted_results = (
+        r3 := SimulationResults(id=3, e_acc=3, time=time, population=pop),
+        r1 := SimulationResults(id=1, e_acc=1, time=time, population=pop),
+        r0 := SimulationResults(id=0, e_acc=0, time=time, population=pop),
+        r4 := SimulationResults(id=4, e_acc=4, time=time, population=pop),
+        r2 := SimulationResults(id=2, e_acc=2, time=time, population=pop),
+    )
+    simulations_results = SimulationsResults(unsorted_results)
+    assert simulations_results.get_by_id(3) is r3
+
+
+def test_get_by_id_missing() -> None:
+    """Test :meth:`.SimulationsResults._get_by_id`."""
+    time = np.linspace(0, 10, 11)
+    pop = time
+    results = (
+        SimulationResults(id=i, e_acc=i, time=time, population=pop)
+        for i in range(5)
+    )
+    simulations_results = SimulationsResults(results)
+    assert simulations_results.get_by_id(6) is None
