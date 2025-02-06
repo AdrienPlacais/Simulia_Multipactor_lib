@@ -10,12 +10,9 @@ import numpy as np
 from simultipac.cst.simulation_results import CSTResultsFactory
 from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
-from simultipac.simulation_results.simulation_results import (
-    DATA_0D,
-    DATA_1D,
-    SimulationResults,
-)
+from simultipac.simulation_results.simulation_results import SimulationResults
 from simultipac.spark3d.simulation_results import Spark3DResultsFactory
+from simultipac.typing import DATA_0D, DATA_1D, DATA_0D_t, DATA_1D_t
 
 
 class UnsupportedToolError(Exception):
@@ -63,8 +60,8 @@ class SimulationsResults:
 
     def plot(
         self,
-        x: DATA_0D | DATA_1D,
-        y: DATA_0D | DATA_1D,
+        x: DATA_0D_t | DATA_1D_t,
+        y: DATA_0D_t | DATA_1D_t,
         idx_to_plot: Iterable[int] | None = None,
         plotter: Plotter | None = None,
         label: str | Literal["auto"] | None = "auto",
@@ -78,7 +75,7 @@ class SimulationsResults:
 
         Parameters
         ----------
-        x, y : str
+        x, y : DATA_0D_t | DATA_1D_t
             Name of properties to plot.
         idx_to_plot : Iterable[int] | None, optional
             If provided, plot only the :class:`.SimulationResult` with those
@@ -103,6 +100,11 @@ class SimulationsResults:
             Objects created by the :meth:`.Plotter.plot`.
 
         """
+        if x in DATA_0D and y in DATA_0D:
+            raise NotImplementedError(
+                f"Should plot y property of every SimulationResult vs x "
+                "property of every SimulationResult."
+            )
         if plotter is None:
             plotter = self._plotter
         if idx_to_plot is None:

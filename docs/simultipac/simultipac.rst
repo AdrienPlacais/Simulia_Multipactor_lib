@@ -28,3 +28,4 @@ Submodules
    :maxdepth: 5
 
    simultipac.constants
+   simultipac.typing

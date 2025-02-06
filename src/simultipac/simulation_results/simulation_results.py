@@ -9,12 +9,8 @@ import pandas as pd
 
 from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
+from simultipac.typing import DATA_0D_t, DATA_1D_t
 from simultipac.util.exponential_growth import ExpGrowthParameters, fit_alpha
-
-#: Attributes stored as float
-DATA_0D = Literal["id", "e_acc", "p_rms", "alpha"]
-#: Attributes stored as 1D arrays
-DATA_1D = Literal["time", "population", "modelled_population"]
 
 
 class ShapeMismatchError(Exception):
@@ -189,8 +185,8 @@ class SimulationResults(ABC):
 
     def plot(
         self,
-        x: DATA_0D | DATA_1D,
-        y: DATA_0D | DATA_1D,
+        x: DATA_0D_t | DATA_1D_t,
+        y: DATA_0D_t | DATA_1D_t,
         plotter: Plotter | None = None,
         label: str | Literal["auto"] | None = None,
         grid: bool = True,
@@ -203,7 +199,7 @@ class SimulationResults(ABC):
 
         Parameters
         ----------
-        x, y : str
+        x, y : DATA_0D_t | DATA_1D_t
             Name of properties to plot.
         plotter : Plotter | None, optional
             Object to use for plot. If not provided, we use ``self._plotter``.
