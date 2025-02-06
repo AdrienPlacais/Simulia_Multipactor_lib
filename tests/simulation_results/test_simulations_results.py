@@ -3,11 +3,13 @@
 from unittest.mock import MagicMock
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from simultipac.simulation_results.simulation_results import SimulationResults
 from simultipac.simulation_results.simulations_results import (
     DuplicateIndexError,
+    NonExistingIDError,
     SimulationsResults,
 )
 
@@ -80,10 +82,10 @@ def test_get_by_id() -> None:
     pop = time
     unsorted_results = (
         r3 := SimulationResults(id=3, e_acc=3, time=time, population=pop),
-        r1 := SimulationResults(id=1, e_acc=1, time=time, population=pop),
-        r0 := SimulationResults(id=0, e_acc=0, time=time, population=pop),
-        r4 := SimulationResults(id=4, e_acc=4, time=time, population=pop),
-        r2 := SimulationResults(id=2, e_acc=2, time=time, population=pop),
+        SimulationResults(id=1, e_acc=1, time=time, population=pop),
+        SimulationResults(id=0, e_acc=0, time=time, population=pop),
+        SimulationResults(id=4, e_acc=4, time=time, population=pop),
+        SimulationResults(id=2, e_acc=2, time=time, population=pop),
     )
     simulations_results = SimulationsResults(unsorted_results)
     assert simulations_results.get_by_id(3) is r3
@@ -98,4 +100,46 @@ def test_get_by_id_missing() -> None:
         for i in range(5)
     )
     simulations_results = SimulationsResults(results)
-    assert simulations_results.get_by_id(6) is None
+    with pytest.raises(NonExistingIDError):
+        simulations_results.get_by_id(6)
+
+
+def test_to_pandas() -> None:
+    """Test :meth:`.SimulationsResults._to_pandas`."""
+    time = np.linspace(0, 10, 11)
+    pop = time
+    n_points = 5
+    results = (
+        SimulationResults(id=i, e_acc=i**2, time=time, population=pop)
+        for i in range(n_points)
+    )
+    returned = SimulationsResults(results)._to_pandas("id", "e_acc")
+    expected = pd.DataFrame(
+        {
+            "id": [i for i in range(n_points)],
+            "e_acc": [i**2 for i in range(n_points)],
+        }
+    )
+    pd.testing.assert_frame_equal(expected, returned)
+
+
+def test_to_pandas_with_exp_growth_params(mocker: MagicMock) -> None:
+    """Test :meth:`.SimulationsResults._to_pandas` with ``alpha``."""
+    time = np.linspace(0, 10, 11)
+    pop = time
+    n_points = 5
+    results = [
+        SimulationResults(id=i, e_acc=i**2, time=time, population=pop)
+        for i in range(n_points)
+    ]
+    for r in results:
+        r.alpha = r.e_acc
+
+    returned = SimulationsResults(results)._to_pandas("id", "alpha")
+    expected = pd.DataFrame(
+        {
+            "id": [i for i in range(n_points)],
+            "alpha": [i**2 for i in range(n_points)],
+        }
+    )
+    pd.testing.assert_frame_equal(expected, returned)

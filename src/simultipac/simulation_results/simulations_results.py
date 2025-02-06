@@ -1,11 +1,13 @@
 """Define a set of simulation results."""
 
 import bisect
+import logging
 from collections.abc import Iterable, Sequence
 from pathlib import Path
 from typing import Any, Iterator, Literal
 
 import numpy as np
+import pandas as pd
 
 from simultipac.cst.simulation_results import CSTResultsFactory
 from simultipac.plotter.default import DefaultPlotter
@@ -181,6 +183,120 @@ class SimulationsResults:
         if idx_to_plot is None:
             idx_to_plot = range(len(self))
         return (self._results[idx] for idx in idx_to_plot)
+
+    def _plot_0d(
+        self,
+        to_plot: Iterable[SimulationResults],
+        x: DATA_0D_t,
+        y: DATA_0D_t,
+        plotter: Plotter,
+        label: str | Literal["auto"] | None = None,
+        grid: bool = True,
+        axes: Any | None = None,
+        **kwargs,
+    ) -> Any:
+        """Concatenate and plot 0D data from ``results``.
+
+        Parameters
+        ----------
+        to_plot : Iterable[SimulationResults]
+            The objects to plot.
+        x, y : typing.DATA_0D_t
+            Name of properties to plot.
+        plotter : Plotter
+            Object to use for plot.
+        label : str | Literal["auto"] | None, optional
+            If provided, overrides the legend. Useful when several simulations
+            are shown on the same plot. Use the magic keyword ``"auto"`` to
+            legend with a short description of current object.
+        grid : bool, optional
+            If grid should be plotted. Default is True.
+        axes : Axes | NDArray[Any] | None, optional
+            Axes to re-use, if provided. The default is None (plot on new
+            axis).
+        kwargs :
+            Other keyword arguments passed to the :meth:`.Plotter.plot` method.
+
+        Returns
+        -------
+        Any
+            Objects created by the :meth:`.Plotter.plot`.
+
+        """
+        data = self._to_pandas(x, y, results=to_plot)
+
+        if label == "auto":
+            label = str(self)
+
+        axes, color = plotter.plot(
+            data,
+            x=x,
+            y=y,
+            grid=grid,
+            axes=axes,
+            label=label,
+            color=self._color,
+            **kwargs,
+        )
+        if self._color is None:
+            self._color = color
+        return axes
+
+    def _to_pandas(
+        self,
+        *args: DATA_0D_t,
+        results: Iterable[SimulationResults] | None = None,
+    ) -> pd.DataFrame:
+        """Concatenate all attribute floats which name is in ``args`` to a df.
+
+        .. todo::
+            Review this and it error handling
+
+        Parameters
+        ----------
+        args : typing.DATA_0D_t
+            Name of arguments as saved in current objects. Example:
+            ``"alpha"``, ``"p_rms"``...
+        results : Iterable[SimulationResults] | None, optional
+            If given, we concatenate only the data frome these
+            :class:`.SimulationResults`.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Concatenates all desired data.
+
+        Raises
+        ------
+        ValueError:
+            If one of the ``args`` is an array or is missing.
+
+        """
+        if results is None:
+            results = self.to_list
+
+        data: dict[str, list[float]] = {}
+
+        for arg in args:
+            concat: list[float] = []
+            for result in results:
+                value = getattr(result, arg, None)
+                if not isinstance(value, (float, int)):
+                    logging.debug(
+                        f"The {arg} attribute of {result} is not a float but a"
+                        f" {type(value)}, so it was not added to the "
+                        "dataframe."
+                    )
+                    continue
+                concat.append(value)
+            data[arg] = concat
+
+        try:
+            return pd.DataFrame(data)
+        except ValueError as e:
+            raise ValueError(
+                "Could not get a data, creating malformed dataframe.\n" f"{e}"
+            )
 
     def fit_alpha(
         self,
