@@ -13,7 +13,7 @@ from simultipac.simulation_results.simulations_results import (
 
 
 def test_add(mocker: MagicMock) -> None:
-    """Test :meth:`.SimulationsResults.add`."""
+    """Test :meth:`.SimulationsResults._add`."""
     time = np.linspace(0, 10, 11)
     pop = time
     n_results = 5
@@ -22,13 +22,13 @@ def test_add(mocker: MagicMock) -> None:
         SimulationResults(id=i, e_acc=i, time=time, population=pop)
         for i in range(n_results)
     )
-    mock_add = mocker.patch.object(SimulationsResults, "add")
+    mock_add = mocker.patch.object(SimulationsResults, "_add")
     SimulationsResults(results)
     assert mock_add.call_count == n_results
 
 
 def test_add_double_id_error() -> None:
-    """Test :meth:`.SimulationsResults.add`."""
+    """Test :meth:`.SimulationsResults._add`."""
     time = np.linspace(0, 10, 11)
     population = time
     n_results = 5
@@ -44,7 +44,7 @@ def test_add_double_id_error() -> None:
 
 
 def test_len() -> None:
-    """Test :meth:`.SimulationsResults.add`."""
+    """Test :meth:`.SimulationsResults._add`."""
     time = np.linspace(0, 10, 11)
     pop = time
     n_results = 5

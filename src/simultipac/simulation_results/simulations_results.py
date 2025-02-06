@@ -36,13 +36,22 @@ class SimulationsResults:
         simulations_results: Iterable[SimulationResults],
         plotter: Plotter = DefaultPlotter(),
     ) -> None:
-        """Instantiate object."""
+        """Sort and store the given :class:`.SimulationResults` instances.
+
+        Parameters
+        ----------
+        simulations_results : Iterable[SimulationResults]
+            The individual results instances.
+        plotter : Plotter, optional
+            An object to create the plots.
+
+        """
         self._results_by_id: dict[int, SimulationResults] = {}
 
         #: :class:`.SimulationResults` sorted by increasing accelerating field
         self._results: list[SimulationResults] = []
         for x in simulations_results:
-            self.add(x)
+            self._add(x)
 
         self._plotter = plotter
 
@@ -54,7 +63,7 @@ class SimulationsResults:
         """Return number of elements."""
         return len(self._results)
 
-    def add(self, result: SimulationResults) -> None:
+    def _add(self, result: SimulationResults) -> None:
         """Add a new :class:`SimulationResults` instance."""
         if result.id in self._results_by_id:
             raise DuplicateIndexError(
