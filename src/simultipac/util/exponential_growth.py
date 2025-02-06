@@ -34,7 +34,7 @@ class ExpGrowthParameters(TypedDict):
     n_0: float
     #: Exponential growth factor in :unit:`ns^{-1}`.
     alpha: float
-    #: Starting time of exponential growth,
+    #: Starting time of exponential growth in :unit:`ns`.
     t_0: float
     #: Exponential growth function.
     model: Callable[[np.ndarray, float, float, float], np.ndarray]
@@ -90,7 +90,7 @@ def exp_growth_log(
         \log{N(t)} = \log{N_0} + \alpha (t-t_0)
 
     In general, better results for the fit process than the classic
-    :func:``exp_growth``.
+    :func:`exp_growth`.
 
     Parameters
     ----------
@@ -347,6 +347,9 @@ def _design_space(
 
 def _smoothen(population: np.ndarray, width: int) -> np.ndarray:
     """Smooth data (running mean).
+
+    Used to compensate the periodic population oscillations (period: RF
+    period).
 
     See also: https://stackoverflow.com/a/43200476/12188681
 

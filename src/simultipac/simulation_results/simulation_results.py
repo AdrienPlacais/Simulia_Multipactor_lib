@@ -11,7 +11,9 @@ from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
 from simultipac.util.exponential_growth import ExpGrowthParameters, fit_alpha
 
+#: Attributes stored as float
 DATA_0D = Literal["id", "e_acc", "p_rms", "alpha"]
+#: Attributes stored as 1D arrays
 DATA_1D = Literal["time", "population", "modelled_population"]
 
 
@@ -47,7 +49,7 @@ class SimulationResults(ABC):
         e_acc : float
             Accelerating field in :unit:`V/m`.
         p_rms : float | None
-            RMS power in W.
+            RMS power in :unit:`W`.
         time : np.ndarray
             Time in :unit:`ns`.
         population : np.ndarray
@@ -104,7 +106,7 @@ class SimulationResults(ABC):
 
     @property
     def alpha(self) -> float:
-        """Return the exponential growth factor in 1/ns."""
+        """Return the exponential growth factor in :unit:`ns^{-1}`."""
         alpha = self._exp_growth_parameters.get("alpha", None)
         if alpha is not None:
             return alpha
@@ -251,7 +253,7 @@ class SimulationResults(ABC):
         ----------
         args : str
             Name of arguments as saved in current objects. Example:
-                ``"population"``, ``"time"``...
+            ``"population"``, ``"time"``...
 
         Returns
         -------
@@ -302,8 +304,8 @@ class SimulationResultsFactory(ABC):
         plotter : Plotter, optional
             Object to create the plots.
         freq_ghz : float | None, optional
-            RF frequency in GHz. Used to compute RF period, which is mandatory
-            for exp growth fitting.
+            RF frequency in :unit:`GHz`. Used to compute RF period, which is
+            mandatory for exp growth fitting.
 
         """
         self._plotter = plotter
