@@ -19,7 +19,13 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 from __future__ import annotations
 
+import os
+import sys
+
 import simultipac
+
+# Add the _ext/ folder so that Sphinx can find it
+sys.path.append(os.path.abspath("./_ext"))
 
 project = "Simultipac"
 copyright = "2025, Adrien Plaçais"
@@ -44,6 +50,7 @@ extensions = [
     "sphinx.ext.intersphinx",  # interlink with other docs, such as numpy
     "sphinx.ext.todo",  # allow use of TODO
     "nbsphinx",
+    "simultipac_sphinx_extensions",  # use :unit: role
     "sphinx_autodoc_typehints",  # Printing types in docstrings not necessary anymore
     "sphinx_tabs.tabs",
 ]
