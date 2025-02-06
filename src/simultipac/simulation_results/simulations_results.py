@@ -1,7 +1,6 @@
 """Define a set of simulation results."""
 
 import bisect
-import logging
 from collections.abc import Iterable, Sequence
 from pathlib import Path
 from typing import Any, Iterator, Literal
@@ -38,22 +37,22 @@ class SimulationsResults:
         plotter: Plotter = DefaultPlotter(),
     ) -> None:
         """Instantiate object."""
-        logging.critical("Creating object.")
         self._results_by_id: dict[int, SimulationResults] = {}
-        self._results_sorted_acc_field: list[SimulationResults] = []
-        # Should populate other dictionaries too
+
+        #: :class:`.SimulationResults` sorted by increasing accelerating field
+        self._results: list[SimulationResults] = []
         for x in simulations_results:
             self.add(x)
-        self._results = [x for x in simulations_results]
+
         self._plotter = plotter
 
     def __iter__(self) -> Iterator[SimulationResults]:
         """Allow iteration over stored results."""
-        return iter(self._results_sorted_acc_field)
+        return iter(self._results)
 
     def __len__(self) -> int:
         """Return number of elements."""
-        return len(self._results_sorted_acc_field)
+        return len(self._results)
 
     def add(self, result: SimulationResults) -> None:
         """Add a new :class:`SimulationResults` instance."""
@@ -63,17 +62,16 @@ class SimulationsResults:
             )
 
         self._results_by_id[result.id] = result
-        bisect.insort(
-            self._results_sorted_acc_field, result, key=lambda r: r.e_acc
-        )
+        bisect.insort(self._results, result, key=lambda r: r.e_acc)
 
     def get_by_id(self, result_id: int) -> SimulationResults | None:
         """Retrieve a :class:`SimulationResults` by its ID."""
         return self._results_by_id.get(result_id)
 
-    def get_sorted_by_acc_field(self) -> list[SimulationResults]:
+    @property
+    def to_list(self) -> list[SimulationResults]:
         """Retrieve all results sorted by ``acc_field``."""
-        return self._results_sorted_acc_field
+        return self._results
 
     def plot(
         self,
@@ -126,7 +124,7 @@ class SimulationsResults:
         if plotter is None:
             plotter = self._plotter
         if idx_to_plot is None:
-            idx_to_plot = (results.id for results in self._results)
+            idx_to_plot = (results.id for results in self)
 
         for idx in idx_to_plot:
             axes = self._results[idx].plot(
@@ -179,7 +177,7 @@ class SimulationsResults:
             exp growth factor.
 
         """
-        for result in self._results:
+        for result in self:
             result.fit_alpha(
                 fitting_periods=fitting_periods,
                 running_mean=running_mean,
