@@ -244,18 +244,18 @@ class SimulationResults(ABC):
             self._color = color
         return axes
 
-    def _to_pandas(self, *args: str) -> pd.DataFrame:
+    def _to_pandas(self, *args: DATA_0D_t | DATA_1D_t) -> pd.DataFrame:
         """Concatenate all attribute arrays which name is in ``args`` to a df.
 
         Parameters
         ----------
-        args : str
+        args : typing.DATA_1D_t | typing.DATA_0D_t
             Name of arguments as saved in current objects. Example:
             ``"population"``, ``"time"``...
 
         Returns
         -------
-        pd.DataFrame
+        pandas.DataFrame
             Concatenates all desired data.
 
         Raises
