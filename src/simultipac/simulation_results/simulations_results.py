@@ -71,17 +71,18 @@ class SimulationsResults:
     ) -> Any:
         """Recursively call :meth:`.SimulationResults.plot`.
 
-        Plottable data is stored in :data:`.DATA_0D` and :data:`.DATA_1D`.
+        .. note::
+            0D ``x`` vs ``y`` not implemented yet.
 
         Parameters
         ----------
-        x, y : DATA_0D_t | DATA_1D_t
+        x, y : typing.DATA_0D_t | typing.DATA_1D_t
             Name of properties to plot.
         idx_to_plot : Iterable[int] | None, optional
             If provided, plot only the :class:`.SimulationResult` with those
             ids.
         plotter : Plotter | None, optional
-            Object to use for plot. If not provided, we use ``self._plotter``.
+            Object to use for plot. If not provided, we use :attr:`._plotter`.
         label : str | Literal["auto"] | None, optional
             If provided, overrides the legend. Useful when several simulations
             are shown on the same plot. Use the magic keyword ``"auto"`` to

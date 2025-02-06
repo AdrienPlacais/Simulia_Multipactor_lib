@@ -195,14 +195,12 @@ class SimulationResults(ABC):
     ) -> Any:
         """Plot ``y`` vs ``x`` using ``plotter.plot()`` method.
 
-        Plottable data is stored in :data:`DATA_0D` and :data:`DATA_1D`.
-
         Parameters
         ----------
-        x, y : DATA_0D_t | DATA_1D_t
+        x, y : typing.DATA_0D_t | typing.DATA_1D_t
             Name of properties to plot.
         plotter : Plotter | None, optional
-            Object to use for plot. If not provided, we use ``self._plotter``.
+            Object to use for plot. If not provided, we use :attr:`._plotter`.
         label : str | Literal["auto"] | None, optional
             If provided, overrides the legend. Useful when several simulations
             are shown on the same plot. Use the magic keyword ``"auto"`` to
