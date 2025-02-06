@@ -74,6 +74,7 @@ class SimulationResults(ABC):
         self._period: float | None = period
         self._modelled_population: np.ndarray | None = None
         self._color: Any = None
+        self._alpha: float | None = None
 
     def __str__(self) -> str:
         """Print info on current simulation."""
@@ -107,13 +108,28 @@ class SimulationResults(ABC):
     @property
     def alpha(self) -> float:
         """Return the exponential growth factor in :unit:`ns^{-1}`."""
+        if self._alpha is not None:
+            return self._alpha
+
         alpha = self._exp_growth_parameters.get("alpha", None)
         if alpha is not None:
+            self.alpha = alpha
             return alpha
+
         logging.warning(
             "Exponential growth factor not calculated yet. Returnin NaN."
         )
         return np.nan
+
+    @alpha.setter
+    def alpha(self, value: float) -> None:
+        """Set the value of exp growth factor."""
+        self._alpha = value
+
+    @alpha.deleter
+    def alpha(self) -> None:
+        """Delete the value."""
+        self._alpha = None
 
     def fit_alpha(
         self,
