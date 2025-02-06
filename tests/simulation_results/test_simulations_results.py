@@ -123,7 +123,7 @@ def test_to_pandas() -> None:
     pd.testing.assert_frame_equal(expected, returned)
 
 
-def test_to_pandas_with_exp_growth_params(mocker: MagicMock) -> None:
+def test_to_pandas_with_exp_growth_params() -> None:
     """Test :meth:`.SimulationsResults._to_pandas` with ``alpha``."""
     time = np.linspace(0, 10, 11)
     pop = time
@@ -143,3 +143,17 @@ def test_to_pandas_with_exp_growth_params(mocker: MagicMock) -> None:
         }
     )
     pd.testing.assert_frame_equal(expected, returned)
+
+
+def test_to_pandas_with_array_raises_error() -> None:
+    """Test :meth:`.SimulationsResults._to_pandas` with ``population``."""
+    time = np.linspace(0, 10, 11)
+    pop = time
+    n_points = 5
+    results = (
+        SimulationResults(id=i, e_acc=i**2, time=time, population=pop)
+        for i in range(n_points)
+    )
+    simulations_results = SimulationsResults(results)
+    with pytest.raises(ValueError):
+        simulations_results._to_pandas("id", "population")  # type: ignore
