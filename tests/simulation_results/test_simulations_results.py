@@ -157,3 +157,21 @@ def test_to_pandas_with_array_raises_error() -> None:
     simulations_results = SimulationsResults(results)
     with pytest.raises(ValueError):
         simulations_results._to_pandas("id", "population")  # type: ignore
+
+
+def test_to_pandas_with_generator_error() -> None:
+    """Test :meth:`.SimulationsResults._to_pandas` with a generator."""
+    time = np.linspace(0, 10, 11)
+    pop = time
+    n_points = 5
+    results = [
+        SimulationResults(id=i, e_acc=i**2, time=time, population=pop)
+        for i in range(n_points)
+    ]
+    simulations_results = SimulationsResults(results)
+
+    # A generator can be called only once, so iterating over it for "id" and
+    # then for "e_acc" will raise an error
+    sub_results = (r for r in results if r.id != 3)
+    with pytest.raises(ValueError):
+        simulations_results._to_pandas("id", "e_acc", results=sub_results)

@@ -247,16 +247,15 @@ class SimulationsResults:
         *args: DATA_0D_t,
         results: Iterable[SimulationResults] | None = None,
     ) -> pd.DataFrame:
-        """Concatenate all attribute floats which name is in ``args`` to a df.
+        """Concatenate all attributes which name is in ``args`` to a dataframe.
 
         .. todo::
-            Review this and it error handling
+            Review this and its error handling
 
         Parameters
         ----------
         args : typing.DATA_0D_t
-            Name of arguments as saved in current objects. Example:
-            ``"alpha"``, ``"p_rms"``...
+            Name of :class:`.SimulationResults` arguments to concatenate.
         results : Iterable[SimulationResults] | None, optional
             If given, we concatenate only the data frome these
             :class:`.SimulationResults`.
@@ -264,7 +263,7 @@ class SimulationsResults:
         Returns
         -------
         pandas.DataFrame
-            Concatenates all desired data.
+            Holds the values of every element of ``args``.
 
         Raises
         ------
@@ -291,11 +290,20 @@ class SimulationsResults:
                 concat.append(value)
             data[arg] = concat
 
+        lengths = {key: len(value) for key, value in data.items()}
+        if len(set(lengths.values())) > 1:
+            raise ValueError(
+                "All the lists in data must have the same length. Maybe "
+                f"{results = } is a Generator? Or maybe one of the keys was "
+                "not found in one or more of the SimulationResults?\n"
+                f"{lengths = }"
+            )
+
         try:
             return pd.DataFrame(data)
         except ValueError as e:
             raise ValueError(
-                "Could not get a data, creating malformed dataframe.\n" f"{e}"
+                f"Could not get a data, creating malformed dataframe.\n{e}"
             )
 
     def fit_alpha(
