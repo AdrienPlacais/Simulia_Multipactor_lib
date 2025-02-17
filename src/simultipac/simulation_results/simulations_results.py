@@ -60,6 +60,7 @@ class SimulationsResults:
             self._add(x)
 
         self._plotter = plotter
+        self._color: Any = None
 
     def __iter__(self) -> Iterator[SimulationResults]:
         """Allow iteration over stored results."""
@@ -138,15 +139,23 @@ class SimulationsResults:
             Objects created by the :meth:`.Plotter.plot`.
 
         """
-        if x in DATA_0D and y in DATA_0D:
-            raise NotImplementedError(
-                f"Should plot y property of every SimulationResult vs x "
-                "property of every SimulationResult."
-            )
         if plotter is None:
             plotter = self._plotter
+        to_plot = self._to_plot(idx_to_plot, id_to_plot)
 
-        for result in self._to_plot(idx_to_plot, id_to_plot):
+        if x in DATA_0D and y in DATA_0D:
+            return self._plot_0d(
+                x=x,
+                y=y,
+                plotter=plotter,
+                label=label,
+                grid=grid,
+                axes=axes,
+                to_plot=to_plot,
+                **kwargs,
+            )
+
+        for result in to_plot:
             axes = result.plot(
                 x=x,
                 y=y,
@@ -162,7 +171,7 @@ class SimulationsResults:
         self,
         idx_to_plot: Iterable[int] | None = None,
         id_to_plot: Iterable[int] | None = None,
-    ) -> Iterable[SimulationResults]:
+    ) -> list[SimulationResults]:
         """Give the :class:`.SimulationResults` to plot.
 
         When ``idx_to_plot`` and ``idx_to_plot`` both are ``None``, we return
@@ -179,28 +188,26 @@ class SimulationsResults:
 
         """
         if id_to_plot is not None:
-            return (self.get_by_id(id) for id in id_to_plot)
+            return [self.get_by_id(id) for id in id_to_plot]
         if idx_to_plot is None:
             idx_to_plot = range(len(self))
-        return (self._results[idx] for idx in idx_to_plot)
+        return [self._results[idx] for idx in idx_to_plot]
 
     def _plot_0d(
         self,
-        to_plot: Iterable[SimulationResults],
         x: DATA_0D_t,
         y: DATA_0D_t,
         plotter: Plotter,
         label: str | Literal["auto"] | None = None,
         grid: bool = True,
         axes: Any | None = None,
+        to_plot: Iterable[SimulationResults] | None = None,
         **kwargs,
     ) -> Any:
         """Concatenate and plot 0D data from ``results``.
 
         Parameters
         ----------
-        to_plot : Iterable[SimulationResults]
-            The objects to plot.
         x, y : typing.DATA_0D_t
             Name of properties to plot.
         plotter : Plotter
@@ -214,6 +221,8 @@ class SimulationsResults:
         axes : Axes | NDArray[Any] | None, optional
             Axes to re-use, if provided. The default is None (plot on new
             axis).
+        to_plot : Iterable[SimulationResults] | None, optional
+            The objects to plot. If not given, plot all the objects.
         kwargs :
             Other keyword arguments passed to the :meth:`.Plotter.plot` method.
 
