@@ -235,7 +235,10 @@ class SimulationsResults:
         data = self._to_pandas(x, y, results=to_plot)
 
         if label == "auto":
-            label = str(self)
+            n_simulations = f"{len(self)} simulations"
+            if to_plot is not None:
+                n_simulations = f"{len(to_plot)} simulations"
+            label = f"SimulationsResults ({n_simulations})"
 
         axes, color = plotter.plot(
             data,
