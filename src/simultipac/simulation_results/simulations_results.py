@@ -201,7 +201,7 @@ class SimulationsResults:
         label: str | Literal["auto"] | None = None,
         grid: bool = True,
         axes: Any | None = None,
-        to_plot: Iterable[SimulationResults] | None = None,
+        to_plot: Sequence[SimulationResults] | None = None,
         **kwargs,
     ) -> Any:
         """Concatenate and plot 0D data from ``results``.
@@ -221,7 +221,7 @@ class SimulationsResults:
         axes : Axes | NDArray[Any] | None, optional
             Axes to re-use, if provided. The default is None (plot on new
             axis).
-        to_plot : Iterable[SimulationResults] | None, optional
+        to_plot : Sequence[SimulationResults] | None, optional
             The objects to plot. If not given, plot all the objects.
         kwargs :
             Other keyword arguments passed to the :meth:`.Plotter.plot` method.
@@ -254,7 +254,7 @@ class SimulationsResults:
     def _to_pandas(
         self,
         *args: DATA_0D_t,
-        results: Iterable[SimulationResults] | None = None,
+        results: Sequence[SimulationResults] | None = None,
     ) -> pd.DataFrame:
         """Concatenate all attributes which name is in ``args`` to a dataframe.
 
@@ -265,7 +265,7 @@ class SimulationsResults:
         ----------
         args : typing.DATA_0D_t
             Name of :class:`.SimulationResults` arguments to concatenate.
-        results : Iterable[SimulationResults] | None, optional
+        results : Sequence[SimulationResults] | None, optional
             If given, we concatenate only the data frome these
             :class:`.SimulationResults`.
 

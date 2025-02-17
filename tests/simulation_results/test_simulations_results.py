@@ -174,4 +174,4 @@ def test_to_pandas_with_generator_error() -> None:
     # then for "e_acc" will raise an error
     sub_results = (r for r in results if r.id != 3)
     with pytest.raises(ValueError):
-        simulations_results._to_pandas("id", "e_acc", results=sub_results)
+        simulations_results._to_pandas("id", "e_acc", results=sub_results)  # type: ignore
