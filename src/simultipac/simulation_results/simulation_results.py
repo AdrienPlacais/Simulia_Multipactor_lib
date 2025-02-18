@@ -34,6 +34,7 @@ class SimulationResults(ABC):
         plotter: Plotter = DefaultPlotter(),
         trim_trailing: bool = False,
         period: float | None = None,
+        parameters: dict[str, float | bool | str] | None = None,
         **kwargs,
     ) -> None:
         """Instantiate, post-process.
@@ -57,6 +58,9 @@ class SimulationResults(ABC):
             Used with SPARK3D (``CSV`` import) for consistency with CST.
         period : float | None, optional
             RF period in :unit:`ns`. Mandatory for exponential growth fits.
+        parameters : dict[str, float | bool | str] | None, optional
+            Additional information on the simulation. Typically, value of
+            magnetic field, number of PIC cells, simulation flags...
 
         """
         self.id = id
@@ -75,6 +79,10 @@ class SimulationResults(ABC):
         self._modelled_population: np.ndarray | None = None
         self._color: Any = None
         self._alpha: float | None = None
+
+        self.parameters: dict[str, Any] = (
+            {} if parameters is None else parameters
+        )
 
     def __str__(self) -> str:
         """Print info on current simulation."""

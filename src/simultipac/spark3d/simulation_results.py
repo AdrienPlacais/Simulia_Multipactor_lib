@@ -15,53 +15,6 @@ from simultipac.simulation_results.simulation_results import (
 class Spark3DResults(SimulationResults):
     """Store a single SPARK3D simulation results."""
 
-    def __init__(
-        self,
-        id: int,
-        e_acc: float,
-        time: np.ndarray,
-        population: np.ndarray,
-        p_rms: float | None = None,
-        plotter: Plotter = DefaultPlotter(),
-        trim_trailing: bool = False,
-        period: float | None = None,
-        **kwargs,
-    ) -> None:
-        """Instantiate, post-process.
-
-        Parameters
-        ----------
-        id : int
-            Unique simulation identifier.
-        e_acc : float
-            Accelerating field in :unit:`V/m`.
-        time : np.ndarray
-            Time in :unit:`ns`.
-        population : np.ndarray
-            Evolution of population with time. Same shape as ``time``.
-        p_rms : float | None, optional
-            RMS power in W.
-        plotter : Plotter, optional
-            An object allowing to plot data.
-        trim_trailing : bool, optional
-            To remove the last simulation points, when the population is 0.
-            Used with SPARK3D (``CSV`` import) for consistency with CST.
-        period : float | None, optional
-            RF period in :unit:`ns`. Mandatory for exponential growth fits.
-
-        """
-        super().__init__(
-            id=id,
-            e_acc=e_acc,
-            time=time,
-            population=population,
-            p_rms=p_rms,
-            plotter=plotter,
-            trim_trailing=trim_trailing,
-            period=period,
-            **kwargs,
-        )
-
 
 class Spark3DResultsFactory(SimulationResultsFactory):
     """Define an object to easily instantiate :class:`.Spark3DResults`."""

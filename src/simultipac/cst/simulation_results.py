@@ -42,40 +42,6 @@ class MissingFileError(Exception):
 class CSTResults(SimulationResults):
     """Store a single CST simulation results."""
 
-    def __init__(
-        self,
-        id: int,
-        e_acc: float,
-        time: np.ndarray,
-        population: np.ndarray,
-        p_rms: float | None | None = None,
-        plotter: Plotter = DefaultPlotter(),
-        trim_trailing: bool = False,
-        period: float | None = None,
-        parameters: dict[str, float | bool | str] | None = None,
-        **kwargs,
-    ) -> None:
-        """Instantiate object, with additional ``parameters`` attributes.
-
-        ``parameters`` is used to store CST simulation parameters: value of
-        magnetic field, etc.
-
-        """
-        self.parameters: dict[str, Any] = (
-            {} if parameters is None else parameters
-        )
-        return super().__init__(
-            id=id,
-            e_acc=e_acc,
-            time=time,
-            population=population,
-            p_rms=p_rms,
-            plotter=plotter,
-            trim_trailing=trim_trailing,
-            period=period,
-            **kwargs,
-        )
-
 
 class CSTResultsFactory(SimulationResultsFactory):
     """Define an object to easily instantiate :class:`.CSTResults`."""
