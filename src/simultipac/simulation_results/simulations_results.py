@@ -378,6 +378,58 @@ class SimulationsResults:
         """Concatenate all data named ``to_save`` and save it to a file."""
         raise NotImplementedError
 
+    def parameter_values(
+        self,
+        parameter: str,
+        default: Any = None,
+        allow_missing: bool = False,
+    ) -> set[Any]:
+        """Get the existing values of ``parameter`` in the stored results.
+
+        Parameters
+        ----------
+        parameter : str
+            Name of the parameter to get. Must be a key in the ``parameters``
+            dictionary of the stored :class:`.SimulationResult`.
+        default : Any, optional
+            The fallback value when the ``parameter`` is not a key of a
+            :attr:`.SimulationResult.parameters`. The default is None.
+        allow_missing : bool, optional
+            If True, an error is raised when ``default`` is present in the
+            output set.
+
+        Returns
+        -------
+        set[Any] :
+            All the different values of ``parameter`` in every stored
+            :class:`.SimulationResult`.
+
+        """
+        values = []
+        missing = []
+        for result in self.to_list:
+            value = result.parameters.get(parameter, default)
+            values.append(value)
+            if value == default:
+                missing.append(result)
+                continue
+
+        if len(missing) == 0:
+            return set(values)
+
+        msg = (
+            f"We did not find {parameter} in following SimulationResults:\n"
+            f"{missing}"
+        )
+        logging.debug(msg)
+        if allow_missing:
+            return set(values)
+
+        raise ValueError(
+            f"We did not find {parameter} in following SimulationResults:"
+            f"\n{missing}"
+        )
+
 
 class SimulationsResultsFactory:
     """An object to create a :class:`.SimulationsResults`."""

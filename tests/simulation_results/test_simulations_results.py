@@ -175,3 +175,45 @@ def test_to_pandas_with_generator_error() -> None:
     sub_results = (r for r in results if r.id != 3)
     with pytest.raises(ValueError):
         simulations_results._to_pandas("id", "e_acc", results=sub_results)  # type: ignore
+
+
+def test_parameter_values() -> None:
+    """Check that we can get the different parameters values."""
+    time = np.linspace(0, 10, 11)
+    pop = time
+    n_points = 10
+    results = [
+        SimulationResults(
+            id=i,
+            e_acc=i**2,
+            time=time,
+            population=pop,
+            parameters={"dummy": i % 3},
+        )
+        for i in range(n_points)
+    ]
+    simulations_results = SimulationsResults(results)
+
+    expected = {0, 1, 2}
+    assert simulations_results.parameter_values("dummy") == expected
+
+
+def test_parameter_values_missing() -> None:
+    """Check that a missing parameter value raises an error."""
+    time = np.linspace(0, 10, 11)
+    pop = time
+    n_points = 10
+    results = [
+        SimulationResults(
+            id=i,
+            e_acc=i**2,
+            time=time,
+            population=pop,
+            parameters={"dummy": i % 3} if i != 5 else {},
+        )
+        for i in range(n_points)
+    ]
+    simulations_results = SimulationsResults(results)
+
+    with pytest.raises(ValueError):
+        simulations_results.parameter_values("dummy", allow_missing=False)
