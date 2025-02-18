@@ -26,7 +26,21 @@ if __name__ == "__main__":
         lw=3,
         ls="--",
     )
-    # results.plot(x="e_acc", y="alpha")
+
+    # First step, make this work:
+    if False:
+        axes = None
+        n_cell_values: set = results.get_parameter_values("n_cell")
+        for value in n_cell_values:
+            idx_to_plot = results.with_parameter_value("n_cell", value)
+            label = f"n_cell = {value}"
+            axes = results.plot(x="e_acc", y="alpha", label=label, axes=axes)
+    # Second step, make this work (same result)
+    if False:
+        axes = results.plot(
+            x="e_acc", y="alpha", sort_by_parameter="n_cell", axes=axes
+        )
+
     # results.save(
     #     "growth.txt",
     #     *(
