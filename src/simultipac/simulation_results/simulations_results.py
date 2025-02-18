@@ -2,7 +2,7 @@
 
 import bisect
 import logging
-from collections.abc import Iterable, Sequence
+from collections.abc import Generator, Iterable, Sequence
 from pathlib import Path
 from typing import Any, Iterator, Literal
 
@@ -428,6 +428,19 @@ class SimulationsResults:
         raise ValueError(
             f"We did not find {parameter} in following SimulationResults:"
             f"\n{missing}"
+        )
+
+    def with_parameter_value(
+        self, parameter: str, value: Any
+    ) -> Generator[SimulationResults, None, None]:
+        """
+        Give the :class:`.SimulationResults` which ``parameter`` is ``value``.
+
+        """
+        return (
+            r
+            for r in self.to_list
+            if r.parameters.get(parameter, None) == value
         )
 
 

@@ -182,7 +182,7 @@ def test_parameter_values() -> None:
     time = np.linspace(0, 10, 11)
     pop = time
     n_points = 10
-    results = [
+    results = (
         SimulationResults(
             id=i,
             e_acc=i**2,
@@ -191,7 +191,7 @@ def test_parameter_values() -> None:
             parameters={"dummy": i % 3},
         )
         for i in range(n_points)
-    ]
+    )
     simulations_results = SimulationsResults(results)
 
     expected = {0, 1, 2}
@@ -199,6 +199,27 @@ def test_parameter_values() -> None:
 
 
 def test_parameter_values_missing() -> None:
+    """Check that a missing parameter value raises an error."""
+    time = np.linspace(0, 10, 11)
+    pop = time
+    n_points = 10
+    results = (
+        SimulationResults(
+            id=i,
+            e_acc=i**2,
+            time=time,
+            population=pop,
+            parameters={"dummy": i % 3} if i != 5 else {},
+        )
+        for i in range(n_points)
+    )
+    simulations_results = SimulationsResults(results)
+
+    with pytest.raises(ValueError):
+        simulations_results.parameter_values("dummy", allow_missing=False)
+
+
+def test_with_parameter_value() -> None:
     """Check that a missing parameter value raises an error."""
     time = np.linspace(0, 10, 11)
     pop = time
@@ -215,5 +236,7 @@ def test_parameter_values_missing() -> None:
     ]
     simulations_results = SimulationsResults(results)
 
-    with pytest.raises(ValueError):
-        simulations_results.parameter_values("dummy", allow_missing=False)
+    expected = (results[0], results[3], results[6], results[9])
+    assert (
+        tuple(simulations_results.with_parameter_value("dummy", 0)) == expected
+    )
