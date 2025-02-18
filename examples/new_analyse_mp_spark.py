@@ -31,7 +31,7 @@ if __name__ == "__main__":
         ls="--",
     )
     axes.set_yscale("log")
-    results.plot(x="e_acc", y="alpha")
+    results.plot(x="e_acc", y="alpha", idx_to_plot=range(0, 5))
     # results.save(
     #     "growth.txt",
     #     *(
