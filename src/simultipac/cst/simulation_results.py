@@ -20,8 +20,6 @@ from pathlib import Path
 from pprint import pformat
 from typing import Any
 
-import numpy as np
-
 from simultipac.cst.helper import (
     get_id,
     mmdd_xxxxxxx_folder_to_dict,
@@ -132,6 +130,11 @@ class CSTResultsFactory(SimulationResultsFactory):
         delimiter : str, optional
             Delimiter between two columns. The default is a tab character.
 
+        Returns
+        -------
+        results : CSTResults
+            Instantiated object.
+
         """
         id = get_id(folderpath)
         raw_results = mmdd_xxxxxxx_folder_to_dict(folderpath, delimiter)
@@ -159,6 +162,7 @@ class CSTResultsFactory(SimulationResultsFactory):
             p_rms=p_rms,
             plotter=self._plotter,
             period=self._period,
+            parameters=raw_results.pop(no_extension(self._parameters_file)),
         )
         return results
 
