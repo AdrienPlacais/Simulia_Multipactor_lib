@@ -170,6 +170,7 @@ class SimulationsResults:
                     axes=axes,
                     to_plot=to_plot,
                     sort_by_parameter=None,
+                    color=None,
                     **kwargs,
                 )
             return axes
@@ -242,6 +243,7 @@ class SimulationsResults:
         grid: bool = True,
         axes: Any | None = None,
         to_plot: Sequence[SimulationResults] | None = None,
+        color: Any = "auto",
         **kwargs,
     ) -> Any:
         """Concatenate and plot 0D data from ``results``.
@@ -263,6 +265,9 @@ class SimulationsResults:
             axis).
         to_plot : Sequence[SimulationResults] | None, optional
             The objects to plot. If not given, plot all the objects.
+        color : Any, optional
+            Color for the plot. If "auto", we use the
+            :attr:`.SimulationsResults._color` attribute.
         kwargs :
             Other keyword arguments passed to the :meth:`.Plotter.plot` method.
 
@@ -287,7 +292,7 @@ class SimulationsResults:
             grid=grid,
             axes=axes,
             label=label,
-            color=self._color,
+            color=self._color if color == "auto" else color,
             **kwargs,
         )
         if self._color is None:
