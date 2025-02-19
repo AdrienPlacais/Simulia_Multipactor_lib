@@ -27,26 +27,13 @@ if __name__ == "__main__":
         ls="--",
     )
 
-    # First step, make this work:
-    if True:
-        axes = None
-        parameters_values: dict[str, set] = results.parameter_values(
-            "size_cell", "N_0"
-        )
-        for size_cell in parameters_values["size_cell"]:
-            for N_0 in parameters_values["N_0"]:
-                to_plot = results.with_parameter_value(
-                    {"size_cell": size_cell, "N_0": N_0}
-                )
-                label = f"{size_cell = }, {N_0 = }"
-                axes = results.plot(
-                    x="e_acc", y="alpha", label=label, axes=axes
-                )
-    # Second step, make this work (same result)
-    if False:
-        axes = results.plot(
-            x="e_acc", y="alpha", sort_by_parameter="size_cell", axes=axes
-        )
+    axes = None
+    axes = results.plot(
+        x="e_acc",
+        y="alpha",
+        sort_by_parameter=("size_cell", "N_0"),
+        axes=axes,
+    )
 
     # results.save(
     #     "growth.txt",

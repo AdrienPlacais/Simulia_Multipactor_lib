@@ -2,7 +2,8 @@
 
 import bisect
 import logging
-from collections.abc import Generator, Iterable, Sequence
+from collections.abc import Collection, Generator, Iterable, Sequence
+from itertools import product
 from pathlib import Path
 from typing import Any, Iterator, Literal
 
@@ -98,10 +99,12 @@ class SimulationsResults:
         y: DATA_0D_t | DATA_1D_t,
         idx_to_plot: Iterable[int] | None = None,
         id_to_plot: Iterable[int] | None = None,
+        to_plot: Iterable[SimulationResults] | None = None,
         plotter: Plotter | None = None,
         label: str | Literal["auto"] | None = "auto",
         grid: bool = True,
         axes: Any | None = None,
+        sort_by_parameter: Collection[str] | None = None,
         **kwargs,
     ) -> Any:
         """Recursively call :meth:`.SimulationResults.plot`.
@@ -116,9 +119,13 @@ class SimulationsResults:
         idx_to_plot : Iterable[int] | None, optional
             Positions in the list of :class:`.SimulationResults` sorted by
             growing accelerating field / power. Not considered if
-            ``id_to_plot`` is provided.
+            ``id_to_plot`` or ``to_plot`` is provided.
         id_to_plot : Iterable[int] | None, optional
-            ID attributes; takes preceedence over ``idx_to_plot``.
+            ID attributes; takes preceedence over ``idx_to_plot``. Not
+            considered if ``to_plot`` is provided.
+        to_plot : Iterable[SimulationResults] | None, optional
+            Objects to plot; takes preceedence over ``idx_to_plot`` and
+            ``id_to_plot``.
         plotter : Plotter | None, optional
             Object to use for plot. If not provided, we use :attr:`._plotter`.
         label : str | Literal["auto"] | None, optional
@@ -130,6 +137,9 @@ class SimulationsResults:
         axes : Axes | NDArray[Any] | None, optional
             Axes to re-use, if provided. The default is None (plot on new
             axis).
+        sort_by_parameter : Collection[str] | None, optional
+            If provided, results are grouped by the given parameters before
+            plotting.
         kwargs :
             Other keyword arguments passed to the :meth:`.Plotter.plot` method.
 
@@ -141,7 +151,29 @@ class SimulationsResults:
         """
         if plotter is None:
             plotter = self._plotter
-        to_plot = self._to_plot(idx_to_plot, id_to_plot)
+
+        if sort_by_parameter is not None:
+            parameters_values = self.parameter_values(*sort_by_parameter)
+            for param_combination in product(
+                *[parameters_values[p] for p in sort_by_parameter]
+            ):
+                filters = dict(zip(sort_by_parameter, param_combination))
+                to_plot = self.with_parameter_value(filters)
+                label = ", ".join(f"{p}={v}" for p, v in filters.items())
+                axes = self.plot(
+                    x=x,
+                    y=y,
+                    plotter=plotter,
+                    label=label,
+                    grid=grid,
+                    axes=axes,
+                    to_plot=to_plot,
+                    sort_by_parameter=None,
+                    **kwargs,
+                )
+            return axes
+
+        to_plot = self._to_plot(idx_to_plot, id_to_plot, to_plot)
 
         if x in DATA_0D and y in DATA_0D:
             return self._plot_0d(
@@ -171,22 +203,29 @@ class SimulationsResults:
         self,
         idx_to_plot: Iterable[int] | None = None,
         id_to_plot: Iterable[int] | None = None,
+        to_plot: Iterable[SimulationResults] | None = None,
     ) -> list[SimulationResults]:
         """Give the :class:`.SimulationResults` to plot.
 
-        When ``idx_to_plot`` and ``idx_to_plot`` both are ``None``, we return
-        all the stored :class:`.SimulationResults`.
+        When all arguments are ``None``, we return all the stored
+        :class:`.SimulationResults`.
 
         Parameters
         ----------
         idx_to_plot : Iterable[int] | None, optional
             Positions in the list of :class:`.SimulationResults` sorted by
             growing accelerating field / power. Not considered if
-            ``id_to_plot`` is provided.
+            ``id_to_plot`` or ``to_plot`` is provided.
         id_to_plot : Iterable[int] | None, optional
-            ID attributes; takes preceedence over ``idx_to_plot``.
+            ID attributes; takes preceedence over ``idx_to_plot``. Not
+            considered if ``to_plot`` is provided.
+        to_plot : Iterable[SimulationResults] | None, optional
+            Objects to plot; takes preceedence over ``idx_to_plot`` and
+            ``id_to_plot``.
 
         """
+        if to_plot is not None:
+            return [r for r in to_plot]
         if id_to_plot is not None:
             return [self.get_by_id(id) for id in id_to_plot]
         if idx_to_plot is None:
