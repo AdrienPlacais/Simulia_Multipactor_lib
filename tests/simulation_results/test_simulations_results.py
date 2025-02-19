@@ -194,8 +194,30 @@ def test_parameter_values() -> None:
     )
     simulations_results = SimulationsResults(results)
 
-    expected = {0, 1, 2}
+    expected = {"dummy": {0, 1, 2}}
     assert simulations_results.parameter_values("dummy") == expected
+
+
+def test_multiple_parameter_values() -> None:
+    """Check that we can get the different parameters values."""
+    time = np.linspace(0, 10, 11)
+    pop = time
+    n_points = 10
+    results = (
+        SimulationResults(
+            id=i,
+            e_acc=i**2,
+            time=time,
+            population=pop,
+            parameters={"dummy": i % 3, "not dummy": i % 4},
+        )
+        for i in range(n_points)
+    )
+    simulations_results = SimulationsResults(results)
+
+    expected = {"dummy": {0, 1, 2}, "not dummy": {0, 1, 2, 3}}
+    got = simulations_results.parameter_values("dummy", "not dummy")
+    assert got == expected
 
 
 def test_parameter_values_missing() -> None:

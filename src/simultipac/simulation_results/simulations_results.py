@@ -380,6 +380,40 @@ class SimulationsResults:
 
     def parameter_values(
         self,
+        *parameters: str,
+        default: Any = None,
+        allow_missing: bool = False,
+    ) -> dict[str, set]:
+        """Get the existing values of all ``parameters`` in the stored results.
+
+        Parameters
+        ----------
+        *parameters : str
+            Name of the parameter(s) to get. Must be key in the ``parameters``
+            dictionary of the stored :class:`.SimulationResult`.
+        default : Any, optional
+            The fallback value when the ``parameter`` is not a key of a
+            :attr:`.SimulationResult.parameters`. The default is None.
+        allow_missing : bool, optional
+            If True, an error is raised when ``default`` is present in the
+            output set.
+
+        Returns
+        -------
+        all_values : dict[str, set]
+            Keys are all the ``parameters``. Values corresponding values in
+            every storred :class:`.SimulationResult`.
+
+        """
+        return {
+            parameter: self._single_parameter_values(
+                parameter, default=default, allow_missing=allow_missing
+            )
+            for parameter in parameters
+        }
+
+    def _single_parameter_values(
+        self,
         parameter: str,
         default: Any = None,
         allow_missing: bool = False,
