@@ -259,5 +259,7 @@ def test_with_parameter_value() -> None:
     simulations_results = SimulationsResults(results)
 
     expected = (results[0], results[6])
-    got = simulations_results.with_parameter_value(dummy=0, not_dummy=0)
+    got = simulations_results.with_parameter_value(
+        {"dummy": 0, "not_dummy": 0}
+    )
     assert tuple(got) == expected

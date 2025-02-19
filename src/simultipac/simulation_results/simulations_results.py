@@ -432,13 +432,13 @@ class SimulationsResults:
         return all_values
 
     def with_parameter_value(
-        self, **kwargs: str
+        self, parameters: dict[str, Any]
     ) -> Generator[SimulationResults, None, None]:
         """Yield :class:`.SimulationResults` matching given parameter values.
 
         Parameters
         ----------
-        **kwargs : str
+        parameters : dict[str, Any]
             Parameter names and their required values.
 
         Yields
@@ -451,7 +451,7 @@ class SimulationsResults:
         for result in self.to_list:
             if all(
                 result.parameters.get(param) == value
-                for param, value in kwargs.items()
+                for param, value in parameters.items()
             ):
                 yield result
 

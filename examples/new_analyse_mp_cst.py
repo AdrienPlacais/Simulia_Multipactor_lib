@@ -28,17 +28,24 @@ if __name__ == "__main__":
     )
 
     # First step, make this work:
-    if False:
+    if True:
         axes = None
-        n_cell_values: set = results.get_parameter_values("n_cell")
-        for value in n_cell_values:
-            idx_to_plot = results.with_parameter_value("n_cell", value)
-            label = f"n_cell = {value}"
-            axes = results.plot(x="e_acc", y="alpha", label=label, axes=axes)
+        parameters_values: dict[str, set] = results.parameter_values(
+            "size_cell", "N_0"
+        )
+        for size_cell in parameters_values["size_cell"]:
+            for N_0 in parameters_values["N_0"]:
+                to_plot = results.with_parameter_value(
+                    {"size_cell": size_cell, "N_0": N_0}
+                )
+                label = f"{size_cell = }, {N_0 = }"
+                axes = results.plot(
+                    x="e_acc", y="alpha", label=label, axes=axes
+                )
     # Second step, make this work (same result)
     if False:
         axes = results.plot(
-            x="e_acc", y="alpha", sort_by_parameter="n_cell", axes=axes
+            x="e_acc", y="alpha", sort_by_parameter="size_cell", axes=axes
         )
 
     # results.save(
