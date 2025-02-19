@@ -242,7 +242,7 @@ def test_parameter_values_missing() -> None:
 
 
 def test_with_parameter_value() -> None:
-    """Check that a missing parameter value raises an error."""
+    """Check that we can get simulation results from parameters values."""
     time = np.linspace(0, 10, 11)
     pop = time
     n_points = 10
@@ -252,13 +252,12 @@ def test_with_parameter_value() -> None:
             e_acc=i**2,
             time=time,
             population=pop,
-            parameters={"dummy": i % 3} if i != 5 else {},
+            parameters={"dummy": i % 3, "not_dummy": i % 2},
         )
         for i in range(n_points)
     ]
     simulations_results = SimulationsResults(results)
 
-    expected = (results[0], results[3], results[6], results[9])
-    assert (
-        tuple(simulations_results.with_parameter_value("dummy", 0)) == expected
-    )
+    expected = (results[0], results[6])
+    got = simulations_results.with_parameter_value(dummy=0, not_dummy=0)
+    assert tuple(got) == expected

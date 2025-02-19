@@ -465,17 +465,28 @@ class SimulationsResults:
         )
 
     def with_parameter_value(
-        self, parameter: str, value: Any
+        self, **kwargs: str
     ) -> Generator[SimulationResults, None, None]:
-        """
-        Give the :class:`.SimulationResults` which ``parameter`` is ``value``.
+        """Yield :class:`.SimulationResults` matching given parameter values.
+
+        Parameters
+        ----------
+        **kwargs : str
+            Parameter names and their required values.
+
+        Yields
+        ------
+        SimulationResults
+            :class:`.SimulationResults` instances whose parameters match the
+            given values.
 
         """
-        return (
-            r
-            for r in self.to_list
-            if r.parameters.get(parameter, None) == value
-        )
+        for result in self.to_list:
+            if all(
+                result.parameters.get(param) == value
+                for param, value in kwargs.items()
+            ):
+                yield result
 
 
 class SimulationsResultsFactory:
