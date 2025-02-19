@@ -34,12 +34,3 @@ if __name__ == "__main__":
         sort_by_parameter=("size_cell", "N_0"),
         axes=axes,
     )
-
-    # results.save(
-    #     "growth.txt",
-    #     *(
-    #         "e_acc",
-    #         "alpha",
-    #     ),
-    #     delimiter="\t",
-    # )

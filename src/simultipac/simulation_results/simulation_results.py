@@ -142,7 +142,7 @@ class SimulationResults(ABC):
     def fit_alpha(
         self,
         fitting_periods: int,
-        running_mean: bool = True,
+        running_mean: bool = False,
         log_fit: bool = True,
         minimum_final_number_of_electrons: int = 0,
         bounds: tuple[list[float], list[float]] = (
@@ -162,7 +162,8 @@ class SimulationResults(ABC):
             starts.
         running_mean : bool, optional
             To tell if you want to average the number of particles over one
-            period. Highly recommended. The default is True.
+            period. It is recommended with CST, but does not bring anything for
+            SPARK3D. The default is False.
         log_fit : bool, optional
             To perform the fit on :func:`exp_growth_log` rather than
             :func:`exp_growth`. The default is True, as it generally shows
