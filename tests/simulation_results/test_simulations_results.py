@@ -1,5 +1,6 @@
 """Define tests for :class:`.SimulationsResults`."""
 
+import logging
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -263,3 +264,75 @@ def test_with_parameter_value() -> None:
         {"dummy": 0, "not_dummy": 0}
     )
     assert tuple(got) == expected
+
+
+def test_format_for_save_0d() -> None:
+    """Check on 0D data."""
+    time = np.linspace(0, 10, 11)
+    populations = (time, time**2)
+    results = (
+        SimulationResults(
+            id=i,
+            e_acc=i**2,
+            time=time,
+            population=populations[i],
+        )
+        for i in range(2)
+    )
+    returned = SimulationsResults(results)._format_for_save("id", "e_acc")
+    expected = pd.DataFrame({"id": [0, 1], "e_acc": [0, 1]})
+    pd.testing.assert_frame_equal(expected, returned)
+
+
+def test_format_for_save_1d() -> None:
+    """Check on 1D data."""
+    time = np.linspace(0, 10, 11)
+    populations = [time, time**2]
+    results = (
+        SimulationResults(
+            id=i,
+            e_acc=i**2,
+            time=time,
+            population=populations[i],
+        )
+        for i in range(2)
+    )
+    returned = SimulationsResults(results)._format_for_save(
+        "time", "population"
+    )
+    data = np.column_stack([time, populations[0], time, populations[1]])
+    expected = pd.DataFrame(
+        data, columns=["time", "population", "time", "population"]
+    )
+    pd.testing.assert_frame_equal(expected, returned)
+
+
+def test_format_for_save_1d_merge() -> None:
+    """Check on 1D data."""
+    time = np.linspace(0, 10, 11)
+    populations = [time, time**2, time / 2, time * 3]
+    results = (
+        SimulationResults(
+            id=i,
+            e_acc=i**2,
+            time=time,
+            population=populations[i],
+        )
+        for i in range(4)
+    )
+    returned = SimulationsResults(results)._format_for_save(
+        "time", "population", merge_on="time"
+    )
+
+    data = np.column_stack([time] + populations)
+    expected = pd.DataFrame(
+        data,
+        columns=[
+            "time",
+            "population_0",
+            "population_1",
+            "population_2",
+            "population_3",
+        ],
+    )
+    pd.testing.assert_frame_equal(expected, returned)

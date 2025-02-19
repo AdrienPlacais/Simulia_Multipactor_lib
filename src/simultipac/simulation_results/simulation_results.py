@@ -249,7 +249,7 @@ class SimulationResults(ABC):
         """
         if plotter is None:
             plotter = self._plotter
-        data = self._to_pandas(x, y)
+        data = self.to_pandas(x, y)
 
         if label == "auto":
             label = str(self)
@@ -268,7 +268,7 @@ class SimulationResults(ABC):
             self._color = color
         return axes
 
-    def _to_pandas(self, *args: DATA_0D_t | DATA_1D_t) -> pd.DataFrame:
+    def to_pandas(self, *args: DATA_0D_t | DATA_1D_t) -> pd.DataFrame:
         """Concatenate all attribute arrays which name is in ``args`` to a df.
 
         Parameters

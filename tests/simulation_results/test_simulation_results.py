@@ -82,7 +82,7 @@ def test_to_pandas() -> None:
     expected = pd.DataFrame(
         {"time": time, "population": population, "e_acc": np.full(4, e_acc)}
     )
-    returned = result._to_pandas("time", "population", "e_acc")
+    returned = result.to_pandas("time", "population", "e_acc")
     pd.testing.assert_frame_equal(expected, returned)
 
 
@@ -94,7 +94,7 @@ def test_to_pandas_with_missing() -> None:
         id=1, e_acc=5.0, p_rms=2.0, time=time, population=population
     )
     with pytest.raises(MissingDataError):
-        result._to_pandas("dummy")
+        result.to_pandas("dummy")  # type: ignore
 
 
 def test_to_pandas_with_float() -> None:
@@ -105,4 +105,4 @@ def test_to_pandas_with_float() -> None:
         id=1, e_acc=5.0, p_rms=2.0, time=time, population=population
     )
     with pytest.raises(ValueError):
-        result._to_pandas("e_acc")
+        result.to_pandas("e_acc")

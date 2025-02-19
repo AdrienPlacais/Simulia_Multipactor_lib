@@ -3,6 +3,7 @@
 import bisect
 import logging
 from collections.abc import Collection, Generator, Iterable, Sequence
+from functools import reduce
 from itertools import product
 from pathlib import Path
 from typing import Any, Iterator, Literal
@@ -410,12 +411,81 @@ class SimulationsResults:
     def save(
         self,
         filepath: Path | str,
-        *to_save: str,
-        delimiter: str = "\t",
+        *to_save: DATA_0D_t | DATA_1D_t,
+        sep: str = ",",
+        merge_on: DATA_0D_t | DATA_1D_t | None = None,
         **kwargs,
     ) -> None:
-        """Concatenate all data named ``to_save`` and save it to a file."""
-        raise NotImplementedError
+        """Concatenate all data named ``to_save`` and save it to a file.
+
+        Parameters
+        ----------
+        filepath : Path | str
+            Where to save the file.
+        to_save : DATA_0D_t | DATA_1D_t
+            The list of quantities to save.
+        sep : str, optional
+            Column separator. Default is a comma.
+        merge_on : DATA_0D_t | DATA_1D_t | None
+            If provided, the different dataframe will be merged against this
+            column. Typical usage is ``merge_on="time"`` to have a single time
+            column.
+
+        """
+        if isinstance(filepath, str):
+            filepath = Path(filepath)
+
+        df = self._format_for_save(*to_save, merge_on=merge_on, **kwargs)
+
+        df.to_csv(filepath, sep=sep, **kwargs)
+        logging.info(f"File saved to {filepath.absolute()}")
+        return
+
+    def _format_for_save(
+        self,
+        *to_save: DATA_0D_t | DATA_1D_t,
+        merge_on: DATA_0D_t | DATA_1D_t | None = None,
+        **kwargs,
+    ) -> pd.DataFrame:
+        """Concatanate desired data into a single dataframe.
+
+        Parameters
+        ----------
+        to_save : DATA_0D_t | DATA_1D_t
+            The list of quantities to save.
+        merge_on : DATA_0D_t | DATA_1D_t | None
+            If provided, the different dataframe will be merged against this
+            column. Typical usage is ``merge_on="time"`` to have a single time
+            column.
+
+        Returns
+        -------
+        pd.DataFrame
+            Contains all the data to save, with proper format.
+
+        """
+        if all(arg in DATA_0D for arg in to_save):
+            return self._to_pandas(*to_save, **kwargs)  # type: ignore
+
+        all_df = [x.to_pandas(*to_save, **kwargs) for x in self.to_list]
+
+        if merge_on is None:
+            return pd.concat(all_df, axis=1)
+
+        assert merge_on in to_save, (
+            f"Cannot merge dataframes on column {merge_on} because it does not"
+            f" exist. Please add it to {to_save = }"
+        )
+        renamed_dfs = []
+        for df, res in zip(all_df, self.to_list):
+            new_cols = {
+                col: f"{col}_{res.id}" for col in to_save if col != merge_on
+            }
+            renamed_dfs.append(df.rename(columns=new_cols))
+        merged_df = reduce(
+            lambda left, right: left.merge(right, on=merge_on), renamed_dfs
+        )
+        return merged_df
 
     def parameter_values(
         self,
