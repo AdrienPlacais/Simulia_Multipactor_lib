@@ -386,11 +386,15 @@ class SimulationsResults:
     ) -> dict[str, set]:
         """Get the existing values of all ``parameters`` in the stored results.
 
+        If no parameters are given, return all parameters with their possible
+        values.
+
         Parameters
         ----------
         *parameters : str
             Name of the parameter(s) to get. Must be key in the ``parameters``
-            dictionary of the stored :class:`.SimulationResult`.
+            dictionary of the stored :class:`.SimulationResult`. If empty, all
+            parameters found in any result are returned.
         default : Any, optional
             The fallback value when the ``parameter`` is not a key of a
             :attr:`.SimulationResult.parameters`. The default is None.
@@ -406,6 +410,11 @@ class SimulationsResults:
 
         """
         all_values = {}
+
+        if not parameters:
+            parameters = tuple(
+                {key for result in self.to_list for key in result.parameters}
+            )
         for parameter in parameters:
             values = set()
             missing_results = []

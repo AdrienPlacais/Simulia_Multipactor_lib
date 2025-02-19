@@ -188,18 +188,19 @@ def test_parameter_values() -> None:
             e_acc=i**2,
             time=time,
             population=pop,
-            parameters={"dummy": i % 3},
+            parameters={"dummy": i % 3, "not dummy": i % 4, "hello": 0},
         )
         for i in range(n_points)
     )
     simulations_results = SimulationsResults(results)
 
-    expected = {"dummy": {0, 1, 2}}
-    assert simulations_results.parameter_values("dummy") == expected
+    expected = {"dummy": {0, 1, 2}, "not dummy": {0, 1, 2, 3}}
+    got = simulations_results.parameter_values("dummy", "not dummy")
+    assert got == expected
 
 
-def test_multiple_parameter_values() -> None:
-    """Check that we can get the different parameters values."""
+def test_parameter_values_no_arg() -> None:
+    """Check that we can get all the parameters values when no arg."""
     time = np.linspace(0, 10, 11)
     pop = time
     n_points = 10
@@ -209,15 +210,14 @@ def test_multiple_parameter_values() -> None:
             e_acc=i**2,
             time=time,
             population=pop,
-            parameters={"dummy": i % 3, "not dummy": i % 4},
+            parameters={"dummy": i % 3, "not dummy": i % 4, "hello": 0},
         )
         for i in range(n_points)
     )
     simulations_results = SimulationsResults(results)
 
-    expected = {"dummy": {0, 1, 2}, "not dummy": {0, 1, 2, 3}}
-    got = simulations_results.parameter_values("dummy", "not dummy")
-    assert got == expected
+    expected = {"dummy": {0, 1, 2}, "not dummy": {0, 1, 2, 3}, "hello": {0}}
+    assert simulations_results.parameter_values() == expected
 
 
 def test_parameter_values_missing() -> None:
