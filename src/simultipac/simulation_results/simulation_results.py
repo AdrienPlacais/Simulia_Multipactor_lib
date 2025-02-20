@@ -2,6 +2,7 @@
 
 import logging
 from abc import ABC
+from pathlib import Path
 from typing import Any, Callable, Literal
 
 import numpy as np
@@ -35,6 +36,8 @@ class SimulationResults(ABC):
         trim_trailing: bool = False,
         period: float | None = None,
         parameters: dict[str, float | bool | str] | None = None,
+        stl_path: str | Path | None = None,
+        stl_alpha: float | None = None,
         **kwargs,
     ) -> None:
         """Instantiate, post-process.
@@ -61,6 +64,11 @@ class SimulationResults(ABC):
         parameters : dict[str, float | bool | str] | None, optional
             Additional information on the simulation. Typically, value of
             magnetic field, number of PIC cells, simulation flags...
+        stl_path : str | Path | None, optional
+            Path to the ``STL`` file holding the 3D structure of the system.
+            If given, we automatically load it. The default is None.
+        stl_alpha : float | None, optional
+            Transparency for the 3D mesh. The default is None.
 
         """
         self.id = id
@@ -83,6 +91,10 @@ class SimulationResults(ABC):
         self.parameters: dict[str, Any] = (
             {} if parameters is None else parameters
         )
+
+        self._mesh = None
+        if stl_path is not None:
+            self._mesh = self._plotter.load_mesh(stl_path, stl_alpha)
 
     def __str__(self) -> str:
         """Print info on current simulation."""
@@ -269,6 +281,19 @@ class SimulationResults(ABC):
             self._color = color
         return axes
 
+    def hist(
+        self,
+        x: str,
+        bins: int = 200,
+        hist_range: tuple[float, float] | None = None,
+        **kwargs,
+    ) -> Any:
+        raise NotImplementedError
+
+    def plot_3d(self, *args, **kwargs) -> Any:
+        assert self._mesh is not None
+        raise NotImplementedError
+
     def to_pandas(self, *args: DATA_0D_t | DATA_1D_t) -> pd.DataFrame:
         """Concatenate all attribute arrays which name is in ``args`` to a df.
 
@@ -317,6 +342,7 @@ class SimulationResultsFactory(ABC):
         self,
         plotter: Plotter = DefaultPlotter(),
         freq_ghz: float | None = None,
+        stl_path: str | Path | None = None,
         *args,
         **kwargs,
     ) -> None:
@@ -329,8 +355,13 @@ class SimulationResultsFactory(ABC):
         freq_ghz : float | None, optional
             RF frequency in :unit:`GHz`. Used to compute RF period, which is
             mandatory for exp growth fitting.
+        stl_path : str | Path | None, optional
+            Path to the ``STL`` file holding the 3D structure of the system.
+            The default is None.
+
 
         """
         self._plotter = plotter
         self._freq_ghz = freq_ghz
         self._period = 1.0 / freq_ghz if freq_ghz is not None else None
+        self._stl_path = stl_path
