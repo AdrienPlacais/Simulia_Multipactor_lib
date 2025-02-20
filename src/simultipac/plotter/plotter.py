@@ -1,7 +1,8 @@
 """Define the generic :class:`Plotter`."""
 
 from abc import ABC, abstractmethod
-from typing import Any
+from pathlib import Path
+from typing import Any, Literal
 
 import pandas as pd
 
@@ -26,7 +27,7 @@ class Plotter(ABC):
 
         Parameters
         ----------
-        data : pd.DataFrame
+        data : pandas.DataFrame
             Holds all data to plot.
         x, y : str
             Name of column in ``data`` for x/y.
@@ -47,12 +48,81 @@ class Plotter(ABC):
         Returns
         -------
         Any
-            Axis objects.
+            Axis object.
         Any
             Color used for the plot.
 
         """
 
     @abstractmethod
-    def plot_3d(self, *args, **kwargs) -> Any:
-        """Create a 3D plot."""
+    def hist(
+        self,
+        data: pd.DataFrame,
+        x: str,
+        bins: int = 200,
+        hist_range: tuple[float, float] | None = None,
+        **kwargs,
+    ) -> Any:
+        """Plot a histogram.
+
+        Parameters
+        ----------
+        data : pandas.DataFrame
+            Holds all data to plot.
+        x : str
+            Name of the column in ``data`` to plot.
+        bins : int, optional
+            Number of bins in the histogram. The default is 200.
+        hist_range : tuple[float, float] | None, optional
+            Lower and upper range for the calculation of the histogram. The
+            default is None.
+        kwargs :
+            Other keyword arguments passed to the actual plot method.
+
+        Returns
+        -------
+        Any
+            Axis object.
+
+        """
+
+    @abstractmethod
+    def plot_3d(
+        self,
+        data: Any,
+        key: Literal[
+            "trajectories", "collision_distribution", "emission_distribution"
+        ],
+        *args,
+        **kwargs,
+    ) -> Any:
+        """Create a 3D plot.
+
+        Parameters
+        ----------
+        data : Any
+            Object storing the data to plot.
+        key : str
+            Name/nature of the data to plot.
+
+        """
+
+    @abstractmethod
+    def load_mesh(
+        self, stl_path: str | Path, stl_alpha: float | None = None, **kwargs
+    ) -> Any:
+        """Load the 3D mesh.
+
+        Parameters
+        ----------
+        stl_path : str | Path
+            Path to the ``STL`` file.
+        stl_alpha : float | None, optional
+            Transparency for the mesh. The default is None.
+
+        Returns
+        -------
+        Any
+            Mesh object.
+
+        """

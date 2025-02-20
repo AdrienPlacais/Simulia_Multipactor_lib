@@ -1,11 +1,14 @@
 """Define a default plotter."""
 
-from typing import Any
+from pathlib import Path
+from typing import Any, Literal
 
 import pandas as pd
+import vedo
 from matplotlib.axes import Axes
 from matplotlib.typing import ColorType
 from numpy.typing import NDArray
+from vedo.mesh import Mesh
 
 from simultipac.constants import markdown
 from simultipac.plotter.plotter import Plotter
@@ -14,13 +17,36 @@ from simultipac.plotter.plotter import Plotter
 class DefaultPlotter(Plotter):
     """An object using maptlotlib for 2D, Vedo for 3D."""
 
+    def __init__(
+        self, vedo_backend: Literal["k3d", "vtk", "2d"] = "2d"
+    ) -> None:
+        """Set basic settings for the 3D Vedo plotter.
+
+        Parameters
+        ----------
+        vedo_backend : str, optional
+            The backend used by ``vedo``. The options that I tested were:
+            - ``"k3d"``: Needs ``k3d`` library. Would be the ideal setting. But
+              raises error in Jupyter Notebooks:
+              ``TraitError: The 'point_size' trait of a Points instance
+              expected a float or a dict, not the float64 0.0.``
+            - ``"vtk"``: Interactive 3D plots. Does not appear in ``HTML``
+              (documentation).
+            - ``"2d"``: Non-interactive 2D plots. Does appear in ``HTML``
+              outputs.
+            The default is ``"2d"``.
+
+        """
+        vedo.settings.default_backend = vedo_backend
+        return super().__init__()
+
     def plot(
         self,
         data: pd.DataFrame,
         x: str,
         y: str,
         grid: bool = True,
-        axes: Axes | NDArray[Any] | None = None,
+        axes: Axes | None = None,
         xlabel: str | None = None,
         ylabel: str | None = None,
         label: str | None = None,
@@ -36,7 +62,7 @@ class DefaultPlotter(Plotter):
             Name of column in ``data`` for x/y.
         grid : bool, optional
             If grid should be plotted. Default is True.
-        axes : Axes | NDArray[Any] | None, optional
+        axes : Axes | None, optional
             Axes to re-use, if provided. The default is None (plot on new
             axis).
         xlabel, ylabel : str | None, optional
@@ -84,6 +110,31 @@ class DefaultPlotter(Plotter):
         color = lines[-1].get_color()
         return color
 
-    def plot_3d(self, *args, **kwargs) -> Any:
-        """Create a 3D plot."""
+    def hist(
+        self,
+        data: pd.DataFrame,
+        x: str,
+        bins: int = 200,
+        hist_range: tuple[float, float] | None = None,
+        **kwargs,
+    ) -> Any:
         raise NotImplementedError
+
+    def plot_3d(
+        self,
+        data: Any,
+        key: Literal[
+            "trajectories", "collision_distribution", "emission_distribution"
+        ],
+        *args,
+        **kwargs,
+    ) -> Any:
+        raise NotImplementedError
+
+    def load_mesh(
+        self, stl_path: str | Path, stl_alpha: float | None = None, **kwargs
+    ) -> Mesh:
+        mesh = vedo.load(str(stl_path))
+        if stl_alpha is not None:
+            mesh.alpha(stl_alpha)
+        return mesh
