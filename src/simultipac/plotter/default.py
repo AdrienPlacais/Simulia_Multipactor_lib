@@ -18,7 +18,7 @@ class DefaultPlotter(Plotter):
     """An object using maptlotlib for 2D, Vedo for 3D."""
 
     def __init__(
-        self, vedo_backend: Literal["k3d", "vtk", "2d"] = "2d"
+        self, vedo_backend: Literal["k3d", "vtk", "2d"] = "2d", *args, **kwargs
     ) -> None:
         """Set basic settings for the 3D Vedo plotter.
 
@@ -37,8 +37,21 @@ class DefaultPlotter(Plotter):
             The default is ``"2d"``.
 
         """
-        vedo.settings.default_backend = vedo_backend
-        return super().__init__()
+        self._vedo_backend: Literal["k3d", "vtk", "2d"]
+        self.vedo_backend = vedo_backend
+
+        return super().__init__(*args, **kwargs)
+
+    @property
+    def vedo_backend(self) -> Literal["k3d", "vtk", "2d"]:
+        """The name of the vedo backend; *a priori*, no need to access that."""
+        return self._vedo_backend
+
+    @vedo_backend.setter
+    def vedo_backend(self, value: Literal["k3d", "vtk", "2d"]) -> None:
+        """Update the vedo backend."""
+        vedo.settings.default_backend = value
+        self._vedo_backend = value
 
     def plot(
         self,

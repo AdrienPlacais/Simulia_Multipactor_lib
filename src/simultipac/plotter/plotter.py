@@ -10,6 +10,9 @@ import pandas as pd
 class Plotter(ABC):
     """An object used to plot data."""
 
+    def __init__(self, *args, **kwargs) -> None:
+        return
+
     @abstractmethod
     def plot(
         self,
