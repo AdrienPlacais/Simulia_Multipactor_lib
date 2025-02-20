@@ -7,5 +7,4 @@ Note that the interactive plots produced with `vedo` will not appear here in thi
 
    notebooks/compute_exp_growth_spark
    notebooks/compute_exp_growth_cst
-   notebooks/export_parametric
    notebooks/particle_monitor
