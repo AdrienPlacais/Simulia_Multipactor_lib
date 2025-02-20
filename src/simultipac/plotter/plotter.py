@@ -2,9 +2,11 @@
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 import pandas as pd
+
+from simultipac.typing import PARTICLE_0D_t, PARTICLE_3D_t
 
 
 class Plotter(ABC):
@@ -61,7 +63,7 @@ class Plotter(ABC):
     def hist(
         self,
         data: pd.DataFrame,
-        x: str,
+        x: PARTICLE_0D_t,
         bins: int = 200,
         hist_range: tuple[float, float] | None = None,
         **kwargs,
@@ -72,7 +74,7 @@ class Plotter(ABC):
         ----------
         data : pandas.DataFrame
             Holds all data to plot.
-        x : str
+        x : PARTICLE_0D_t
             Name of the column in ``data`` to plot.
         bins : int, optional
             Number of bins in the histogram. The default is 200.
@@ -93,9 +95,7 @@ class Plotter(ABC):
     def plot_3d(
         self,
         data: Any,
-        key: Literal[
-            "trajectories", "collision_distribution", "emission_distribution"
-        ],
+        key: PARTICLE_3D_t,
         *args,
         **kwargs,
     ) -> Any:
@@ -105,7 +105,7 @@ class Plotter(ABC):
         ----------
         data : Any
             Object storing the data to plot.
-        key : str
+        key : PARTICLE_3D_t
             Name/nature of the data to plot.
 
         """

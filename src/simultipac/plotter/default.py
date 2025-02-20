@@ -12,13 +12,16 @@ from vedo.mesh import Mesh
 
 from simultipac.constants import markdown
 from simultipac.plotter.plotter import Plotter
+from simultipac.typing import PARTICLE_0D_t, PARTICLE_3D_t
+
+VEDO_BACKENDS_t = Literal["k3d", "vtk", "2d"]
 
 
 class DefaultPlotter(Plotter):
     """An object using maptlotlib for 2D, Vedo for 3D."""
 
     def __init__(
-        self, vedo_backend: Literal["k3d", "vtk", "2d"] = "2d", *args, **kwargs
+        self, vedo_backend: VEDO_BACKENDS_t = "2d", *args, **kwargs
     ) -> None:
         """Set basic settings for the 3D Vedo plotter.
 
@@ -37,18 +40,18 @@ class DefaultPlotter(Plotter):
             The default is ``"2d"``.
 
         """
-        self._vedo_backend: Literal["k3d", "vtk", "2d"]
+        self._vedo_backend: VEDO_BACKENDS_t
         self.vedo_backend = vedo_backend
 
         return super().__init__(*args, **kwargs)
 
     @property
-    def vedo_backend(self) -> Literal["k3d", "vtk", "2d"]:
+    def vedo_backend(self) -> VEDO_BACKENDS_t:
         """The name of the vedo backend; *a priori*, no need to access that."""
         return self._vedo_backend
 
     @vedo_backend.setter
-    def vedo_backend(self, value: Literal["k3d", "vtk", "2d"]) -> None:
+    def vedo_backend(self, value: VEDO_BACKENDS_t) -> None:
         """Update the vedo backend."""
         vedo.settings.default_backend = value
         self._vedo_backend = value
@@ -126,7 +129,7 @@ class DefaultPlotter(Plotter):
     def hist(
         self,
         data: pd.DataFrame,
-        x: str,
+        x: PARTICLE_0D_t,
         bins: int = 200,
         hist_range: tuple[float, float] | None = None,
         **kwargs,
@@ -136,9 +139,7 @@ class DefaultPlotter(Plotter):
     def plot_3d(
         self,
         data: Any,
-        key: Literal[
-            "trajectories", "collision_distribution", "emission_distribution"
-        ],
+        key: PARTICLE_3D_t,
         *args,
         **kwargs,
     ) -> Any:
