@@ -11,8 +11,8 @@ from simultipac.particle_monitor.particle_monitor import ParticleMonitor
 def _create_trajectory_line(particle: Particle) -> vedo.Lines:
     """Create the trajectory line object."""
     lines = vedo.Lines(
-        start_pts=particle.pos[:-1],
-        end_pts=particle.pos[1:],
+        start_pts=particle.position.array[:-1],
+        end_pts=particle.position.array[1:],
         lw=7,
     )
     return lines
@@ -22,10 +22,7 @@ def _create_collision_point(particle: Particle) -> vedo.Points | None:
     """Create a collision point if particle not alive at end."""
     if particle.alive_at_end:
         return
-    collision_point = vedo.Point(
-        pos=particle.pos[-1],
-        r=8.0,
-    )
+    collision_point = vedo.Point(pos=particle.position.last, r=8)
     return collision_point
 
 
@@ -33,21 +30,15 @@ def _create_emission_point(particle: Particle) -> vedo.Points | None:
     """Create a starting green points if particle is an emitted electron."""
     if particle.source_id == 0:
         return
-    emission_point = vedo.Point(
-        pos=particle.pos[0],
-        r=8.0,
-        c="green",
-    )
+    emission_point = vedo.Point(pos=particle.position.first, r=8, c="green")
     return emission_point
 
 
 def _create_extrapolated_position_point(particle: Particle) -> vedo.Points:
     """Create point object corresponding to extrapolated position."""
-    assert particle.extrapolated_pos is not None
+    assert particle.position._extrapolated is not None
     extrapolated_point = vedo.Point(
-        pos=particle.extrapolated_pos[-1],
-        r=8.0,
-        c="blue",
+        pos=particle.position.extrapolated.last, r=8, c="blue"
     )
     return extrapolated_point
 

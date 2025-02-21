@@ -283,7 +283,7 @@ class ParticleMonitor(dict):
         if remove_alive_at_end:
             subset = _filter_out_alive_at_end(subset)
 
-        out = [part.mom[-1] for part in subset.values()]
+        out = [part.momentum.last for part in subset.values()]
 
         if normalize:
             out = [mom / np.linalg.norm(mom) for mom in out]

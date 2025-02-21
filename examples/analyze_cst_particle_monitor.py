@@ -18,9 +18,6 @@ if __name__ == "__main__":
     factory = CSTResultsFactory(
         "CST",
         freq_ghz=1.30145,
-        # Not mandatory. Runs:
-        # self.mesh = vedo.load(str(stl_path))
-        # self.mesh.alpha(0.3)
         stl_path=Path("../docs/manual/data/cst/WR75_reduced/wr75.stl"),
     )
     result: CSTResults = factory._from_simulation_folder(
@@ -38,10 +35,10 @@ if __name__ == "__main__":
 
     # Needs stl to be loaded
     # to_plot can be a Sequence of PID, or the magic keyword
-    result.plot3d(
-        "trajectories", to_plot="random sample", extrapolate_positions=False
+    result.plot_3d(
+        "trajectory", to_plot="random sample", extrapolate_positions=False
     )
 
     # New features
-    result.plot3d("collision_distribution")
-    result.plot3d("emission_distribution")
+    result.plot_3d("collision_distribution")
+    result.plot_3d("emission_distribution")

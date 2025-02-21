@@ -7,6 +7,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from simultipac.particle_monitor.converters import (
+    adim_momentum_to_eV,
     adim_momentum_to_speed_mm_per_ns,
 )
 
@@ -29,9 +30,9 @@ class Vector:
         self._array: NDArray[np.float64] | None = None
 
         self._is_extrapolated = is_extrapolated
-        self.extrapolated: Vector
+        self._extrapolated: Vector
         if not is_extrapolated:
-            self.extrapolated = Vector(is_extrapolated=True)
+            self._extrapolated = Vector(is_extrapolated=True)
         self._is_reordered = False
         self._is_normalized = False
 
@@ -81,16 +82,45 @@ class Vector:
             self._array = np.column_stack([self.x, self.y, self.z])
         return self._array
 
+    @property
+    def last(self) -> NDArray[np.float64]:
+        """1D array containing last coordinates."""
+        return self.array[-1, :]
+
+    @property
+    def first(self) -> NDArray[np.float64]:
+        """1D array containing first coordinates."""
+        return self.array[0, :]
+
+    @property
+    def n_steps(self) -> int:
+        """Return number of stored time steps."""
+        return len(self.x)
+
+    @property
+    def extrapolated(self) -> NDArray[np.float64]:
+        """Shortcut to ``self._extrapolated.array``."""
+        return self._extrapolated.array
+
 
 class Momentum(Vector):
     """Specialized class for momentum."""
+
+    def __init__(
+        self,
+        x: Sequence[float] | None = None,
+        y: Sequence[float] | None = None,
+        z: Sequence[float] | None = None,
+        is_extrapolated: bool = False,
+    ) -> None:
+        super().__init__(x, y, z, is_extrapolated)
 
     def extrapolate(
         self,
         known_times: NDArray[np.float64],
         desired_times: NDArray[np.float64],
-        *,
         poly_fit_deg: int,
+        n_points: int = 3,
     ) -> None:
         """Extrapolate the momentum.
 
@@ -103,9 +133,13 @@ class Momentum(Vector):
             not start at 0.
         poly_fit_deg : int
             Degree of the polynomial fit.
+        n_points : int
+            Number of time steps to extrapolate on.
 
         """
-        polynom = np.polyfit(known_times, self.array, poly_fit_deg)
+        polynom = np.polyfit(
+            known_times[-n_points:], self.array[-n_points:], poly_fit_deg
+        )
         polynom = np.flip(polynom, axis=0)
 
         n_time_subdivisions = desired_times.shape[0]
@@ -114,9 +148,17 @@ class Momentum(Vector):
             for deg in range(poly_fit_deg + 1):
                 for j in range(3):
                     new[j] += polynom[deg, j] * desired_times[i] ** deg
-            self.extrapolated.append(new)
+            self._extrapolated.append(new)
 
         return super().extrapolate()
+
+    def emission_energy(self, mass_eV: float) -> float:
+        """Get first energy in eV."""
+        return adim_momentum_to_eV(self.first, mass_eV)
+
+    def collision_energy(self, mass_eV: float) -> float:
+        """Get last energy in eV."""
+        return adim_momentum_to_eV(self.last, mass_eV)
 
 
 class Position(Vector):
@@ -139,20 +181,20 @@ class Position(Vector):
         Parameters
         ----------
         momentum : NDArray | Momentum
-            1D array containing last known momentum, adimensionned.
+            1D array containing last known momentum, adimensionned. You can
+            also directly provide the :class:`Momentum` instance.
         delta_t : Iterable[float] | NDArray[np.float64]
             1D array containing time at which position should be extrapolated.
             Should look like ``[delta, 2*delta, 3*delta]``.
 
         """
         if isinstance(momentum, Momentum):
-            momentum = momentum.array[-1, :]
-        last_speed = adim_momentum_to_speed_mm_per_ns(momentum)
-        last_pos = self.array[-1, :]
+            momentum = momentum.last
+        last_speed = adim_momentum_to_speed_mm_per_ns(momentum, force_2d=False)
 
         for time in delta_t:
-            new_pos = [last_pos[i] + last_speed[i] * time for i in range(3)]
-            self.extrapolated.append(new_pos)
+            new_pos = [self.last[i] + last_speed[i] * time for i in range(3)]
+            self._extrapolated.append(new_pos)
         return super().extrapolate()
 
     def normalize(self) -> None:

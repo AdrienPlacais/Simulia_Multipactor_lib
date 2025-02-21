@@ -43,6 +43,7 @@ def adim_momentum_to_speed_m_per_s(
 
 def adim_momentum_to_speed_mm_per_ns(
     mom: NDArray[np.float64],
+    force_2d: bool = True,
 ) -> NDArray[np.float64]:
     """Convert adimensionned momentum to speed in :unit:`mm/ns`.
 
@@ -51,15 +52,17 @@ def adim_momentum_to_speed_mm_per_ns(
     mom : numpy.ndarray
         A 1D or 2D array holding adimensionned momentum along the three
         directions of one or several particles.
+    force_2d : bool, optional
+        Force output array in 2D.
 
     Returns
     -------
     speed_in_mm_per_ns : numpy.ndarray
-        A 2D array holding the speed along the three directions of one or
+        A 1D or 2D array holding the speed along the three directions of one or
         several particles.
 
     """
-    if len(mom.shape) == 1:
+    if len(mom.shape) == 1 and force_2d:
         mom = np.expand_dims(mom, 0)
     speed_in_mm_per_ns = mom * clight_in_mm_per_ns
     return speed_in_mm_per_ns
