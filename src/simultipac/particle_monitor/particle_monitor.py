@@ -11,13 +11,37 @@ dictionary are the particle id of the :class:`Particle`.
 import os
 from collections.abc import Generator
 from pathlib import Path
-from typing import overload
+from typing import Self, overload
 
 import numpy as np
 import vedo
+from numpy._typing import NDArray
 
-from simultipac.loaders.loader_cst import particle_monitor
-from simultipac.particle_monitor.particle import Particle
+from simultipac.particle_monitor.particle import Particle, PartMonLine
+
+
+def _load_particle_monitor_file(
+    filepath: Path, delimiter: str | None = None
+) -> tuple[PartMonLine, ...]:
+    """Load a single Particle Monitor file.
+
+    A Particle Monitor file holds the ID, position, momentum of every particle
+    alive at a specific time.
+
+    .. todo::
+        Type hints could be cleaner.
+
+    """
+    n_header = 6
+
+    with open(filepath, encoding="utf-8") as file:
+        particles_info = tuple(
+            tuple(line.split(delimiter))
+            for i, line in enumerate(file)
+            if i > n_header
+        )
+
+    return particles_info  # type: ignore
 
 
 class ParticleMonitor(dict):
@@ -31,7 +55,7 @@ class ParticleMonitor(dict):
 
     """
 
-    def __init__(self, folder: Path, delimiter: str | None = None) -> None:
+    def __init__(self, dict_of_parts: dict[int, Particle]) -> None:
         """Create the object, ordered list of filepaths beeing provided.
 
         Parameters
@@ -43,30 +67,34 @@ class ParticleMonitor(dict):
             files. The default is None.
 
         """
-        dict_of_parts: dict[int, Particle] = {}
-
-        filepaths = list(_absolute_file_paths(folder))
-
-        for filepath in filepaths:
-            particles_info = particle_monitor(filepath, delimiter=delimiter)
-
-            for particle_info in particles_info:
-                # what is this??
-                particle_id = int(particle_info[10])
-                if particle_id in dict_of_parts:
-                    dict_of_parts[particle_id].add_a_file(*particle_info)
-                    continue
-                dict_of_parts[particle_id] = Particle(*particle_info)
-
-        for particle in dict_of_parts.values():
-            particle.finalize()
-            particle.extrapolate_pos_and_mom_one_time_step_further()
-
         super().__init__(dict_of_parts)
 
         self.max_time = max([part.time[-1] for part in self.values()])
         for particle in self.values():
             particle.determine_if_alive_at_end(self.max_time)
+
+    @classmethod
+    def from_folder(cls, folder: Path, delimiter: str | None = None) -> Self:
+        """Load all the particle monitor files and create object."""
+        dict_of_parts: dict[int, Particle] = {}
+
+        for filepath in _absolute_file_paths(folder):
+            particles_info = _load_particle_monitor_file(
+                filepath, delimiter=delimiter
+            )
+
+            for part_mon_line in particles_info:
+                particle_id = int(part_mon_line[10])
+                if particle_id in dict_of_parts:
+                    dict_of_parts[particle_id].add_a_file(part_mon_line)
+                    continue
+                dict_of_parts[particle_id] = Particle(part_mon_line)
+
+        for particle in dict_of_parts.values():
+            particle.finalize()
+            particle.extrapolate_pos_and_mom_one_time_step_further()
+
+        return cls(dict_of_parts)
 
     @property
     def seed_electrons(self) -> dict[int, Particle]:
@@ -94,7 +122,7 @@ class ParticleMonitor(dict):
 
     def emission_energies(
         self, source_id: int | None = None, to_numpy: bool = True
-    ) -> list[float]:
+    ) -> list[float] | NDArray[np.float64]:
         """Get emission energies of all or only a subset of particles."""
         subset = self
         if source_id is not None:
@@ -110,9 +138,8 @@ class ParticleMonitor(dict):
         to_numpy: bool = True,
         extrapolation: bool = True,
         remove_alive_at_end: bool = True,
-    ) -> None:
-        """
-        Get all collision energies in eV.
+    ) -> list[float] | NDArray[np.float64]:
+        """Get all collision energies in eV.
 
         Parameters
         ----------
@@ -150,7 +177,7 @@ class ParticleMonitor(dict):
         source_id: int | None = None,
         to_numpy: bool = True,
         remove_alive_at_end: bool = True,
-    ) -> np.ndarray[np.float64]: ...
+    ) -> NDArray[np.float64]: ...
 
     @overload
     def last_known_position(
@@ -158,14 +185,14 @@ class ParticleMonitor(dict):
         source_id: int | None = None,
         to_numpy: bool = True,
         remove_alive_at_end: bool = False,
-    ) -> list[np.ndarray[np.float64]]: ...
+    ) -> list[NDArray[np.float64]]: ...
 
     def last_known_position(
         self,
         source_id: int | None = None,
         to_numpy: bool = True,
         remove_alive_at_end: bool = True,
-    ) -> list[np.ndarray[np.float64]] | np.ndarray[np.float64]:
+    ) -> list[NDArray[np.float64]] | NDArray[np.float64]:
         """
         Get the last recorded position of every particle.
 

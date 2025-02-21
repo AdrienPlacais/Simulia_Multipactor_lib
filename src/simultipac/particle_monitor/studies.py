@@ -7,14 +7,15 @@ trajectories of the particles.
 
 from typing import Any
 
+import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from simultipac.particle_monitor.collisions.vedo_mesh_collisions import (
     part_mesh_intersections,
 )
 from simultipac.particle_monitor.particle_monitor import ParticleMonitor
-from simultipac.visualization.plot import create_fig_if_not_exists
 
 
 def plot_emission_energies(
@@ -227,3 +228,70 @@ def plot_impact_density_distribution(
     collisions_per_cell = collisions.sum(axis=0)
     collision_density = collisions_per_cell / mesh.areas
     collision_density /= np.max(collision_density)
+
+
+def create_fig_if_not_exists(
+    axnum: int | list[int],
+    sharex: bool = False,
+    num: int = 1,
+    clean_fig: bool = False,
+    **kwargs,
+) -> tuple[Figure, list[Axes]]:
+    """
+    Check if figures were already created, create it if not.
+
+    Parameters
+    ----------
+    axnum : int | list[int]
+        Axes indexes as understood by :func:`fig.add_subplot` or number of
+        desired axes.
+    sharex : boolean, optional
+        If x axis should be shared. The default is False.
+    num : int, optional
+        Fig number. The default is 1.
+    clean_fig : bool, optional
+        To tell if the Figure should be cleaned from previous plots. The
+        default is False.
+    **kwargs : dict
+        Dict passed to :func:`add_subplot`.
+
+    Return
+    ------
+    fig : Figure
+        Figure holding axes.
+    axlist : list[Axes]
+        Axes of Figure.
+
+    """
+    if isinstance(axnum, int):
+        # We make a one-column, axnum rows figure
+        axnum = range(100 * axnum + 11, 101 * axnum + 11)
+
+    if plt.fignum_exists(num):
+        fig = plt.figure(num)
+        axlist = fig.get_axes()
+
+        if clean_fig:
+            _clean_fig([num])
+        return fig, axlist
+
+    fig = plt.figure(num, **kwargs)
+    axlist = []
+    axlist.append(fig.add_subplot(axnum[0], **kwargs))
+
+    d_sharex = {True: axlist[0], False: None}
+
+    for i in axnum[1:]:
+        axlist.append(fig.add_subplot(i, sharex=d_sharex[sharex], **kwargs))
+    if sharex:
+        for ax in axlist[:-1]:
+            plt.setp(ax.get_xticklabels(), visible=False)
+    return fig, axlist
+
+
+def _clean_fig(fignumlist: list[int]) -> None:
+    """Clean axis of Figs in fignumlist."""
+    for fignum in fignumlist:
+        fig = plt.figure(fignum)
+        for axx in fig.get_axes():
+            axx.cla()

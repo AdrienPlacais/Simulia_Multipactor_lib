@@ -5,12 +5,29 @@ import math
 
 import numpy as np
 import vedo
+from numpy.typing import NDArray
 
 from simultipac.constants import clight, qelem
 from simultipac.particle_monitor.converters import (
     adim_momentum_to_eV,
     adim_momentum_to_speed_mm_per_ns,
 )
+
+PartMonLine = tuple[str, str, str, str, str, str, str, str, str, str, str, str]
+PartMonData = tuple[
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    int,
+    int,
+]
 
 
 class Particle:  # pylint: disable=too-many-instance-attributes
@@ -61,7 +78,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
     """
 
-    def __init__(self, *line: str) -> None:
+    def __init__(self, raw_line: PartMonLine) -> None:
         """Init from a line of a position_monitor file."""
         self._posx: list[float]
         self._posy: list[float]
@@ -76,38 +93,38 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.extrapolated_mom: np.ndarray | None = None
         self.extrapolated_times: np.ndarray | None = None
 
-        self._masses: list[float] | np.ndarray
+        self._masses: list[float]
         self.mass: float
         self.mass_eV: float  # pylint: disable=invalid-name
-        self._charges: list[float] | np.ndarray
+        self._charges: list[float]
         self.charge: float
-        self.macro_charge: list[float] | np.ndarray
-        self.time: list[float] | np.ndarray
+        self._macro_charge: list[float]
+        self._time: list[float]
         self.particle_id: int
         self.source_id: int
 
-        line = _str_to_correct_types(line)
-        self._posx = [line[0]]
-        self._posy = [line[1]]
-        self._posz = [line[2]]
-        self._momx = [line[3]]
-        self._momy = [line[4]]
-        self._momz = [line[5]]
-        self._masses = [line[6]]
-        self._charges = [line[7]]
-        self.macro_charge = [line[8]]
-        self.time = [line[9]]
-        self.particle_id = line[10]
-        self.source_id = line[11]
+        _line = _str_to_correct_types(raw_line)
+        self._posx = [_line[0]]
+        self._posy = [_line[1]]
+        self._posz = [_line[2]]
+        self._momx = [_line[3]]
+        self._momy = [_line[4]]
+        self._momz = [_line[5]]
+        self._masses = [_line[6]]
+        self._charges = [_line[7]]
+        self._macro_charge = [_line[8]]
+        self._time = [_line[9]]
+        self.particle_id = _line[10]
+        self.source_id = _line[11]
 
         self.alive_at_end = False
         self.collision_cell_id: np.ndarray = np.array([], dtype=np.float64)
         self.collision_point: np.ndarray = np.array([], dtype=np.uint32)
         self.collision_angle: float = np.nan
 
-    def add_a_file(self, *line: str) -> None:
+    def add_a_file(self, raw_line: PartMonLine) -> None:
         """Add a time-step/a file to the current Particle."""
-        line = _str_to_correct_types(line)
+        line = _str_to_correct_types(raw_line)
         self._posx.append(line[0])
         self._posy.append(line[1])
         self._posz.append(line[2])
@@ -117,8 +134,8 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
         self._masses.append(line[6])
         self._charges.append(line[7])
-        self.macro_charge.append(line[8])
-        self.time.append(line[9])
+        self._macro_charge.append(line[8])
+        self._time.append(line[9])
 
     def finalize(self) -> None:
         """Post treat Particles for consistency checks, better data types."""
@@ -130,23 +147,20 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
     def _check_constanteness_of_some_attributes(self) -> None:
         """Ensure that mass and charge did not evolve during simulation."""
-        isconstant, constant = _get_constant(self._masses)
-        if not isconstant:
-            raise OSError("Variation of mass during simulation.")
-        self.mass = constant
-        self.mass_eV = constant * clight**2 / qelem
-
-        isconstant, constant = _get_constant(self._charges)
-        if not isconstant:
-            raise OSError("Variation of charge during simulation.")
-        self.charge = constant
+        self.mass = _get_constant(self._masses)
+        self.mass_eV = self.mass * clight**2 / qelem
+        self.charge = _get_constant(self._charges)
 
     def _some_values_to_array(self) -> None:
         """Tranform position, momentum and time lists to np.arrays."""
         self.pos = np.column_stack((self._posx, self._posy, self._posz))
         self.mom = np.column_stack((self._momx, self._momy, self._momz))
-        self.macro_charge = np.array(self.macro_charge)
         self.time = np.array(self.time)
+
+    @property
+    def macro_charge(self) -> NDArray[np.float64]:
+        """Return macro charge as an array."""
+        return np.array(self._macro_charge)
 
     def _switch_to_mm_ns_units(self) -> None:
         """Change the system units to limit rounding errors.
@@ -157,7 +171,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
             nanoseconds.
 
         """
-        self.pos *= 1e3  # mm
+        self.pos *= 1e3  # :unit:`mm`
         self.time *= 1e18  # :unit:`ns`
         # I do not know why, but time is in s * 1e-18 (aka nanonanoseconds)
 
@@ -363,7 +377,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.collision_angle = abs(math.atan(tan_theta))
 
 
-def _str_to_correct_types(line: tuple[str]) -> tuple[float | int]:
+def _str_to_correct_types(line: PartMonLine) -> PartMonData:
     """Convert the input line of strings to proper data types."""
     corrected = (
         float(line[0]),
@@ -382,13 +396,12 @@ def _str_to_correct_types(line: tuple[str]) -> tuple[float | int]:
     return corrected
 
 
-def _get_constant(variables: list[float]) -> tuple[bool, float | None]:
+def _get_constant(variables: list[float]) -> float:
     """Check that the list of floats is a constant, return constant."""
     asarray = np.array(variables)
     if not (asarray == asarray[0]).all():
-        return False, None
-
-    return True, asarray[0]
+        raise ValueError
+    return asarray[0]
 
 
 def _is_sorted(array: np.ndarray) -> bool:
