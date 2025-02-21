@@ -34,6 +34,7 @@ from simultipac.simulation_results.simulation_results import (
     SimulationResults,
     SimulationResultsFactory,
 )
+from simultipac.typing import PARTICLE_0D_t
 
 
 class MissingFileError(Exception):
@@ -56,7 +57,7 @@ class CSTResults(SimulationResults):
         parameters: dict[str, float | bool | str] | None = None,
         stl_path: str | Path | None = None,
         stl_alpha: float | None = None,
-        particle_monitor: ParticleMonitor | None = None,
+        folder_particle_monitors: str | Path | None = None,
         **kwargs,
     ) -> None:
         """Instantiate, post-process.
@@ -88,13 +89,15 @@ class CSTResults(SimulationResults):
             If given, we automatically load it. The default is None.
         stl_alpha : float | None, optional
             Transparency for the 3D mesh. The default is None.
-        particle_monitor : ParticleMonitor | None, optional
-            Holds positions of every particle.
+        folder_particle_monitors : str | Path | None
+            Where the particle monitor files are stored.
 
         """
         self._particle_monitor: ParticleMonitor
-        if particle_monitor is not None:
-            self._particle_monitor = particle_monitor
+        if folder_particle_monitors is not None:
+            self._particle_monitor = ParticleMonitor.from_folder(
+                folder_particle_monitors
+            )
         super().__init__(
             id=id,
             e_acc=e_acc,

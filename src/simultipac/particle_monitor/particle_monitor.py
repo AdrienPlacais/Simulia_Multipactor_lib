@@ -74,8 +74,12 @@ class ParticleMonitor(dict):
             particle.determine_if_alive_at_end(self.max_time)
 
     @classmethod
-    def from_folder(cls, folder: Path, delimiter: str | None = None) -> Self:
+    def from_folder(
+        cls, folder: str | Path, delimiter: str | None = None
+    ) -> Self:
         """Load all the particle monitor files and create object."""
+        if isinstance(folder, str):
+            folder = Path(folder)
         dict_of_parts: dict[int, Particle] = {}
 
         for filepath in _absolute_file_paths(folder):

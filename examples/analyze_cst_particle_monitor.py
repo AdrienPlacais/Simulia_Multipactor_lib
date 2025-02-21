@@ -22,7 +22,7 @@ if __name__ == "__main__":
     )
     result: CSTResults = factory._from_simulation_folder(
         folderpath=Path("../docs/manual/data/cst/WR75_reduced/"),
-        particle_monitors=Path("../docs/manual/data/cst/WR75_reduced/"),
+        particle_monitor=Path("../docs/manual/data/cst/WR75_reduced/"),
     )
 
     result.hist(x="emission_energies", bins=200, hist_range=(0, 1e2))
