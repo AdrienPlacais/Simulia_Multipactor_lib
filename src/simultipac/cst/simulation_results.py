@@ -20,11 +20,14 @@ from pathlib import Path
 from pprint import pformat
 from typing import Any
 
+import numpy as np
+
 from simultipac.cst.helper import (
     get_id,
     mmdd_xxxxxxx_folder_to_dict,
     no_extension,
 )
+from simultipac.particle_monitor.particle_monitor import ParticleMonitor
 from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
 from simultipac.simulation_results.simulation_results import (
@@ -39,6 +42,73 @@ class MissingFileError(Exception):
 
 class CSTResults(SimulationResults):
     """Store a single CST simulation results."""
+
+    def __init__(
+        self,
+        id: int,
+        e_acc: float,
+        time: np.ndarray,
+        population: np.ndarray,
+        p_rms: float | None = None,
+        plotter: Plotter = DefaultPlotter(),
+        trim_trailing: bool = False,
+        period: float | None = None,
+        parameters: dict[str, float | bool | str] | None = None,
+        stl_path: str | Path | None = None,
+        stl_alpha: float | None = None,
+        particle_monitor: ParticleMonitor | None = None,
+        **kwargs,
+    ) -> None:
+        """Instantiate, post-process.
+
+        Parameters
+        ----------
+        id : int
+            Unique simulation identifier.
+        e_acc : float
+            Accelerating field in :unit:`V/m`.
+        time : np.ndarray
+            Time in :unit:`ns`.
+        population : np.ndarray
+            Evolution of population with time. Same shape as ``time``.
+        p_rms : float | None, optional
+            RMS power in :unit:`W`.
+        plotter : Plotter, optional
+            An object allowing to plot data.
+        trim_trailing : bool, optional
+            To remove the last simulation points, when the population is 0.
+            Used with SPARK3D (``CSV`` import) for consistency with CST.
+        period : float | None, optional
+            RF period in :unit:`ns`. Mandatory for exponential growth fits.
+        parameters : dict[str, float | bool | str] | None, optional
+            Additional information on the simulation. Typically, value of
+            magnetic field, number of PIC cells, simulation flags...
+        stl_path : str | Path | None, optional
+            Path to the ``STL`` file holding the 3D structure of the system.
+            If given, we automatically load it. The default is None.
+        stl_alpha : float | None, optional
+            Transparency for the 3D mesh. The default is None.
+        particle_monitor : ParticleMonitor | None, optional
+            Holds positions of every particle.
+
+        """
+        self._particle_monitor: ParticleMonitor
+        if particle_monitor is not None:
+            self._particle_monitor = particle_monitor
+        super().__init__(
+            id=id,
+            e_acc=e_acc,
+            time=time,
+            population=population,
+            p_rms=p_rms,
+            plotter=plotter,
+            trim_trailing=trim_trailing,
+            period=period,
+            parameters=parameters,
+            stl_path=stl_path,
+            stl_alpha=stl_alpha,
+            **kwargs,
+        )
 
 
 class CSTResultsFactory(SimulationResultsFactory):
