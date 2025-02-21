@@ -34,7 +34,6 @@ from simultipac.simulation_results.simulation_results import (
     SimulationResults,
     SimulationResultsFactory,
 )
-from simultipac.typing import PARTICLE_0D_t
 
 
 class MissingFileError(Exception):
@@ -93,11 +92,6 @@ class CSTResults(SimulationResults):
             Where the particle monitor files are stored.
 
         """
-        self._particle_monitor: ParticleMonitor
-        if folder_particle_monitors is not None:
-            self._particle_monitor = ParticleMonitor.from_folder(
-                folder_particle_monitors
-            )
         super().__init__(
             id=id,
             e_acc=e_acc,
@@ -112,6 +106,11 @@ class CSTResults(SimulationResults):
             stl_alpha=stl_alpha,
             **kwargs,
         )
+        self._particle_monitor: ParticleMonitor
+        if folder_particle_monitors is not None:
+            self._particle_monitor = ParticleMonitor.from_folder(
+                folder_particle_monitors, plotter=self._plotter
+            )
 
 
 class CSTResultsFactory(SimulationResultsFactory):

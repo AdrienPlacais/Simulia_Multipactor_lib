@@ -9,15 +9,17 @@ dictionary are the particle id of the :class:`Particle`.
 """
 
 import os
-from collections.abc import Generator
 from pathlib import Path
-from typing import Self, overload
+from typing import Any, Self, overload
 
 import numpy as np
 import vedo
 from numpy._typing import NDArray
 
 from simultipac.particle_monitor.particle import Particle, PartMonLine
+from simultipac.plotter.default import DefaultPlotter
+from simultipac.plotter.plotter import Plotter
+from simultipac.typing import PARTICLE_0D_t
 
 
 def _load_particle_monitor_file(
@@ -55,7 +57,11 @@ class ParticleMonitor(dict):
 
     """
 
-    def __init__(self, dict_of_parts: dict[int, Particle]) -> None:
+    def __init__(
+        self,
+        dict_of_parts: dict[int, Particle],
+        plotter: Plotter = DefaultPlotter(),
+    ) -> None:
         """Create the object, ordered list of filepaths beeing provided.
 
         Parameters
@@ -67,6 +73,7 @@ class ParticleMonitor(dict):
             files. The default is None.
 
         """
+        self._plotter = plotter
         super().__init__(dict_of_parts)
 
         self.max_time = max([part.time[-1] for part in self.values()])
@@ -75,7 +82,10 @@ class ParticleMonitor(dict):
 
     @classmethod
     def from_folder(
-        cls, folder: str | Path, delimiter: str | None = None
+        cls,
+        folder: str | Path,
+        delimiter: str | None = None,
+        plotter: Plotter = DefaultPlotter(),
     ) -> Self:
         """Load all the particle monitor files and create object."""
         if isinstance(folder, str):
@@ -98,7 +108,7 @@ class ParticleMonitor(dict):
             particle.finalize()
             particle.extrapolate_pos_and_mom_one_time_step_further()
 
-        return cls(dict_of_parts)
+        return cls(dict_of_parts, plotter=plotter)
 
     @property
     def seed_electrons(self) -> dict[int, Particle]:
@@ -302,6 +312,19 @@ class ParticleMonitor(dict):
         for particle in self.values():
             particle.find_collision(mesh, **kwargs)
             particle.compute_collision_angle(mesh)
+
+    def hist(
+        self,
+        x: PARTICLE_0D_t,
+        bins: int = 200,
+        hist_range: tuple[float, float] | None = None,
+        plotter: Plotter | None = None,
+        **kwargs,
+    ) -> Any:
+        if plotter is None:
+            plotter = self._plotter
+        data = getattr(self, x, None)
+        assert data is not None, f"Could not get {x}"
 
 
 def _absolute_file_paths(directory: Path) -> Generator[Path, Path, None]:
