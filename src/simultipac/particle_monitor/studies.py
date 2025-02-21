@@ -48,13 +48,11 @@ def plot_emission_energies(
     axes[1].set_ylabel("Emitted electrons")
 
     for i in range(2):
-        emission_energies = particles.emission_energies(
-            source_id=i, to_numpy=True
-        )
-        counts, bins = np.histogram(
+        emission_energies = particles.emission_energies(source_id=i)
+        counts, _bins = np.histogram(
             emission_energies, bins=bins, range=hist_range
         )
-        axes[i].hist(bins[:-1], bins, weights=counts)
+        axes[i].hist(_bins[:-1], bins, weights=counts)
         axes[i].grid(True)
     return fig
 
@@ -88,13 +86,13 @@ def plot_collision_energies(
     axes[0].set_ylabel("All electrons")
 
     collision_energies = particles.collision_energies(
-        to_numpy=True, extrapolation=False, remove_alive_at_end=True
+        extrapolation=False, remove_alive_at_end=True
     )
 
-    counts, bins = np.histogram(
+    counts, _bins = np.histogram(
         collision_energies, bins=bins, range=hist_range
     )
-    axes[0].hist(bins[:-1], bins, weights=counts)
+    axes[0].hist(_bins[:-1], bins, weights=counts)
     axes[0].grid(True)
     return fig
 
@@ -132,10 +130,10 @@ def plot_collision_angles(
         particle.collision_angle for particle in particle_monitor.values()
     ]
 
-    counts, bins = np.histogram(
+    counts, _bins = np.histogram(
         np.rad2deg(collision_angles), bins=bins, range=hist_range
     )
-    axes[0].hist(bins[:-1], bins, weights=counts)
+    axes[0].hist(_bins[:-1], bins, weights=counts)
     axes[0].grid(True)
     return fig
 
@@ -187,13 +185,13 @@ def plot_trajectories(
         axes[i].set_aspect("equal", adjustable="box")
 
         for part in particles_to_plot.values():
-            projected_pos = projection(part.pos)
+            projected_pos = projection(part.position)
             (line,) = axes[i].plot(
                 projected_pos[:, 0], projected_pos[:, 1], marker="o"
             )
 
-            if part.extrapolated_pos is not None:
-                projected_pos = projection(part.extrapolated_pos)
+            if part._extrapolated is not None:
+                projected_pos = projection(part.extrapolated)
                 axes[i].plot(
                     projected_pos[:, 0],
                     projected_pos[:, 1],

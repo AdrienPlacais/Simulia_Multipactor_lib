@@ -9,8 +9,9 @@ dictionary are the particle id of the :class:`Particle`.
 """
 
 import os
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Self, overload
+from typing import Any, Self
 
 import numpy as np
 import vedo
@@ -135,24 +136,21 @@ class ParticleMonitor(dict):
         return out
 
     def emission_energies(
-        self, source_id: int | None = None, to_numpy: bool = True
-    ) -> list[float] | NDArray[np.float64]:
+        self, source_id: int | None = None
+    ) -> NDArray[np.float64]:
         """Get emission energies of all or only a subset of particles."""
         subset = self
         if source_id is not None:
             subset = _filter_source_id(subset, source_id)
         out = [part.emission_energy for part in subset.values()]
-        if to_numpy:
-            return np.array(out)
-        return out
+        return np.array(out)
 
     def collision_energies(
         self,
         source_id: int | None = None,
-        to_numpy: bool = True,
         extrapolation: bool = True,
         remove_alive_at_end: bool = True,
-    ) -> list[float] | NDArray[np.float64]:
+    ) -> NDArray[np.float64]:
         """Get all collision energies in eV.
 
         Parameters
@@ -160,9 +158,6 @@ class ParticleMonitor(dict):
         source_id : int | None, optional
             If set, we only take particles which source_id is ``source_id``.
             The default is None.
-        to_numpy : bool, optional
-            If True, output list is transformed to an array. The default is
-            True.
         extrapolation : bool, optional
             If True, we extrapolate over the last time steps to refine the
             collision energy. Otherwise, we simply take the last known energy
@@ -181,32 +176,13 @@ class ParticleMonitor(dict):
         out = [
             part.collision_energy(extrapolation) for part in subset.values()
         ]
-        if to_numpy:
-            return np.array(out)
-        return out
+        return np.array(out)
 
-    @overload
     def last_known_position(
         self,
         source_id: int | None = None,
-        to_numpy: bool = True,
         remove_alive_at_end: bool = True,
-    ) -> NDArray[np.float64]: ...
-
-    @overload
-    def last_known_position(
-        self,
-        source_id: int | None = None,
-        to_numpy: bool = True,
-        remove_alive_at_end: bool = False,
-    ) -> list[NDArray[np.float64]]: ...
-
-    def last_known_position(
-        self,
-        source_id: int | None = None,
-        to_numpy: bool = True,
-        remove_alive_at_end: bool = True,
-    ) -> list[NDArray[np.float64]] | NDArray[np.float64]:
+    ) -> NDArray[np.float64]:
         """
         Get the last recorded position of every particle.
 
@@ -224,7 +200,7 @@ class ParticleMonitor(dict):
 
         Returns
         -------
-        out : list[np.ndarray[np.float64]] | np.ndarray[np.float64]
+        out : NDArray[np.float64]
             Last known position in :unit:`mm` of every particle.
 
         """
@@ -234,36 +210,15 @@ class ParticleMonitor(dict):
         if remove_alive_at_end:
             subset = _filter_out_alive_at_end(subset)
 
-        out = [part.pos[-1] for part in subset.values()]
-        if to_numpy:
-            return np.array(out)
-        return out
-
-    @overload
-    def last_known_direction(
-        self,
-        source_id: int | None = None,
-        to_numpy: bool = True,
-        normalize: bool = True,
-        remove_alive_at_end: bool = True,
-    ) -> np.ndarray[np.float64]: ...
-
-    @overload
-    def last_known_direction(
-        self,
-        source_id: int | None = None,
-        to_numpy: bool = False,
-        normalize: bool = True,
-        remove_alive_at_end: bool = True,
-    ) -> list[np.ndarray[np.float64]]: ...
+        out = [part.position.last for part in subset.values()]
+        return np.array(out)
 
     def last_known_direction(
         self,
         source_id: int | None = None,
-        to_numpy: bool = True,
         normalize: bool = True,
         remove_alive_at_end: bool = True,
-    ) -> list[np.ndarray[np.float64]] | np.ndarray[np.float64]:
+    ) -> NDArray[np.float64]:
         """
         Get the last recorded direction of every particle.
 
@@ -276,9 +231,6 @@ class ParticleMonitor(dict):
         source_id : int | None, optional
             If set, we only take particles which source_id is ``source_id``.
             The default is None.
-        to_numpy : bool, optional
-            If True, output list is transformed to an array. The default is
-            True.
         normalize : bool, optional
             To normalize the direction vector. The default is True.
         remove_alive_at_end : bool, optional
@@ -287,7 +239,7 @@ class ParticleMonitor(dict):
 
         Returns
         -------
-        out : list[np.ndarray[np.float64]] | np.ndarray[np.float64]
+        out : NDArray[np.float64]
             Last known moment vector of every particle.
 
         """
@@ -302,9 +254,7 @@ class ParticleMonitor(dict):
         if normalize:
             out = [mom / np.linalg.norm(mom) for mom in out]
 
-        if to_numpy:
-            return np.array(out)
-        return out
+        return np.array(out)
 
     def compute_collision_angles(self, mesh: vedo.Mesh, **kwargs) -> None:
         """Find all collisions."""
