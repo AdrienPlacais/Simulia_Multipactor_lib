@@ -149,17 +149,9 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         """Compute emission energy in eV."""
         return self.momentum.emission_energy(self.mass_eV)
 
-    def collision_energy(
-        self,
-        extrapolation: bool = True,
-    ) -> float | None:
+    @property
+    def collision_energy(self) -> float:
         """Determine the impact energy in :unit:`eV`.
-
-        Parameters
-        ----------
-        extrapolation : bool, optional
-            If True, perform an extrapolation of the last time steps to
-            increase the precision. The default is True.
 
         Returns
         -------
@@ -171,12 +163,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         NotImplementedError : If extrapolation is True.
 
         """
-        if extrapolation:
-            raise NotImplementedError(
-                "TODO: extrapolation of on last time  steps for better "
-                "precision."
-            )
-        return self.momentum.emission_energy(self.mass_eV)
+        return self.momentum.collision_energy(self.mass_eV)
 
     def extrapolate_pos_and_mom_one_time_step_further(self) -> None:
         """Extrapolate position and momentum by one time step.
