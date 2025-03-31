@@ -8,12 +8,14 @@ dictionary are the particle id of the :class:`Particle`.
 
 """
 
+import logging
 import os
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 from pathlib import Path
-from typing import Any, Self
+from typing import Any, Literal, Self
 
 import numpy as np
+import pandas as pd
 import vedo
 from numpy._typing import NDArray
 
@@ -47,9 +49,12 @@ def _load_particle_monitor_file(
     return particles_info  # type: ignore
 
 
+FILTER_KEY = Literal["seed", "emitted", "collision", "no collision"]
+FILTER_FUNC = Callable[[Particle], bool]
+
+
 class ParticleMonitor(dict):
-    """
-    Holds all :class:`Particle` objects as values, particle id as keys.
+    """Holds all :class:`Particle` objects as values, particle id as keys.
 
     Attributes
     ----------
@@ -57,6 +62,14 @@ class ParticleMonitor(dict):
         Time at which the simulation ended.
 
     """
+
+    FILTERS: dict[str, FILTER_FUNC] = {
+        "_default": lambda _: True,
+        "seed": lambda p: p.source_id == 0,
+        "emitted": lambda p: p.source_id == 1,
+        "collision": lambda p: not p.alive_at_end,
+        "no collision": lambda p: p.alive_at_end,
+    }
 
     def __init__(
         self,
@@ -269,12 +282,74 @@ class ParticleMonitor(dict):
         bins: int = 200,
         hist_range: tuple[float, float] | None = None,
         plotter: Plotter | None = None,
+        filter: FILTER_KEY | FILTER_FUNC | None = None,
         **kwargs,
     ) -> Any:
         if plotter is None:
             plotter = self._plotter
-        data = getattr(self, x, None)
-        assert data is not None, f"Could not get {x}"
+        data = self.to_pandas(x, filter=filter)
+        return self._plotter.hist(
+            data, x, bins=bins, hist_range=hist_range, title=filter, **kwargs
+        )
+
+    @property
+    def to_list(self) -> list[Particle]:
+        """Return stored :class:`.Particle` as a list."""
+        return list(self.values())
+
+    def to_pandas(
+        self,
+        *args: PARTICLE_0D_t,
+        filter: FILTER_KEY | FILTER_FUNC | None = None,
+    ) -> pd.DataFrame:
+        particles = self.filter_particles(filter)
+
+        data: dict[str, list[float]] = {}
+
+        for arg in args:
+            concat: list[float] = []
+            for result in particles:
+                value = getattr(result, arg, None)
+                if not isinstance(value, (float, int)):
+                    logging.debug(
+                        f"The {arg} attribute of {result} is not a float but a"
+                        f" {type(value)}, so it was not added to the "
+                        "dataframe."
+                    )
+                    continue
+                concat.append(value)
+            data[arg] = concat
+
+        lengths = {key: len(value) for key, value in data.items()}
+        if len(set(lengths.values())) > 1:
+            raise ValueError(
+                "All the lists in data must have the same length. Maybe "
+                f"{particles = } is a Generator? Or maybe one of the keys was "
+                "not found in one or more of the Particles?\n"
+                f"{lengths = }"
+            )
+
+        try:
+            return pd.DataFrame(data)
+        except ValueError as e:
+            raise ValueError(
+                f"Could not get a data, creating malformed dataframe.\n{e}"
+            )
+
+    def filter_particles(
+        self, filter: FILTER_KEY | FILTER_FUNC | None
+    ) -> list[Particle]:
+        """Return a list of particles that match the given criterion."""
+        if isinstance(filter, str):
+            filter = self.FILTERS.get(filter)
+            if filter is None:
+                logging.error(
+                    f"Unknown filter: {filter}. Returning all particles."
+                )
+        if filter is None:
+            filter = self.FILTERS["_default"]
+
+        return [p for p in self.values() if filter(p)]
 
 
 def _absolute_file_paths(directory: Path) -> Generator[Path, Path, None]:
@@ -301,7 +376,7 @@ def _filter_source_id(
 
 
 def _filter_out_dead_at_end(
-    input_dict: dict[int, Particle]
+    input_dict: dict[int, Particle],
 ) -> dict[int, Particle]:
     """Filter out Particles that collisioned during simulation."""
     particles_alive_at_end = {
@@ -321,7 +396,7 @@ def _filter_out_alive_at_end(
 
 
 def _filter_out_part_with_one_time_step(
-    input_dict: dict[int, Particle]
+    input_dict: dict[int, Particle],
 ) -> dict[int, Particle]:
     """Remove particle with only one known position.
 
