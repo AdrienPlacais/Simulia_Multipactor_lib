@@ -1,15 +1,20 @@
 """Test the correct behavior of :class:`.CSTResults`."""
 
+from unittest.mock import MagicMock
+
 import numpy as np
+import pytest
 
 from simultipac.cst.simulation_results import CSTResults
 
 
-def test_cst_results_initialization() -> None:
+@pytest.mark.implementation
+def test_cst_results_initialization(mocker: MagicMock) -> None:
     """Test initialization of :class:`.CSTResults` object."""
     time = np.array([0, 1, 2, 3])
     population = np.array([10, 8, 5, 0])
     parameters = {"B_field": 1.2, "n_steps": 100}
+    mocker.patch("is_file", return_value=True)
     result = CSTResults(
         id=1,
         e_acc=5.0,

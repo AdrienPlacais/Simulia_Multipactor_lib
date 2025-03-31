@@ -92,6 +92,7 @@ def test_get_e_acc_not_found() -> None:
         factory._pop_e_acc(mock_raw_results, Path("dummy"))
 
 
+@pytest.mark.implementation
 def test_missing_file(mocker: MagicMock) -> None:
     """Test that MissingFileError is raised when a mandatory file is missing."""
     factory = CSTResultsFactory()
@@ -105,6 +106,7 @@ def test_missing_file(mocker: MagicMock) -> None:
         factory._from_simulation_folder(Path("dummy_folder"))
 
 
+@pytest.mark.implementation
 def test_from_simulation_folder(mocker: MagicMock) -> None:
     """Test the _from_simulation_folder method of :class:`.CSTResultsFactory`."""
     factory = CSTResultsFactory()
