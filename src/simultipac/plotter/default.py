@@ -132,9 +132,22 @@ class DefaultPlotter(Plotter):
         x: PARTICLE_0D_t,
         bins: int = 200,
         hist_range: tuple[float, float] | None = None,
+        xlabel: str | None = None,
+        title: str | None = None,
         **kwargs,
     ) -> Any:
-        raise NotImplementedError
+        if xlabel is None:
+            xlabel = markdown.get(x, x)
+        axes = data.plot(
+            kind="hist",
+            bins=bins,
+            range=hist_range,
+            xlabel=xlabel,
+            title=title,
+            **kwargs,
+        )
+        assert axes is not None
+        return axes
 
     def plot_3d(
         self,
