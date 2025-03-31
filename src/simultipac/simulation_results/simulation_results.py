@@ -359,7 +359,6 @@ class SimulationResultsFactory(ABC):
             Path to the ``STL`` file holding the 3D structure of the system.
             The default is None.
 
-
         """
         self._plotter = plotter
         self._freq_ghz = freq_ghz
