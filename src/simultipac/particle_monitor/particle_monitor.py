@@ -74,31 +74,45 @@ class ParticleMonitor(dict):
     def __init__(
         self,
         dict_of_parts: dict[int, Particle],
+        stl_path: str | Path | None = None,
         plotter: Plotter = DefaultPlotter(),
+        **kwargs,
     ) -> None:
         """Create the object, ordered list of filepaths beeing provided.
 
         Parameters
         ----------
-        folder : Path
-            Folder where all the CST ParticleMonitor files are stored.
-        delimiter : str | None, optional
-            Delimiter used to separate columns in the CST ParticleMonitor
-            files. The default is None.
+        dict_of_parts :
+            Dictionary which values are :class:`.Particle` instances and keys
+            are the associated unique ID.
+        stl_path :
+            Path to the structure mesh. In particular, used to compute the
+            collision and emission angles.
+        plotter :
+            Object to create the plots.
 
         """
         self._plotter = plotter
+        self._mesh: vedo.Mesh
         super().__init__(dict_of_parts)
 
         self.max_time = max([part.time[-1] for part in self.values()])
         for particle in self.values():
             particle.determine_if_alive_at_end(self.max_time)
 
+        if stl_path is not None:
+            self._mesh = self._load_mesh(stl_path)
+            for particle in self.values():
+                particle.find_collision(self._mesh, **kwargs)
+                particle.compute_collision_angle(self._mesh)
+                # particle.compute_emission_angle(self._mesh)
+
     @classmethod
     def from_folder(
         cls,
         folder: str | Path,
         delimiter: str | None = None,
+        stl_path: str | Path | None = None,
         plotter: Plotter = DefaultPlotter(),
     ) -> Self:
         """Load all the particle monitor files and create object."""
@@ -122,7 +136,7 @@ class ParticleMonitor(dict):
             particle.finalize()
             particle.extrapolate_pos_and_mom_one_time_step_further()
 
-        return cls(dict_of_parts, plotter=plotter)
+        return cls(dict_of_parts, stl_path=stl_path, plotter=plotter)
 
     @property
     def seed_electrons(self) -> dict[int, Particle]:
@@ -164,7 +178,7 @@ class ParticleMonitor(dict):
         extrapolation: bool = True,
         remove_alive_at_end: bool = True,
     ) -> NDArray[np.float64]:
-        """Get all collision energies in eV.
+        """Get all collision energies in :unit:`eV`.
 
         Parameters
         ----------
@@ -189,6 +203,70 @@ class ParticleMonitor(dict):
         out = [
             part.collision_energy(extrapolation) for part in subset.values()
         ]
+        return np.array(out)
+
+    def emission_angles(
+        self,
+        source_id: int | None = None,
+        extrapolation: bool = True,
+    ) -> NDArray[np.float64]:
+        """Get all emission angles in :unit:`deg`.
+
+        Parameters
+        ----------
+        source_id : int | None, optional
+            If set, we only take particles which source_id is ``source_id``.
+            The default is None.
+        extrapolation : bool, optional
+            If True, we extrapolate over the last time steps to refine the
+            collision energy. Otherwise, we simply take the last known energy
+            of the particle. The default is True.
+        remove_alive_at_end : bool, optional
+            To remove particles alive at the end of the simulation (did not
+            impact a wall). The default is True.
+
+        Returns
+        -------
+        out : NDArray[np.float64]
+            Emission angles in degrees.
+
+        """
+        raise NotImplementedError
+        subset = self
+        if source_id is not None:
+            subset = _filter_source_id(subset, source_id)
+        out = [part.emission_angle for part in subset.values()]
+        return np.array(out)
+
+    def collision_angles(
+        self,
+        source_id: int | None = None,
+        extrapolation: bool = True,
+        remove_alive_at_end: bool = True,
+    ) -> NDArray[np.float64]:
+        """Get all collision angles in :unit:`deg`.
+
+        Parameters
+        ----------
+        source_id : int | None, optional
+            If set, we only take particles which source_id is ``source_id``.
+            The default is None.
+        extrapolation : bool, optional
+            If True, we extrapolate over the last time steps to refine the
+            collision angle. Otherwise, we simply take the last known momentum
+            of the particle. The default is True.
+        remove_alive_at_end : bool, optional
+            To remove particles alive at the end of the simulation (did not
+            impact a wall). The default is True.
+
+        """
+        subset = self
+        if source_id is not None:
+            subset = _filter_source_id(subset, source_id)
+        if remove_alive_at_end:
+            subset = _filter_out_alive_at_end(subset)
+
+        out = [part.collision_angle(extrapolation) for part in subset.values()]
         return np.array(out)
 
     def last_known_position(
@@ -350,6 +428,10 @@ class ParticleMonitor(dict):
             filter = self.FILTERS["_default"]
 
         return [p for p in self.values() if filter(p)]
+
+    def _load_mesh(self, stl_path: Path | str) -> vedo.Mesh:
+        """Load the ``STL`` file."""
+        raise NotImplementedError
 
 
 def _absolute_file_paths(directory: Path) -> Generator[Path, Path, None]:

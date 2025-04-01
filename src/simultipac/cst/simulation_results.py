@@ -56,7 +56,7 @@ class CSTResults(SimulationResults):
         parameters: dict[str, float | bool | str] | None = None,
         stl_path: str | Path | None = None,
         stl_alpha: float | None = None,
-        folder_particle_monitors: str | Path | None = None,
+        particle_monitor: ParticleMonitor | None = None,
         **kwargs,
     ) -> None:
         """Instantiate, post-process.
@@ -88,8 +88,8 @@ class CSTResults(SimulationResults):
             If given, we automatically load it. The default is None.
         stl_alpha : float | None, optional
             Transparency for the 3D mesh. The default is None.
-        folder_particle_monitors : str | Path | None
-            Where the particle monitor files are stored.
+        particle_monitor :
+            Stores all particle monitor data.
 
         """
         super().__init__(
@@ -107,10 +107,9 @@ class CSTResults(SimulationResults):
             **kwargs,
         )
         self._particle_monitor: ParticleMonitor
-        if folder_particle_monitors is not None:
-            self._particle_monitor = ParticleMonitor.from_folder(
-                folder_particle_monitors, plotter=self._plotter
-            )
+
+        if particle_monitor is not None:
+            self._particle_monitor = particle_monitor
 
 
 class CSTResultsFactory(SimulationResultsFactory):
@@ -174,7 +173,10 @@ class CSTResultsFactory(SimulationResultsFactory):
         return mandatory
 
     def _from_simulation_folder(
-        self, folderpath: Path, delimiter: str = "\t"
+        self,
+        folderpath: Path,
+        delimiter: str = "\t",
+        folder_particle_monitor: str | Path | None = None,
     ) -> CSTResults:
         """Instantiate results from a :file:`mmdd-xxxxxxx` folder.
 
@@ -194,6 +196,19 @@ class CSTResultsFactory(SimulationResultsFactory):
         Non-mandatory files data will be loaded in the ``parameters``
         attribute.
 
+        If you want to load particle monitor data, you must provide
+        ``folder_particle_monitor`` where all particle monitors are stored.
+        Typical structure is::
+
+            folder_particle_monitor
+            ├──'position  monitor 1_0.117175810039043.txt'
+            ├──'position  monitor 1_0.156234413385391.txt'
+            ├──'position  monitor 1_0.19529302418232.txt'
+            ├──'position  monitor 1_0.232905015349388.txt'
+            ├──'position  monitor 1_0.271963626146317.txt'
+            ├──...
+            └──'position  monitor 1_7.81172066926956E-02.txt'
+
         Parameters
         ----------
         folderpath : Path
@@ -201,6 +216,8 @@ class CSTResultsFactory(SimulationResultsFactory):
             single simulation among a parametric simulation export.
         delimiter : str, optional
             Delimiter between two columns. The default is a tab character.
+        folder_particle_monitor :
+            Holds all the particle monitor files.
 
         Returns
         -------
@@ -208,6 +225,7 @@ class CSTResultsFactory(SimulationResultsFactory):
             Instantiated object.
 
         """
+        assert folderpath.is_dir(), f"{folderpath = } does not exist."
         id = get_id(folderpath)
         raw_results = mmdd_xxxxxxx_folder_to_dict(folderpath, delimiter)
 
@@ -226,6 +244,13 @@ class CSTResultsFactory(SimulationResultsFactory):
             if self._p_rms_file
             else None
         )
+
+        particle_monitor = None
+        if folder_particle_monitor is not None:
+            particle_monitor = ParticleMonitor.from_folder(
+                folder_particle_monitor,
+                plotter=self._plotter,
+            )
         results = CSTResults(
             id=id,
             e_acc=e_acc,
@@ -235,6 +260,7 @@ class CSTResultsFactory(SimulationResultsFactory):
             plotter=self._plotter,
             period=self._period,
             parameters=raw_results.pop(no_extension(self._parameters_file)),
+            particle_monitor=particle_monitor,
         )
         return results
 
@@ -272,9 +298,18 @@ class CSTResultsFactory(SimulationResultsFactory):
         )
 
     def from_simulation_folders(
-        self, master_folder: Path, delimiter: str = "\t"
+        self,
+        master_folder: Path,
+        delimiter: str = "\t",
     ) -> list[CSTResults]:
-        """Load all :file:`mmdd-xxxxxxx` folders in ``master_folder``."""
+        """Load all :file:`mmdd-xxxxxxx` folders in ``master_folder``.
+
+        Note
+        ----
+        Loading of :class:`.ParticleMonitor` for multiple simulations is
+        currently not supported.
+
+        """
         folders = list(master_folder.iterdir())
         return [
             self._from_simulation_folder(folder, delimiter=delimiter)

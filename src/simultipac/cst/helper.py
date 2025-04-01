@@ -23,7 +23,8 @@ def get_id(folderpath: Path) -> int:
     except:
         raise ValueError(
             "An error occured when extracting the simulation ID of "
-            f"{folderpath = }"
+            f"{folderpath = }. Folder name must look like: `mmdd-xxxxxxx`, "
+            "`xxxxxxx` beeing the simulation ID."
         )
     return id
 

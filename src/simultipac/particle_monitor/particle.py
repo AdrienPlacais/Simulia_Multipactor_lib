@@ -90,6 +90,9 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.source_id = _line[11]
 
         self.alive_at_end = False
+        self.emission_cell_id: np.ndarray = np.array([], dtype=np.float64)
+        self.emission_point: np.ndarray = np.array([], dtype=np.uint32)
+        self.emission_angle: float = np.nan
         self.collision_cell_id: np.ndarray = np.array([], dtype=np.float64)
         self.collision_point: np.ndarray = np.array([], dtype=np.uint32)
         self.collision_angle: float = np.nan
@@ -128,7 +131,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
         .. warning::
             In CST Particle Monitor files, the time is given in seconds *
-            1e-18 (aka nano-nanoseconds).  Tested with CST units for time in
+            1e-18 (aka nano-nanoseconds). Tested with CST units for time in
             nanoseconds.
 
         """
@@ -146,7 +149,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
     @property
     def emission_energy(self) -> float:
-        """Compute emission energy in eV."""
+        """Compute emission energy in :unit:`eV`."""
         return self.momentum.emission_energy(self.mass_eV)
 
     @property
@@ -303,10 +306,20 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.collision_point = collision_point
         return
 
-    def compute_collision_angle(
-        self,
-        mesh: vedo.Mesh,
-    ) -> None:
+    def compute_emission_angle(self, mesh: vedo.Mesh) -> None:
+        """Compute the angle of emission."""
+        raise NotImplementedError
+        if self.collision_cell_id.shape[0] < 1:
+            return
+
+        direction = self.momentum.first
+        normal = mesh.cell_normals[self.emission_cell_id]
+        adjacent = normal.dot(direction)
+        opposite = np.linalg.norm(np.cross(normal, direction))
+        tan_theta = opposite / adjacent
+        self.emission_angle = abs(math.atan(tan_theta))
+
+    def compute_collision_angle(self, mesh: vedo.Mesh) -> None:
         """Compute the angle of impact."""
         if self.alive_at_end:
             return
