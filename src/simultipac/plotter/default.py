@@ -12,7 +12,7 @@ from vedo.mesh import Mesh
 
 from simultipac.constants import markdown
 from simultipac.plotter.plotter import Plotter
-from simultipac.typing import PARTICLE_0D_t, PARTICLE_3D_t
+from simultipac.types import PARTICLE_0D_t, PARTICLE_3D_t
 
 VEDO_BACKENDS_t = Literal["k3d", "vtk", "2d"]
 

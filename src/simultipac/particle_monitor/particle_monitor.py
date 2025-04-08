@@ -22,7 +22,7 @@ from numpy._typing import NDArray
 from simultipac.particle_monitor.particle import Particle, PartMonLine
 from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
-from simultipac.typing import PARTICLE_0D_t
+from simultipac.types import PARTICLE_0D_t
 
 
 def _load_particle_monitor_file(

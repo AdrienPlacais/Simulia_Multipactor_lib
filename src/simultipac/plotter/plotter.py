@@ -6,7 +6,7 @@ from typing import Any
 
 import pandas as pd
 
-from simultipac.typing import PARTICLE_0D_t, PARTICLE_3D_t
+from simultipac.types import PARTICLE_0D_t, PARTICLE_3D_t
 
 
 class Plotter(ABC):

@@ -16,7 +16,7 @@ from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
 from simultipac.simulation_results.simulation_results import SimulationResults
 from simultipac.spark3d.simulation_results import Spark3DResultsFactory
-from simultipac.typing import DATA_0D, DATA_0D_t, DATA_1D_t
+from simultipac.types import DATA_0D, DATA_0D_t, DATA_1D_t
 
 
 class UnsupportedToolError(Exception):

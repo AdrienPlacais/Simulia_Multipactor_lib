@@ -10,7 +10,7 @@ import pandas as pd
 
 from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
-from simultipac.typing import DATA_0D_t, DATA_1D_t, PARTICLE_0D_t
+from simultipac.types import DATA_0D_t, DATA_1D_t, PARTICLE_0D_t
 from simultipac.util.exponential_growth import ExpGrowthParameters, fit_alpha
 
 
