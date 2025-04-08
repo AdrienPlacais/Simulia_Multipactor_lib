@@ -68,3 +68,5 @@ examples/cst/WR75_reduced/wr75_pic/*
 # Tracked with git lfs
 *.stl
 *.cst
+
+.python-version
