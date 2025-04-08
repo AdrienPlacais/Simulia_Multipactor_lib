@@ -177,6 +177,7 @@ class CSTResultsFactory(SimulationResultsFactory):
         folderpath: Path,
         delimiter: str = "\t",
         folder_particle_monitor: str | Path | None = None,
+        load_first_n_particles: int | None = None,
     ) -> CSTResults:
         """Instantiate results from a :file:`mmdd-xxxxxxx` folder.
 
@@ -218,6 +219,9 @@ class CSTResultsFactory(SimulationResultsFactory):
             Delimiter between two columns. The default is a tab character.
         folder_particle_monitor :
             Holds all the particle monitor files.
+        load_first_n_particles :
+            If provided, we only load the ``load_first_n_particles`` first
+            particles. Useful for debugging/speeding up.
 
         Returns
         -------
@@ -250,6 +254,7 @@ class CSTResultsFactory(SimulationResultsFactory):
             particle_monitor = ParticleMonitor.from_folder(
                 folder_particle_monitor,
                 plotter=self._plotter,
+                load_first_n_particles=load_first_n_particles,
             )
         results = CSTResults(
             id=id,

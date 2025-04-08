@@ -11,6 +11,11 @@ Modernize and package the library.
 
 ## [2.0.1] -- unreleased
 
+### Added
+
+- `SimulationResults` and `ParticleMonitor` can be initialized with the `load_first_n_particles`.
+  Will only load the first `load_first_n_particles` in `folder_particle_monitor` to speed up the script for debug purposes.
+
 ### Changed
 
 - UI is more natural. In particular:

@@ -114,13 +114,20 @@ class ParticleMonitor(dict):
         delimiter: str | None = None,
         stl_path: str | Path | None = None,
         plotter: Plotter = DefaultPlotter(),
+        load_first_n_particles: int | None = None,
+        **kwargs,
     ) -> Self:
         """Load all the particle monitor files and create object."""
         if isinstance(folder, str):
             folder = Path(folder)
         dict_of_parts: dict[int, Particle] = {}
 
-        for filepath in _absolute_file_paths(folder):
+        if load_first_n_particles is None:
+            load_first_n_particles = -1
+
+        for i, filepath in enumerate(_absolute_file_paths(folder)):
+            if i == load_first_n_particles:
+                break
             particles_info = _load_particle_monitor_file(
                 filepath, delimiter=delimiter
             )
