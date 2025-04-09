@@ -108,7 +108,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self._time.append(line[9])
 
     def finalize(self) -> None:
-        """Post treat Particles for consistency checks, better data types."""
+        """Post treat object for consistency checks, better data types."""
         self._check_constanteness_of_some_attributes()
         self.time = np.array(self._time)
         self._switch_to_mm_ns_units()
@@ -160,10 +160,6 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         -------
         energy: float
             The last known energy in :unit:`eV`.
-
-        Raises
-        ------
-        NotImplementedError : If extrapolation is True.
 
         """
         return self.momentum.collision_energy(self.mass_eV)
@@ -223,7 +219,18 @@ class Particle:  # pylint: disable=too-many-instance-attributes
     def determine_if_alive_at_end(
         self, max_time: float, tol: float = 1e-6
     ) -> None:
-        """Determine if the particle collisioned before end of simulation."""
+        """Determine if the particle collisioned before end of simulation.
+
+        This method sets :attr:`.alive_at_end` flag.
+
+        Parameters
+        ----------
+        max_time :
+            Simulation end time in :unit:`ns`.
+        tol :
+            Tolerance in :unit:`ns`.
+
+        """
         if abs(max_time - self.time[-1]) < tol:
             self.alive_at_end = True
 
@@ -274,7 +281,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
         p_0 = self.position.last
         assert self.position.extrapolated is not None
-        p_1 = self.position.extrapolated[-1, :]
+        p_1 = self.position.extrapolated[-1]
 
         collision_point, collision_cell = mesh.intersect_with_line(
             p0=p_0, p1=p_1, return_ids=True, tol=0
