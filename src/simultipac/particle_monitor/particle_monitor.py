@@ -58,7 +58,7 @@ class ParticleMonitor(dict):
 
     Attributes
     ----------
-    max_time : float
+    max_time :
         Time at which the simulation ended.
 
     """
@@ -74,17 +74,24 @@ class ParticleMonitor(dict):
     def __init__(
         self,
         dict_of_parts: dict[int, Particle],
+        max_time: float,
         stl_path: str | Path | None = None,
         plotter: Plotter = DefaultPlotter(),
         **kwargs,
     ) -> None:
         """Create the object, ordered list of filepaths beeing provided.
 
+        Also handle mesh related operations: collision/emission angles
+        calculation.
+
         Parameters
         ----------
         dict_of_parts :
             Dictionary which values are :class:`.Particle` instances and keys
             are the associated unique ID.
+        max_time :
+            Simulation end time. Used to determine which particles were alive
+            at the end of the simulation.
         stl_path :
             Path to the structure mesh. In particular, used to compute the
             collision and emission angles.
@@ -96,7 +103,7 @@ class ParticleMonitor(dict):
         self._mesh: vedo.Mesh
         super().__init__(dict_of_parts)
 
-        self.max_time = max([part.time[-1] for part in self.values()])
+        self.max_time = max_time
         for particle in self.values():
             particle.determine_if_alive_at_end(self.max_time)
 
@@ -115,35 +122,72 @@ class ParticleMonitor(dict):
         stl_path: str | Path | None = None,
         plotter: Plotter = DefaultPlotter(),
         load_first_n_particles: int | None = None,
+        particle_monitor_ignore: Collection[str] = (".swp",),
         **kwargs,
     ) -> Self:
-        """Load all the particle monitor files and create object."""
+        """Load all the particle monitor files and create object.
+
+        Parameters
+        ----------
+        folder :
+            Where all the CST particle monitor files are stored.
+        delimiter :
+            Delimiter between columns.
+        stl_path :
+            Path to the mesh file, saved as ``STL``.
+        plotter :
+            Object realizing the plots.
+        load_first_n_particles :
+            To only load the first particles that are found in the ``folder``.
+        particle_monitor_ignore :
+            File extensions to skip when exploring the particle monitor folder.
+
+        Returns
+        -------
+        particle_monitor : ParticleMonitor
+            Instantiated object.
+
+        """
+        if stl_path is None:
+            raise ValueError
         if isinstance(folder, str):
             folder = Path(folder)
         dict_of_parts: dict[int, Particle] = {}
 
-        if load_first_n_particles is None:
-            load_first_n_particles = -1
+        filepaths, max_time = _sorted_particle_monitor_files(
+            folder, particle_monitor_ignore=particle_monitor_ignore
+        )
 
-        for i, filepath in enumerate(_absolute_file_paths(folder)):
-            if i == load_first_n_particles:
-                break
+        for filepath in filepaths:
             particles_info = _load_particle_monitor_file(
                 filepath, delimiter=delimiter
             )
 
             for part_mon_line in particles_info:
                 particle_id = int(part_mon_line[10])
+
+                if (
+                    load_first_n_particles is not None
+                    and particle_id > load_first_n_particles
+                ):
+                    continue
+
                 if particle_id in dict_of_parts:
                     dict_of_parts[particle_id].add_a_file(part_mon_line)
                     continue
+
                 dict_of_parts[particle_id] = Particle(part_mon_line)
 
         for particle in dict_of_parts.values():
             particle.finalize()
             particle.extrapolate_pos_and_mom_one_time_step_further()
 
-        return cls(dict_of_parts, stl_path=stl_path, plotter=plotter)
+        return cls(
+            dict_of_parts,
+            stl_path=stl_path,
+            plotter=plotter,
+            max_time=max_time,
+        )
 
     @property
     def seed_electrons(self) -> dict[int, Particle]:
@@ -248,21 +292,16 @@ class ParticleMonitor(dict):
     def collision_angles(
         self,
         source_id: int | None = None,
-        extrapolation: bool = True,
         remove_alive_at_end: bool = True,
     ) -> NDArray[np.float64]:
         """Get all collision angles in :unit:`deg`.
 
         Parameters
         ----------
-        source_id : int | None, optional
+        source_id :
             If set, we only take particles which source_id is ``source_id``.
             The default is None.
-        extrapolation : bool, optional
-            If True, we extrapolate over the last time steps to refine the
-            collision angle. Otherwise, we simply take the last known momentum
-            of the particle. The default is True.
-        remove_alive_at_end : bool, optional
+        remove_alive_at_end :
             To remove particles alive at the end of the simulation (did not
             impact a wall). The default is True.
 
@@ -441,15 +480,90 @@ class ParticleMonitor(dict):
         raise NotImplementedError
 
 
-def _absolute_file_paths(directory: Path) -> Generator[Path, Path, None]:
-    """Get all filepaths in absolute from dir, remove unwanted files."""
+def _absolute_file_paths(
+    directory: Path, particle_monitor_ignore: Collection[str] = (".swp",)
+) -> Generator[Path, Path, None]:
+    """Get all filepaths in absolute from dir, remove unwanted files.
+
+    Parameters
+    ----------
+    directory :
+        Folder to explore.
+    particle_monitor_ignore :
+        Extensions to skip.
+
+    """
     for dirpath, _, filenames in os.walk(directory):
         for dirpath, _, filenames in os.walk(directory):
             for f in filenames:
                 f = Path(f)
-                if f.suffix in (".swp",):
+                if f.suffix in particle_monitor_ignore:
                     continue
                 yield Path(dirpath, f)
+
+
+def _get_float_from_filename(filename: Path) -> float:
+    """Extract the float value from the filename.
+
+    Parameters
+    ----------
+    filename :
+        Filename, looking like
+        :file:`position  monitor 1_0.117175810039043.txt`
+
+    """
+    match = re.search(
+        r"_(\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)(?=\.txt$)", filename.name
+    )
+    if match:
+        return float(match.group(1))
+    raise ValueError(
+        f"Cannot extract float from {filename = }. Expected format: "
+        "`position  monitor 1_0.117175810039043.txt`."
+    )
+
+
+def _sorted_particle_monitor_files(
+    directory: Path, particle_monitor_ignore: Collection[str] = (".swp",)
+) -> tuple[list[Path], float]:
+    """Recursively get and sort all particle monitor files.
+
+    Typical structure is::
+
+        directory
+        ├──'position  monitor 1_0.117175810039043.txt'
+        ├──'position  monitor 1_0.156234413385391.txt'
+        ├──'position  monitor 1_0.19529302418232.txt'
+        ├──'position  monitor 1_0.232905015349388.txt'
+        ├──'position  monitor 1_0.271963626146317.txt'
+        ├──...
+        └──'position  monitor 1_7.81172066926956E-02.txt'
+
+    Parameters
+    ----------
+    directory :
+        Folder to explore.
+    particle_monitor_ignore :
+        Extensions to skip.
+
+    Returns
+    -------
+    files : list[Path]
+        The sorted filepaths.
+    max_time : float
+        Highest time among provided files.
+
+    """
+    files = list(
+        _absolute_file_paths(
+            directory, particle_monitor_ignore=particle_monitor_ignore
+        )
+    )
+    sorted_files = sorted(files, key=_get_float_from_filename)
+    max_time = (
+        _get_float_from_filename(sorted_files[-1]) if sorted_files else 0.0
+    )
+    return sorted_files, max_time
 
 
 def _filter_source_id(
