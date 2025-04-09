@@ -3,6 +3,11 @@
 In particular, plotthe emission energy, the collision energy or the
 trajectories of the particles.
 
+.. deprecated:: 2.0.1
+    Use :class:`.CSTResults` instead. Note that, under the hood, the
+    :attr:`.CSTResults._particle_monitor` of type :class:`.ParticleMonitor`
+    methods are called, so you can use them directly.
+
 """
 
 from typing import Any
