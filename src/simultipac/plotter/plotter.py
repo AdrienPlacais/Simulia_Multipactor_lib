@@ -1,15 +1,16 @@
 """Define the generic :class:`Plotter`."""
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
 from simultipac.types import PARTICLE_0D_t, PARTICLE_3D_t
+from simultipac.util.singleton import SingletonMeta
 
 
-class Plotter(ABC):
+class Plotter(metaclass=SingletonMeta):
     """An object used to plot data."""
 
     def __init__(self, *args, **kwargs) -> None:
