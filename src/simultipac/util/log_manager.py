@@ -41,7 +41,7 @@ def _get_last_commit_hash() -> str:
             .decode("utf-8")
             .strip()
         )
-    except subprocess.CalledProcessError:
+    except:
         return "Unknown commit"
 
 
