@@ -34,32 +34,32 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
     Attributes
     ----------
-    position : Position
+    position :
         Position of the particle during the simulation.
-    momentum : Momentum
+    momentum :
         Momentum of the particle during the simulation.
-    _masses : list[float] | np.ndarray
+    _masses :
         Mass of particle at each time step. An error is raised if it changes
         between two files.
-    mass : float
+    mass :
         Mass of the particle in :unit:`kg`.
-    mass_eV : float
+    mass_eV :
         Mass of the particle in :unit:`eV`.
-    _charges : list[float] | np.ndarray
+    _charges :
         Charge of particle at each time step. An error is raised if it changes
         between two files.
-    charge : float
+    charge :
         Charge of the particle.
-    macro_charge : list[float] | np.ndarray
+    macro_charge :
         Charge of the macro-particle.
-    time : list[float] | np.ndarray
+    time :
         Holds the time steps in :unit:`ns` corresponding to every value of
         ``pos``, ``mom``, etc.
-    particle_id : int
+    particle_id :
         Unique id for the particle.
-    source_id : {0, 1}
+    source_id :
         Gives information on how the particle was created.
-    extrapolated_times : np.ndarray | None
+    extrapolated_times :
         Times at which position and momentum are extrapolated.
 
     """
@@ -261,13 +261,13 @@ class Particle:  # pylint: disable=too-many-instance-attributes
 
         Parameters
         ----------
-        mesh : vedo.Mesh
+        mesh :
             ``vedo`` mesh object describing the structure of the rf system.
-        warn_no_collision : bool, optional
+        warn_no_collision :
             If True, a warning is raised when the electron was not alive at the
             end of the simulation, but no collision was detected. The default
             is True.
-        warn_multiple_collisions : bool
+        warn_multiple_collisions :
             To warn if several collisions were detected for the same particle.
             Also remove all collisions but the first one. The default is True.
         kwargs :
