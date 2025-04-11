@@ -27,7 +27,7 @@ class DefaultPlotter(Plotter):
 
         Parameters
         ----------
-        vedo_backend : str, optional
+        vedo_backend :
             The backend used by ``vedo``. The options that I tested were:
             - ``"k3d"``: Needs ``k3d`` library. Would be the ideal setting. But
               raises error in Jupyter Notebooks:
@@ -72,19 +72,19 @@ class DefaultPlotter(Plotter):
 
         Parameters
         ----------
-        data : pd.DataFrame
+        data :
             Holds all data to plot.
-        x, y : str
+        x, y :
             Name of column in ``data`` for x/y.
-        grid : bool, optional
+        grid :
             If grid should be plotted. Default is True.
-        axes : Axes | None, optional
+        axes :
             Axes to re-use, if provided. The default is None (plot on new
             axis).
-        xlabel, ylabel : str | None, optional
+        xlabel, ylabel :
             Name of the labels. If not provided, we use the markdown equivalent
             of x/y, if defined in :data:`.markdown`.
-        label : str | None, optional
+        label :
             If provided, overrides the legend. Useful when several simulations
             are shown on the same plot.
         kwargs :
@@ -156,12 +156,20 @@ class DefaultPlotter(Plotter):
         *args,
         **kwargs,
     ) -> Any:
+        if isinstance(data, vedo.Mesh):
+            return self.plot_mesh(data, *args, **kwargs)
         raise NotImplementedError
+
+    def plot_mesh(
+        self, mesh: vedo.Mesh, axes: int = 1, *args, **kwargs
+    ) -> Any:
+        """Plot the mesh (``STL`` file)."""
+        return vedo.show(mesh, *args, axes=axes, **kwargs)
 
     def load_mesh(
         self, stl_path: str | Path, stl_alpha: float | None = None, **kwargs
     ) -> Mesh:
-        mesh = vedo.load(str(stl_path))
+        mesh = vedo.load(stl_path)
         if stl_alpha is not None:
             mesh.alpha(stl_alpha)
         return mesh
