@@ -83,6 +83,11 @@ class Vector:
         return self._array
 
     @property
+    def to_list(self) -> list[NDArray[np.float64]]:
+        """List of positions, each of size 3."""
+        return list(self.array)
+
+    @property
     def last(self) -> NDArray[np.float64]:
         """1D array containing last coordinates."""
         return self.array[-1, :]

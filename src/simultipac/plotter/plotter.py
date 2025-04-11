@@ -4,7 +4,9 @@ from abc import abstractmethod
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 
 from simultipac.types import PARTICLE_0D_t, PARTICLE_3D_t
 from simultipac.util.singleton import SingletonMeta
@@ -130,3 +132,48 @@ class Plotter(metaclass=SingletonMeta):
             Mesh object.
 
         """
+
+    @abstractmethod
+    def plot_mesh(self, mesh: Any, *args, **kwargs) -> Any:
+        """Plot a 3D mesh."""
+
+    @abstractmethod
+    def plot_trajectory(
+        self,
+        points: list[NDArray[np.float64]],
+        emission_color: str | None = None,
+        collision_color: str | None = None,
+        collision_point: NDArray[np.float64] = np.array([], dtype=np.float64),
+        lw: int = 7,
+        r: int = 8,
+        **kwargs,
+    ) -> Any:
+        """Plot the :class:`.Particle` trajectory stored in ``points``.
+
+        Parameters
+        ----------
+        points :
+            List of positions, as returned by :meth:`.Vector.to_list`.
+        emission_color :
+            If provided, the first known position is colored with this color.
+        collision_color :
+            If provided, the last known position is colored with this color.
+        collision_point :
+            If provided and ``collision_color`` is not ``None``, we plot this
+            point instead of the last of ``points``. This is useful when the
+            extrapolated time is large, and actuel collision point may differ
+            significantly from last position points.
+        lw :
+            Trajectory line width.
+        r :
+            Size of the emission/collision points.
+
+        """
+
+    def show(self) -> None:
+        """Show the plots that were produced.
+
+        Useful for the bash interface.
+
+        """
+        return

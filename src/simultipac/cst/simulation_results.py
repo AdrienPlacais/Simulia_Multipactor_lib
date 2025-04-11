@@ -27,13 +27,18 @@ from simultipac.cst.helper import (
     mmdd_xxxxxxx_folder_to_dict,
     no_extension,
 )
-from simultipac.particle_monitor.particle_monitor import ParticleMonitor
+from simultipac.particle_monitor.particle_monitor import (
+    FILTER_FUNC,
+    FILTER_KEY,
+    ParticleMonitor,
+)
 from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
 from simultipac.simulation_results.simulation_results import (
     SimulationResults,
     SimulationResultsFactory,
 )
+from simultipac.types import PARTICLE_0D_t, PARTICLE_3D_t
 
 
 class MissingFileError(Exception):
@@ -54,7 +59,6 @@ class CSTResults(SimulationResults):
         trim_trailing: bool = False,
         period: float | None = None,
         parameters: dict[str, float | bool | str] | None = None,
-        stl_path: str | Path | None = None,
         stl_alpha: float | None = None,
         particle_monitor: ParticleMonitor | None = None,
         **kwargs,
@@ -102,14 +106,140 @@ class CSTResults(SimulationResults):
             trim_trailing=trim_trailing,
             period=period,
             parameters=parameters,
-            stl_path=stl_path,
             stl_alpha=stl_alpha,
             **kwargs,
         )
         self._particle_monitor: ParticleMonitor
-
         if particle_monitor is not None:
             self._particle_monitor = particle_monitor
+
+    def hist(
+        self,
+        x: PARTICLE_0D_t,
+        bins: int = 200,
+        hist_range: tuple[float, float] | None = None,
+        plotter: Plotter | None = None,
+        filter: FILTER_KEY | FILTER_FUNC | None = None,
+        **kwargs,
+    ) -> Any:
+        """Create a histogram.
+
+        Parameters
+        ----------
+        x :
+            Name of the data to plot.
+        bins :
+            Number of histogram bins.
+        hist_range :
+            Lower and upper value for the histogram.
+        plotter :
+            Object creating the plots.
+        filter :
+            To plot only some of the particles.
+
+        """
+        return self._particle_monitor.hist(
+            x=x,
+            bins=bins,
+            hist_range=hist_range,
+            plotter=plotter,
+            filter=filter,
+            **kwargs,
+        )
+
+    def plot_3d(self, key: PARTICLE_3D_t, **kwargs) -> Any:
+        if key == "trajectory":
+            return self.plot_trajectories(**kwargs)
+
+    def plot_trajectories(
+        self,
+        emission_color: str | None = None,
+        collision_color: str | None = None,
+        lw: int = 7,
+        r: int = 8,
+        plotter: Plotter | None = None,
+        filter: FILTER_KEY | FILTER_FUNC | None = None,
+        **kwargs,
+    ) -> Any:
+        """Plot trajectories in 3D.
+
+        Parameters
+        ----------
+        emission_color :
+            If provided, the first known position is colored with this color.
+        collision_color :
+            If provided, the last known position is colored with this color.
+        collision_point :
+            If provided and ``collision_color`` is not ``None``, we plot this
+            point instead of the last of ``points``. This is useful when the
+            extrapolated time is large, and actuel collision point may differ
+            significantly from last position points.
+        lw :
+            Trajectory line width.
+        r :
+            Size of the emission/collision points.
+        plotter :
+            An object allowing to plot data.
+        filter :
+            To select the particles to be plotted.
+
+        """
+        return self._particle_monitor.plot_trajectories(
+            emission_color=emission_color,
+            collision_color=collision_color,
+            lw=lw,
+            r=r,
+            plotter=plotter,
+            filter=filter,
+            **kwargs,
+        )
+
+    def plot_mesh(self, *args, **kwargs) -> Any:
+        """Plot the stored mesh."""
+        return self._particle_monitor.plot_mesh(*args, **kwargs)
+
+    def plot_trajectories(
+        self,
+        emission_color: str | None = None,
+        collision_color: str | None = None,
+        lw: int = 7,
+        r: int = 8,
+        plotter: Plotter | None = None,
+        filter: FILTER_KEY | FILTER_FUNC | None = None,
+        **kwargs,
+    ) -> Any:
+        """Plot trajectories in 3D.
+
+        Parameters
+        ----------
+        emission_color :
+            If provided, the first known position is colored with this color.
+        collision_color :
+            If provided, the last known position is colored with this color.
+        collision_point :
+            If provided and ``collision_color`` is not ``None``, we plot this
+            point instead of the last of ``points``. This is useful when the
+            extrapolated time is large, and actuel collision point may differ
+            significantly from last position points.
+        lw :
+            Trajectory line width.
+        r :
+            Size of the emission/collision points.
+        plotter :
+            An object allowing to plot data.
+        filter :
+            To select the particles to be plotted.
+
+        """
+        return self._particle_monitor.plot_trajectories(
+            emission_color=emission_color,
+            collision_color=collision_color,
+            lw=lw,
+            r=r,
+            plotter=plotter,
+            filter=filter,
+            **kwargs,
+        )
 
 
 class CSTResultsFactory(SimulationResultsFactory):
@@ -130,6 +260,8 @@ class CSTResultsFactory(SimulationResultsFactory):
         ),
         e_acc_file_mv_m: str = "E_acc in MV per m.txt",
         p_rms_file: str | None = None,
+        stl_path: Path | str | None = None,
+        stl_alpha: float | None = None,
         **kwargs,
     ) -> None:
         """Instantiate object.
@@ -159,6 +291,8 @@ class CSTResultsFactory(SimulationResultsFactory):
             Path to the `STL` file describing the geometry. Used by
             :class:`.ParticleMonitor` to compute emission and collision angles,
             and realize 3D plots.
+        stl_alpha :
+            Transparency for the 3D mesh.
 
         """
         if plotter is None:
@@ -167,7 +301,12 @@ class CSTResultsFactory(SimulationResultsFactory):
         self._e_acc_file_mv_m = e_acc_file_mv_m
         self._p_rms_file = p_rms_file
         return super().__init__(
-            *args, plotter=plotter, freq_ghz=freq_ghz, **kwargs
+            *args,
+            plotter=plotter,
+            freq_ghz=freq_ghz,
+            stl_path=stl_path,
+            stl_alpha=stl_alpha,
+            **kwargs,
         )
 
     @property
@@ -260,6 +399,8 @@ class CSTResultsFactory(SimulationResultsFactory):
             particle_monitor = ParticleMonitor.from_folder(
                 folder_particle_monitor,
                 plotter=self._plotter,
+                stl_path=self._stl_path,
+                stl_alpha=self._stl_alpha,
                 load_first_n_particles=load_first_n_particles,
             )
         results = CSTResults(

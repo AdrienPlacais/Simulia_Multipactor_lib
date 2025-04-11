@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Perform a MP study with CST Particle Monitor.
 
 .. note::
@@ -10,19 +11,22 @@
 
 """
 
-from collections.abc import Sequence
 from pathlib import Path
-from typing import Literal
-
-import pandas as pd
 
 from simultipac.cst.simulation_results import CSTResults, CSTResultsFactory
-from simultipac.particle_monitor.particle_monitor import ParticleMonitor
+from simultipac.plotter.default import DefaultPlotter
 
 if __name__ == "__main__":
+    # Warning! Default ``vedo_backend`` can lead to crashes or nothing
+    # appearing, depending on your interpreter and env
+    # For me, this script will not work in Spyder
+    plotter = DefaultPlotter(vedo_backend="vtk")
+    stl_path = Path("../docs/manual/data/cst/WR75_reduced/wr75.stl")
     factory = CSTResultsFactory(
+        plotter=plotter,
         freq_ghz=1.30145,
-        stl_path=Path("../docs/manual/data/cst/WR75_reduced/wr75.stl"),
+        stl_path=stl_path,
+        stl_alpha=0.3,
     )
 
     result: CSTResults = factory._from_simulation_folder(
@@ -32,32 +36,25 @@ if __name__ == "__main__":
         folder_particle_monitor=Path(
             "../docs/manual/data/cst/WR75_reduced/Export/3d"
         ),
+        load_first_n_particles=10,
     )
-    monitor: ParticleMonitor = result._particle_monitor
 
-    monitor.hist("emission_energy", filter="seed", bins=10)
-    # part_mon.hist("collision_energy", filter="seed", bins=10)
-    # part_mon.hist("collision_angle", filter="seed", bins=10)
+    histogram_examples = True
+    if histogram_examples:
+        # The three types of histograms currently implemented, with some `hist`
+        # method arguments examples
+        # result.hist("emission_energy", filter="emitted")
+        result.hist("collision_energy", filter="seed", hist_range=(0, 100))
+        # result.hist("collision_angle", bins=100)
+        # TODO : result.hist("emission_angle")
 
-    if False:
-        result.hist(
-            x="emission_energies",
-            bins=200,
-            hist_range=(0, 1e2),
-        )
-        result.hist(x="collision_energies", bins=200, hist_range=(0, 2e2))
-
-        # Needs stl to be loaded
-        # computing is automatically performed if not already done (@property)
-        # result.compute_collision_angles(warn_multiple_collisions=False, warn_no_collision=True)
-        result.hist(x="collision_angles", bins=200, hist_range=(0, 90))
-
-        # Needs stl to be loaded
-        # to_plot can be a Sequence of PID, or the magic keyword
-        result.plot_3d(
-            "trajectory", to_plot="random sample", extrapolate_positions=False
+    plots_3d_examples = True
+    if plots_3d_examples:
+        result.plot_mesh()
+        result.plot_trajectories(
+            emission_color=None,
+            collision_color="red",
+            filter=lambda particle: particle.particle_id < 100,
         )
 
-        # New features
-        result.plot_3d("collision_distribution")
-        result.plot_3d("emission_distribution")
+    result.show()

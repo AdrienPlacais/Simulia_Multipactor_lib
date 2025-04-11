@@ -3,12 +3,13 @@
 from pathlib import Path
 from typing import Any, Literal
 
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import vedo
 from matplotlib.axes import Axes
 from matplotlib.typing import ColorType
 from numpy.typing import NDArray
-from vedo.mesh import Mesh
 
 from simultipac.constants import markdown
 from simultipac.plotter.plotter import Plotter
@@ -42,6 +43,8 @@ class DefaultPlotter(Plotter):
         """
         self._vedo_backend: VEDO_BACKENDS_t
         self.vedo_backend = vedo_backend
+        self._plotter_3d = vedo.Plotter()
+        self._show_3d = False
 
         return super().__init__(*args, **kwargs)
 
@@ -156,20 +159,77 @@ class DefaultPlotter(Plotter):
         *args,
         **kwargs,
     ) -> Any:
-        if isinstance(data, vedo.Mesh):
-            return self.plot_mesh(data, *args, **kwargs)
+        self._show_3d = True
         raise NotImplementedError
 
-    def plot_mesh(
-        self, mesh: vedo.Mesh, axes: int = 1, *args, **kwargs
-    ) -> Any:
+    def plot_mesh(self, mesh: vedo.Mesh, *args, **kwargs) -> vedo.Plotter:
         """Plot the mesh (``STL`` file)."""
-        return vedo.show(mesh, *args, axes=axes, **kwargs)
+        self._show_3d = True
+        self._plotter_3d += mesh
+        return self._plotter_3d
+
+    def plot_trajectory(
+        self,
+        points: list[NDArray[np.float64]],
+        emission_color: str | None = None,
+        collision_color: str | None = None,
+        collision_point: NDArray[np.float64] = np.array([], dtype=np.float64),
+        lw: int = 7,
+        r: int = 8,
+        **kwargs,
+    ) -> vedo.Plotter:
+        """Plot the :class:`.Particle` trajectory stored in ``points``.
+
+        Parameters
+        ----------
+        points :
+            List of positions, as returned by :meth:`.Vector.to_list`.
+        emission_color :
+            If provided, the first known position is colored with this color.
+        collision_color :
+            If provided, the last known position is colored with this color.
+        collision_point :
+            If provided and ``collision_color`` is not ``None``, we plot this
+            point instead of the last of ``points``. This is useful when the
+            extrapolated time is large, and actuel collision point may differ
+            significantly from last position points.
+        lw :
+            Trajectory line width.
+        r :
+            Size of the emission/collision points.
+
+        """
+        self._show_3d = True
+        objects = vedo.Lines(points[:-1], points[1:], lw=lw, **kwargs)
+
+        if emission_color is not None:
+            objects += vedo.Point(pos=points[0], r=r, c=emission_color)
+
+        if collision_color is not None:
+            if len(collision_point) == 0:
+                collision_point = points[-1]
+            objects += vedo.Point(pos=collision_point, r=r, c=collision_color)
+
+        self._plotter_3d += objects
+        return self._plotter_3d
 
     def load_mesh(
         self, stl_path: str | Path, stl_alpha: float | None = None, **kwargs
-    ) -> Mesh:
+    ) -> vedo.Mesh:
         mesh = vedo.load(stl_path)
         if stl_alpha is not None:
             mesh.alpha(stl_alpha)
         return mesh
+
+    def show(self) -> None:
+        """Show the plots that were produced.
+
+        Useful for the bash interface.
+
+        """
+        plt.show()
+        if not self._show_3d:
+            return
+
+        _plotter_3d: vedo.Plotter = self._plotter_3d
+        _plotter_3d.show()

@@ -10,7 +10,8 @@ dictionary are the particle id of the :class:`Particle`.
 
 import logging
 import os
-from collections.abc import Callable, Generator
+import re
+from collections.abc import Callable, Collection, Generator
 from pathlib import Path
 from typing import Any, Literal, Self
 
@@ -76,6 +77,7 @@ class ParticleMonitor(dict):
         dict_of_parts: dict[int, Particle],
         max_time: float,
         stl_path: str | Path | None = None,
+        stl_alpha: float | None = None,
         plotter: Plotter | None = None,
         **kwargs,
     ) -> None:
@@ -95,6 +97,8 @@ class ParticleMonitor(dict):
         stl_path :
             Path to the structure mesh. In particular, used to compute the
             collision and emission angles.
+        stl_alpha :
+            Mesh transparency setting.
         plotter :
             Object to create the plots.
 
@@ -102,7 +106,9 @@ class ParticleMonitor(dict):
         if plotter is None:
             plotter = DefaultPlotter()
         self._plotter = plotter
+        self._stl_path = stl_path
         self._mesh: vedo.Mesh
+        self._kwargs = kwargs
         super().__init__(dict_of_parts)
 
         self.max_time = max_time
@@ -110,11 +116,19 @@ class ParticleMonitor(dict):
             particle.determine_if_alive_at_end(self.max_time)
 
         if stl_path is not None:
-            self._mesh = self._load_mesh(stl_path)
-            for particle in self.values():
-                particle.find_collision(self._mesh, **kwargs)
-                particle.compute_collision_angle(self._mesh)
-                # particle.compute_emission_angle(self._mesh)
+            self._mesh = self._load_mesh(
+                stl_path, stl_alpha=stl_alpha, **kwargs
+            )
+            self.compute_collision_angles(self._mesh)
+        return
+
+    def __repr__(self) -> str:
+        """Return how the object was initialized."""
+        return (
+            f"ParticleMonitor(dict_of_parts={len(self)} particles, "
+            f"stl_path={self._stl_path}, plotter={self._plotter}, kwargs="
+            f"{self._kwargs})"
+        )
 
     @classmethod
     def from_folder(
@@ -122,6 +136,7 @@ class ParticleMonitor(dict):
         folder: str | Path,
         delimiter: str | None = None,
         stl_path: str | Path | None = None,
+        stl_alpha: float | None = None,
         plotter: Plotter | None = None,
         load_first_n_particles: int | None = None,
         particle_monitor_ignore: Collection[str] = (".swp",),
@@ -137,6 +152,8 @@ class ParticleMonitor(dict):
             Delimiter between columns.
         stl_path :
             Path to the mesh file, saved as ``STL``.
+        stl_alpha :
+            Transparency for the 3D mesh.
         plotter :
             Object realizing the plots.
         load_first_n_particles :
@@ -187,8 +204,10 @@ class ParticleMonitor(dict):
         return cls(
             dict_of_parts,
             stl_path=stl_path,
+            stl_alpha=stl_alpha,
             plotter=plotter,
             max_time=max_time,
+            **kwargs,
         )
 
     @property
@@ -314,7 +333,7 @@ class ParticleMonitor(dict):
         if remove_alive_at_end:
             subset = _filter_out_alive_at_end(subset)
 
-        out = [part.collision_angle(extrapolation) for part in subset.values()]
+        out = [part.collision_angle for part in subset.values()]
         return np.array(out)
 
     def last_known_position(
@@ -322,8 +341,7 @@ class ParticleMonitor(dict):
         source_id: int | None = None,
         remove_alive_at_end: bool = True,
     ) -> NDArray[np.float64]:
-        """
-        Get the last recorded position of every particle.
+        """Get the last recorded position of every particle.
 
         Parameters
         ----------
@@ -411,12 +429,85 @@ class ParticleMonitor(dict):
         filter: FILTER_KEY | FILTER_FUNC | None = None,
         **kwargs,
     ) -> Any:
+        """Create a histogram.
+
+        Parameters
+        ----------
+        x :
+            Name of the data to plot.
+        bins :
+            Number of histogram bins.
+        hist_range :
+            Lower and upper value for the histogram.
+        plotter :
+            Object creating the plots.
+        filter :
+            To plot only some of the particles.
+
+        """
         if plotter is None:
             plotter = self._plotter
         data = self.to_pandas(x, filter=filter)
         return self._plotter.hist(
             data, x, bins=bins, hist_range=hist_range, title=filter, **kwargs
         )
+
+    def plot_mesh(
+        self, plotter: Plotter | None = None, *args, **kwargs
+    ) -> Any:
+        """Plot the stored mesh."""
+        if plotter is None:
+            plotter = self._plotter
+        return plotter.plot_mesh(self._mesh, *args, **kwargs)
+
+    def plot_trajectories(
+        self,
+        emission_color: str | None = None,
+        collision_color: str | None = None,
+        lw: int = 7,
+        r: int = 8,
+        plotter: Plotter | None = None,
+        filter: FILTER_KEY | FILTER_FUNC | None = None,
+        **kwargs,
+    ) -> Any:
+        """Plot trajectories in 3D.
+
+        Parameters
+        ----------
+        emission_color :
+            If provided, the first known position is colored with this color.
+        collision_color :
+            If provided, the last known position is colored with this color.
+        collision_point :
+            If provided and ``collision_color`` is not ``None``, we plot this
+            point instead of the last of ``points``. This is useful when the
+            extrapolated time is large, and actuel collision point may differ
+            significantly from last position points.
+        lw :
+            Trajectory line width.
+        r :
+            Size of the emission/collision points.
+        plotter :
+            An object allowing to plot data.
+        filter :
+            To select the particles to be plotted.
+
+        """
+        if plotter is None:
+            plotter = self._plotter
+        particles = self.filter_particles(filter)
+
+        veplotter = None
+        for p in particles:
+            veplotter = p.plot_trajectory(
+                plotter=plotter,
+                emission_color=emission_color,
+                collision_color=collision_color,
+                lw=lw,
+                r=r,
+                **kwargs,
+            )
+        return veplotter
 
     @property
     def to_list(self) -> list[Particle]:
@@ -477,9 +568,14 @@ class ParticleMonitor(dict):
 
         return [p for p in self.values() if filter(p)]
 
-    def _load_mesh(self, stl_path: Path | str) -> vedo.Mesh:
-        """Load the ``STL`` file."""
-        raise NotImplementedError
+    def _load_mesh(
+        self, stl_path: Path | str, stl_alpha: float | None = None, **kwargs
+    ) -> vedo.Mesh:
+        """Load the ``STL`` file with :meth:`self._plotter.load_mesh`."""
+        if isinstance(stl_path, str):
+            stl_path = Path(stl_path)
+        assert stl_path.is_file, f"{stl_path = } does not exist."
+        return self._plotter.load_mesh(stl_path, stl_alpha=stl_alpha, **kwargs)
 
 
 def _absolute_file_paths(

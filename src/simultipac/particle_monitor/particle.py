@@ -2,6 +2,7 @@
 
 import logging
 import math
+from typing import Any
 
 import numpy as np
 import vedo
@@ -9,6 +10,7 @@ from numpy.typing import NDArray
 
 from simultipac.constants import clight, qelem
 from simultipac.particle_monitor.vector import Momentum, Position
+from simultipac.plotter.plotter import Plotter
 
 PartMonLine = tuple[str, str, str, str, str, str, str, str, str, str, str, str]
 PartMonData = tuple[
@@ -93,8 +95,8 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self.emission_cell_id: np.ndarray = np.array([], dtype=np.float64)
         self.emission_point: np.ndarray = np.array([], dtype=np.uint32)
         self.emission_angle: float = np.nan
-        self.collision_cell_id: np.ndarray = np.array([], dtype=np.float64)
-        self.collision_point: np.ndarray = np.array([], dtype=np.uint32)
+        self.collision_cell_id: np.ndarray = np.array([], dtype=np.uint32)
+        self.collision_point: np.ndarray = np.array([], dtype=np.float64)
         self.collision_angle: float = np.nan
 
     def add_a_file(self, raw_line: PartMonLine) -> None:
@@ -339,6 +341,49 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         opposite = np.linalg.norm(np.cross(normal, direction))
         tan_theta = opposite / adjacent
         self.collision_angle = abs(math.atan(tan_theta))
+
+    def plot_trajectory(
+        self,
+        plotter: Plotter,
+        emission_color: str | None = None,
+        collision_color: str | None = None,
+        lw: int = 7,
+        r: int = 8,
+        **kwargs,
+    ) -> Any:
+        """Plot the trajectory of the particle in 3D.
+
+        Parameters
+        ----------
+        plotter :
+            Objet realizing the plots.
+        emission_color :
+            If provided, the first known position is colored with this color.
+        collision_color :
+            If provided, the last known position is colored with this color.
+        collision_point :
+            If provided and ``collision_color`` is not ``None``, we plot this
+            point instead of the last of ``points``. This is useful when the
+            extrapolated time is large, and actuel collision point may differ
+            significantly from last position points.
+        lw :
+            Trajectory line width.
+        r :
+            Size of the emission/collision points.
+
+        """
+        collision_point = self.collision_point
+        if collision_point.shape == (1, 3):
+            collision_point = collision_point[0]
+        return plotter.plot_trajectory(
+            points=self.position.to_list,
+            emission_color=emission_color if self.source_id != 0 else None,
+            collision_color=collision_color if not self.alive_at_end else None,
+            collision_point=collision_point,
+            lw=lw,
+            r=r,
+            **kwargs,
+        )
 
 
 def _str_to_correct_types(line: PartMonLine) -> PartMonData:

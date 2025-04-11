@@ -10,7 +10,7 @@ import pandas as pd
 
 from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
-from simultipac.types import DATA_0D_t, DATA_1D_t, PARTICLE_0D_t
+from simultipac.types import DATA_0D_t, DATA_1D_t, PARTICLE_0D_t, PARTICLE_3D_t
 from simultipac.util.exponential_growth import ExpGrowthParameters, fit_alpha
 
 
@@ -36,8 +36,6 @@ class SimulationResults(ABC):
         trim_trailing: bool = False,
         period: float | None = None,
         parameters: dict[str, float | bool | str] | None = None,
-        stl_path: str | Path | None = None,
-        stl_alpha: float | None = None,
         **kwargs,
     ) -> None:
         """Instantiate, post-process.
@@ -88,10 +86,6 @@ class SimulationResults(ABC):
         self.parameters: dict[str, Any] = (
             {} if parameters is None else parameters
         )
-
-        self._mesh = None
-        if stl_path is not None:
-            self._mesh = self._plotter.load_mesh(stl_path, stl_alpha)
 
     def __str__(self) -> str:
         """Print info on current simulation."""
@@ -278,17 +272,7 @@ class SimulationResults(ABC):
             self._color = color
         return axes
 
-    def hist(
-        self,
-        x: PARTICLE_0D_t,
-        bins: int = 200,
-        hist_range: tuple[float, float] | None = None,
-        **kwargs,
-    ) -> Any:
-        raise NotImplementedError
-
-    def plot_3d(self, *args, **kwargs) -> Any:
-        assert self._mesh is not None
+    def hist(self, *args, **kwargs) -> Any:
         raise NotImplementedError
 
     def to_pandas(self, *args: DATA_0D_t | DATA_1D_t) -> pd.DataFrame:
@@ -331,6 +315,14 @@ class SimulationResults(ABC):
         missing = [arg for arg in args if getattr(self, arg, None) is None]
         raise MissingDataError(f"{missing} not found in {self}")
 
+    def show(self) -> None:
+        """Show the plots that were produced.
+
+        Useful for the bash interface.
+
+        """
+        return self._plotter.show()
+
 
 class SimulationResultsFactory(ABC):
     """Easily create :class:`.SimulationResults`."""
@@ -340,6 +332,7 @@ class SimulationResultsFactory(ABC):
         plotter: Plotter | None = None,
         freq_ghz: float | None = None,
         stl_path: str | Path | None = None,
+        stl_alpha: float | None = None,
         *args,
         **kwargs,
     ) -> None:
@@ -355,6 +348,8 @@ class SimulationResultsFactory(ABC):
         stl_path :
             Path to the ``STL`` file holding the 3D structure of the system.
             The default is None.
+        stl_alpha :
+            Transparency setting for the mesh.
 
         """
         if plotter is None:
@@ -363,3 +358,4 @@ class SimulationResultsFactory(ABC):
         self._freq_ghz = freq_ghz
         self._period = 1.0 / freq_ghz if freq_ghz is not None else None
         self._stl_path = stl_path
+        self._stl_alpha = stl_alpha
