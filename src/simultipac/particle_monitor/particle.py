@@ -238,7 +238,7 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         self,
         mesh: vedo.Mesh,
         warn_no_collision: bool = True,
-        warn_multiple_collisions: bool = True,
+        warn_multiple_collisions: bool = False,
         **kwargs,
     ) -> None:
         """Find where the trajectory impacts the structure.
