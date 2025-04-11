@@ -48,9 +48,9 @@ class SimulationsResults:
 
         Parameters
         ----------
-        simulations_results : Iterable[SimulationResults]
+        simulations_results :
             The individual results instances.
-        plotter : Plotter, optional
+        plotter :
             An object to create the plots.
 
         """
@@ -115,30 +115,29 @@ class SimulationsResults:
 
         Parameters
         ----------
-        x, y : typing.DATA_0D_t | typing.DATA_1D_t
+        x, y :
             Name of properties to plot.
-        idx_to_plot : Iterable[int] | None, optional
+        idx_to_plot :
             Positions in the list of :class:`.SimulationResults` sorted by
             growing accelerating field / power. Not considered if
             ``id_to_plot`` or ``to_plot`` is provided.
-        id_to_plot : Iterable[int] | None, optional
+        id_to_plot :
             ID attributes; takes preceedence over ``idx_to_plot``. Not
             considered if ``to_plot`` is provided.
-        to_plot : Iterable[SimulationResults] | None, optional
+        to_plot :
             Objects to plot; takes preceedence over ``idx_to_plot`` and
             ``id_to_plot``.
-        plotter : Plotter | None, optional
+        plotter :
             Object to use for plot. If not provided, we use :attr:`._plotter`.
-        label : str | Literal["auto"] | None, optional
+        label :
             If provided, overrides the legend. Useful when several simulations
             are shown on the same plot. Use the magic keyword ``"auto"`` to
             legend with a short description of current object.
-        grid : bool, optional
+        grid :
             If grid should be plotted. Default is True.
-        axes : Axes | NDArray[Any] | None, optional
-            Axes to re-use, if provided. The default is None (plot on new
-            axis).
-        sort_by_parameter : Collection[str] | None, optional
+        axes :
+            Axes to re-use, if provided.
+        sort_by_parameter :
             If provided, results are grouped by the given parameters before
             plotting.
         kwargs :
@@ -214,14 +213,14 @@ class SimulationsResults:
 
         Parameters
         ----------
-        idx_to_plot : Iterable[int] | None, optional
+        idx_to_plot :
             Positions in the list of :class:`.SimulationResults` sorted by
             growing accelerating field / power. Not considered if
             ``id_to_plot`` or ``to_plot`` is provided.
-        id_to_plot : Iterable[int] | None, optional
+        id_to_plot :
             ID attributes; takes preceedence over ``idx_to_plot``. Not
             considered if ``to_plot`` is provided.
-        to_plot : Iterable[SimulationResults] | None, optional
+        to_plot :
             Objects to plot; takes preceedence over ``idx_to_plot`` and
             ``id_to_plot``.
 
@@ -250,22 +249,21 @@ class SimulationsResults:
 
         Parameters
         ----------
-        x, y : typing.DATA_0D_t
+        x, y :
             Name of properties to plot.
-        plotter : Plotter
+        plotter :
             Object to use for plot.
-        label : str | Literal["auto"] | None, optional
+        label :
             If provided, overrides the legend. Useful when several simulations
             are shown on the same plot. Use the magic keyword ``"auto"`` to
             legend with a short description of current object.
-        grid : bool, optional
+        grid :
             If grid should be plotted. Default is True.
-        axes : Axes | NDArray[Any] | None, optional
-            Axes to re-use, if provided. The default is None (plot on new
-            axis).
-        to_plot : Sequence[SimulationResults] | None, optional
+        axes :
+            Axes to re-use, if provided.
+        to_plot :
             The objects to plot. If not given, plot all the objects.
-        color : Any, optional
+        color :
             Color for the plot. If "auto", we use the
             :attr:`.SimulationsResults._color` attribute.
         kwargs :
@@ -311,9 +309,9 @@ class SimulationsResults:
 
         Parameters
         ----------
-        args : typing.DATA_0D_t
+        args :
             Name of :class:`.SimulationResults` arguments to concatenate.
-        results : Sequence[SimulationResults] | None, optional
+        results :
             If given, we concatenate only the data frome these
             :class:`.SimulationResults`.
 
@@ -380,21 +378,21 @@ class SimulationsResults:
 
         Parameters
         ----------
-        fitting_periods : int
+        fitting_periods :
             Number of periods over which the exp growth is searched. Longer is
             better, but you do not want to start the fit before the exp growth
             starts.
-        running_mean : bool, optional
+        running_mean :
             To tell if you want to average the number of particles over one
-            period. Highly recommended. The default is True.
-        log_fit : bool, optional
+            period. Highly recommended.
+        log_fit :
             To perform the fit on :func:`exp_growth_log` rather than
             :func:`exp_growth`. The default is True, as it generally shows
             better convergence.
-        minimum_final_number_of_electrons : int, optional
+        minimum_final_number_of_electrons :
             Under this final number of electrons, we do no bother finding the
             exp growth factor and set all fit parameters to ``NaN``.
-        bounds : tuple[list[float], list[float]], optional
+        bounds :
             Upper bound and lower bound for the two variables: initial number
             of electrons, exp growth factor.
         initial_values: list[float], optional
@@ -425,13 +423,13 @@ class SimulationsResults:
 
         Parameters
         ----------
-        filepath : Path | str
+        filepath :
             Where to save the file.
-        to_save : DATA_0D_t | DATA_1D_t
+        to_save :
             The list of quantities to save.
-        sep : str, optional
+        sep :
             Column separator. Default is a comma.
-        merge_on : DATA_0D_t | DATA_1D_t | None
+        merge_on :
             If provided, the different dataframe will be merged against this
             column. Typical usage is ``merge_on="time"`` to have a single time
             column.
@@ -456,9 +454,9 @@ class SimulationsResults:
 
         Parameters
         ----------
-        to_save : DATA_0D_t | DATA_1D_t
+        to_save :
             The list of quantities to save.
-        merge_on : DATA_0D_t | DATA_1D_t | None
+        merge_on :
             If provided, the different dataframe will be merged against this
             column. Typical usage is ``merge_on="time"`` to have a single time
             column.
@@ -505,14 +503,14 @@ class SimulationsResults:
 
         Parameters
         ----------
-        *parameters : str
+        *parameters :
             Name of the parameter(s) to get. Must be key in the ``parameters``
             dictionary of the stored :class:`.SimulationResult`. If empty, all
             parameters found in any result are returned.
-        default : Any, optional
+        default :
             The fallback value when the ``parameter`` is not a key of a
-            :attr:`.SimulationResult.parameters`. The default is None.
-        allow_missing : bool, optional
+            :attr:`.SimulationResult.parameters`.
+        allow_missing :
             If True, an error is raised when ``default`` is present in the
             output set.
 
@@ -561,7 +559,7 @@ class SimulationsResults:
 
         Parameters
         ----------
-        parameters : dict[str, Any]
+        parameters :
             Parameter names and their required values.
 
         Yields
@@ -596,9 +594,9 @@ class SimulationsResultsFactory:
         ----------
         tool: str
             Name of the tool.
-        plotter : Plotter, optional
+        plotter :
             Object to create the plots.
-        freq_ghz : float | None, optional
+        freq_ghz :
             RF frequency in GHz. Used to compute RF period, which is mandatory
             for exp growth fitting.
 
@@ -619,14 +617,14 @@ class SimulationsResultsFactory:
 
         Parameters
         ----------
-        plotter : Plotter
+        plotter :
             An object to plot data.
-        filepath : Path | None
+        filepath :
             Filepath to a ``TXT`` or ``CSV`` file for SPARK3D.
-        master_folder : Path | None
+        master_folder :
             Filepath to the folder holding all the ``mmdd-xxxxxxx`` folders for
             CST.
-        e_acc : np.ndarray | None
+        e_acc :
             The accelerating fields, used by SPARK3D.
         kwargs :
             Keyword arguments passed to the appropriate subclass of
@@ -664,14 +662,14 @@ class SimulationsResultsFactory:
 
         Parameters
         ----------
-        plotter : Plotter
+        plotter :
             An object to plot data.
-        filepath : Path | None
+        filepath :
             Filepath to a ``TXT`` or ``CSV`` file for SPARK3D.
-        master_folder : Path | None
+        master_folder :
             Filepath to the folder holding all the ``mmdd-xxxxxxx`` folders for
             CST.
-        e_acc : np.ndarray | None
+        e_acc :
             The accelerating fields, used by SPARK3D.
         kwargs :
             Keyword arguments passed to the appropriate subclass of

@@ -63,31 +63,31 @@ class CSTResults(SimulationResults):
 
         Parameters
         ----------
-        id : int
+        id :
             Unique simulation identifier.
-        e_acc : float
+        e_acc :
             Accelerating field in :unit:`V/m`.
-        time : np.ndarray
+        time :
             Time in :unit:`ns`.
-        population : np.ndarray
+        population :
             Evolution of population with time. Same shape as ``time``.
-        p_rms : float | None, optional
+        p_rms :
             RMS power in :unit:`W`.
-        plotter : Plotter, optional
+        plotter :
             An object allowing to plot data.
-        trim_trailing : bool, optional
+        trim_trailing :
             To remove the last simulation points, when the population is 0.
             Used with SPARK3D (``CSV`` import) for consistency with CST.
-        period : float | None, optional
+        period :
             RF period in :unit:`ns`. Mandatory for exponential growth fits.
-        parameters : dict[str, float | bool | str] | None, optional
+        parameters :
             Additional information on the simulation. Typically, value of
             magnetic field, number of PIC cells, simulation flags...
-        stl_path : str | Path | None, optional
+        stl_path :
             Path to the ``STL`` file holding the 3D structure of the system.
-            If given, we automatically load it. The default is None.
-        stl_alpha : float | None, optional
-            Transparency for the 3D mesh. The default is None.
+            If given, we automatically load it.
+        stl_alpha :
+            Transparency for the 3D mesh.
         particle_monitor :
             Stores all particle monitor data.
 
@@ -138,23 +138,27 @@ class CSTResultsFactory(SimulationResultsFactory):
 
         Parameters
         ----------
-        plotter : Plotter
+        plotter :
             Object to plot data.
-        freq_ghz : float | None, optional
+        freq_ghz :
             RF frequency in GHz. Used to compute RF period, which is mandatory
             for exp growth fitting.
-        e_acc_parameter : Sequence[str], optional
+        e_acc_parameter :
             The possible names of the accelerating field in
             :file:`Parameters.txt`; we try all of them sequentially, and resort
             to taking it from a file if it was not successful. You can pass in
             an empty tuple to force the use of the file.
-        e_acc_file_mv_m : str, optional
+        e_acc_file_mv_m :
             Name of the file where the value of the accelerating field in
             :unit:`MV/m` is written. This is a fallback, we prefer getting
             accelerating field from the :file:`Parameters.txt` file.
-        e_acc_file : str, optional
+        e_acc_file :
             Name of the file where the value of the RMS power in W is written.
             If not provided, we do not load RMS power.
+        stl_path :
+            Path to the `STL` file describing the geometry. Used by
+            :class:`.ParticleMonitor` to compute emission and collision angles,
+            and realize 3D plots.
 
         """
         self._e_acc_parameter = e_acc_parameter
@@ -212,11 +216,11 @@ class CSTResultsFactory(SimulationResultsFactory):
 
         Parameters
         ----------
-        folderpath : Path
+        folderpath :
             Path to a :file:`mmdd-xxxxxxx` folder, holding the results of a
             single simulation among a parametric simulation export.
-        delimiter : str, optional
-            Delimiter between two columns. The default is a tab character.
+        delimiter :
+            Delimiter between two columns.
         folder_particle_monitor :
             Holds all the particle monitor files.
         load_first_n_particles :

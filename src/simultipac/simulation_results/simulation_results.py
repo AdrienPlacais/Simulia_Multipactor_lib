@@ -44,31 +44,26 @@ class SimulationResults(ABC):
 
         Parameters
         ----------
-        id : int
+        id :
             Unique simulation identifier.
-        e_acc : float
+        e_acc :
             Accelerating field in :unit:`V/m`.
-        time : np.ndarray
+        time :
             Time in :unit:`ns`.
-        population : np.ndarray
+        population :
             Evolution of population with time. Same shape as ``time``.
-        p_rms : float | None, optional
+        p_rms :
             RMS power in :unit:`W`.
-        plotter : Plotter, optional
+        plotter :
             An object allowing to plot data.
-        trim_trailing : bool, optional
+        trim_trailing :
             To remove the last simulation points, when the population is 0.
             Used with SPARK3D (``CSV`` import) for consistency with CST.
-        period : float | None, optional
+        period :
             RF period in :unit:`ns`. Mandatory for exponential growth fits.
-        parameters : dict[str, float | bool | str] | None, optional
+        parameters :
             Additional information on the simulation. Typically, value of
             magnetic field, number of PIC cells, simulation flags...
-        stl_path : str | Path | None, optional
-            Path to the ``STL`` file holding the 3D structure of the system.
-            If given, we automatically load it. The default is None.
-        stl_alpha : float | None, optional
-            Transparency for the 3D mesh. The default is None.
 
         """
         self.id = id
@@ -168,22 +163,22 @@ class SimulationResults(ABC):
 
         Parameters
         ----------
-        fitting_periods : int
+        fitting_periods :
             Number of periods over which the exp growth is searched. Longer is
             better, but you do not want to start the fit before the exp growth
             starts.
-        running_mean : bool, optional
+        running_mean :
             To tell if you want to average the number of particles over one
             period. It is recommended with CST, but does not bring anything for
             SPARK3D. The default is False.
-        log_fit : bool, optional
+        log_fit :
             To perform the fit on :func:`exp_growth_log` rather than
             :func:`exp_growth`. The default is True, as it generally shows
             better convergence.
-        minimum_final_number_of_electrons : int, optional
+        minimum_final_number_of_electrons :
             Under this final number of electrons, we do no bother finding the
             exp growth factor and set all fit parameters to ``NaN``.
-        bounds : tuple[list[float], list[float]], optional
+        bounds :
             Upper bound and lower bound for the two variables: initial number
             of electrons, exp growth factor.
         initial_values: list[float], optional
@@ -238,17 +233,17 @@ class SimulationResults(ABC):
 
         Parameters
         ----------
-        x, y : typing.DATA_0D_t | typing.DATA_1D_t
+        x, y :
             Name of properties to plot.
-        plotter : Plotter | None, optional
+        plotter :
             Object to use for plot. If not provided, we use :attr:`._plotter`.
-        label : str | Literal["auto"] | None, optional
+        label :
             If provided, overrides the legend. Useful when several simulations
             are shown on the same plot. Use the magic keyword ``"auto"`` to
             legend with a short description of current object.
-        grid : bool, optional
+        grid :
             If grid should be plotted. Default is True.
-        axes : Axes | NDArray[Any] | None, optional
+        axes :
             Axes to re-use, if provided. The default is None (plot on new
             axis).
         kwargs :
@@ -299,7 +294,7 @@ class SimulationResults(ABC):
 
         Parameters
         ----------
-        args : typing.DATA_1D_t | typing.DATA_0D_t
+        args :
             Name of arguments as saved in current objects. Example:
             ``"population"``, ``"time"``...
 
@@ -350,12 +345,12 @@ class SimulationResultsFactory(ABC):
 
         Parameters
         ----------
-        plotter : Plotter, optional
+        plotter :
             Object to create the plots.
-        freq_ghz : float | None, optional
+        freq_ghz :
             RF frequency in :unit:`GHz`. Used to compute RF period, which is
             mandatory for exp growth fitting.
-        stl_path : str | Path | None, optional
+        stl_path :
             Path to the ``STL`` file holding the 3D structure of the system.
             The default is None.
 
