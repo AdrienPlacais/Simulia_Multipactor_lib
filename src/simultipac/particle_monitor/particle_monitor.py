@@ -76,7 +76,7 @@ class ParticleMonitor(dict):
         dict_of_parts: dict[int, Particle],
         max_time: float,
         stl_path: str | Path | None = None,
-        plotter: Plotter = DefaultPlotter(),
+        plotter: Plotter | None = None,
         **kwargs,
     ) -> None:
         """Create the object, ordered list of filepaths beeing provided.
@@ -99,6 +99,8 @@ class ParticleMonitor(dict):
             Object to create the plots.
 
         """
+        if plotter is None:
+            plotter = DefaultPlotter()
         self._plotter = plotter
         self._mesh: vedo.Mesh
         super().__init__(dict_of_parts)
@@ -120,7 +122,7 @@ class ParticleMonitor(dict):
         folder: str | Path,
         delimiter: str | None = None,
         stl_path: str | Path | None = None,
-        plotter: Plotter = DefaultPlotter(),
+        plotter: Plotter | None = None,
         load_first_n_particles: int | None = None,
         particle_monitor_ignore: Collection[str] = (".swp",),
         **kwargs,

@@ -50,7 +50,7 @@ class CSTResults(SimulationResults):
         time: np.ndarray,
         population: np.ndarray,
         p_rms: float | None = None,
-        plotter: Plotter = DefaultPlotter(),
+        plotter: Plotter | None = None,
         trim_trailing: bool = False,
         period: float | None = None,
         parameters: dict[str, float | bool | str] | None = None,
@@ -121,7 +121,7 @@ class CSTResultsFactory(SimulationResultsFactory):
     def __init__(
         self,
         *args,
-        plotter: Plotter = DefaultPlotter(),
+        plotter: Plotter | None = None,
         freq_ghz: float | None = None,
         e_acc_parameter: Sequence[str] = (
             "E_acc",
@@ -161,6 +161,8 @@ class CSTResultsFactory(SimulationResultsFactory):
             and realize 3D plots.
 
         """
+        if plotter is None:
+            plotter = DefaultPlotter()
         self._e_acc_parameter = e_acc_parameter
         self._e_acc_file_mv_m = e_acc_file_mv_m
         self._p_rms_file = p_rms_file

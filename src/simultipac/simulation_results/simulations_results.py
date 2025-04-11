@@ -42,7 +42,7 @@ class SimulationsResults:
     def __init__(
         self,
         simulations_results: Iterable[SimulationResults],
-        plotter: Plotter = DefaultPlotter(),
+        plotter: Plotter | None = None,
     ) -> None:
         """Sort and store the given :class:`.SimulationResults` instances.
 
@@ -61,6 +61,8 @@ class SimulationsResults:
         for x in simulations_results:
             self._add(x)
 
+        if plotter is None:
+            plotter = DefaultPlotter()
         self._plotter = plotter
         self._color: Any = None
 
@@ -583,7 +585,7 @@ class SimulationsResultsFactory:
     def __init__(
         self,
         tool: Literal["SPARK3D", "CST"],
-        plotter: Plotter = DefaultPlotter(),
+        plotter: Plotter | None = None,
         freq_ghz: float | None = None,
         *args,
         **kwargs,
@@ -601,6 +603,8 @@ class SimulationsResultsFactory:
             for exp growth fitting.
 
         """
+        if plotter is None:
+            plotter = DefaultPlotter()
         self._tool = tool
         self._plotter = plotter
         self._freq_ghz = freq_ghz

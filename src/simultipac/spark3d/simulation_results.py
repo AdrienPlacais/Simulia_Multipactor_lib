@@ -4,7 +4,6 @@ from pathlib import Path
 
 import numpy as np
 
-from simultipac.plotter.default import DefaultPlotter
 from simultipac.plotter.plotter import Plotter
 from simultipac.simulation_results.simulation_results import (
     SimulationResults,
@@ -21,12 +20,12 @@ class Spark3DResultsFactory(SimulationResultsFactory):
 
     def __init__(
         self,
-        plotter: Plotter = DefaultPlotter(),
+        plotter: Plotter | None = None,
         freq_ghz: float | None = None,
         *args,
         **kwargs,
     ) -> None:
-        super().__init__(plotter, freq_ghz, *args, **kwargs)
+        super().__init__(plotter=plotter, freq_ghz=freq_ghz, *args, **kwargs)
 
     def from_file(
         self, filepath: Path, e_acc: np.ndarray, delimiter: str = " ", **kwargs

@@ -32,7 +32,7 @@ class SimulationResults(ABC):
         time: np.ndarray,
         population: np.ndarray,
         p_rms: float | None = None,
-        plotter: Plotter = DefaultPlotter(),
+        plotter: Plotter | None = None,
         trim_trailing: bool = False,
         period: float | None = None,
         parameters: dict[str, float | bool | str] | None = None,
@@ -71,6 +71,8 @@ class SimulationResults(ABC):
         self.p_rms = p_rms
         self.time = time
         self.population = population
+        if plotter is None:
+            plotter = DefaultPlotter()
         self._plotter = plotter
         self._check_consistent_shapes()
         if trim_trailing:
@@ -335,7 +337,7 @@ class SimulationResultsFactory(ABC):
 
     def __init__(
         self,
-        plotter: Plotter = DefaultPlotter(),
+        plotter: Plotter | None = None,
         freq_ghz: float | None = None,
         stl_path: str | Path | None = None,
         *args,
@@ -355,6 +357,8 @@ class SimulationResultsFactory(ABC):
             The default is None.
 
         """
+        if plotter is None:
+            plotter = DefaultPlotter()
         self._plotter = plotter
         self._freq_ghz = freq_ghz
         self._period = 1.0 / freq_ghz if freq_ghz is not None else None
