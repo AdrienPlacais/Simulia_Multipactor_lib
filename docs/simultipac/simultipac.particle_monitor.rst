@@ -23,4 +23,4 @@ Submodules
    simultipac.particle_monitor.converters
    simultipac.particle_monitor.particle
    simultipac.particle_monitor.particle_monitor
-   simultipac.particle_monitor.studies
+   simultipac.particle_monitor.vector

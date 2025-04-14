@@ -52,8 +52,6 @@ class Particle:  # pylint: disable=too-many-instance-attributes
         between two files.
     charge :
         Charge of the particle.
-    macro_charge :
-        Charge of the macro-particle.
     time :
         Holds the time steps in :unit:`ns` corresponding to every value of
         ``pos``, ``mom``, etc.

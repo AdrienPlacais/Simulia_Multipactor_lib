@@ -30,15 +30,14 @@ class DefaultPlotter(Plotter):
         ----------
         vedo_backend :
             The backend used by ``vedo``. The options that I tested were:
-            - ``"k3d"``: Needs ``k3d`` library. Would be the ideal setting. But
-              raises error in Jupyter Notebooks:
-              ``TraitError: The 'point_size' trait of a Points instance
-              expected a float or a dict, not the float64 0.0.``
-            - ``"vtk"``: Interactive 3D plots. Does not appear in ``HTML``
-              (documentation).
-            - ``"2d"``: Non-interactive 2D plots. Does appear in ``HTML``
-              outputs.
-            The default is ``"2d"``.
+              - ``"k3d"``: Needs ``k3d`` library. Would be the ideal setting.
+                But raises error in Jupyter Notebooks: ``TraitError: The
+                'point_size' trait of a Points instance expected a float or a
+                dict, not the float64 0.0.``
+              - ``"vtk"``: Interactive 3D plots. Does not appear in ``HTML``
+                (documentation).
+              - ``"2d"``: Non-interactive 2D plots. Does appear in ``HTML``
+                outputs.
 
         """
         self._vedo_backend: VEDO_BACKENDS_t
