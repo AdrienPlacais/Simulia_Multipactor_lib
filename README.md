@@ -15,13 +15,10 @@ In particular:
 You will need a recent version of Python (at least 3.12).
 
 ## Installation
-### Simple installation:
+### Simple installation
 ```
 pip install simultipac
 ```
-
-> [!WARNING]
-> The package is not on PyPI yet, prefer building from source.
 
 ### Building form source
 1. Navigate to the library installation folder.
@@ -32,10 +29,10 @@ pip install simultipac
 
 # How to use
 ## Documentation
-Documentation is available at [this link](https://adrienplacais.github.io/Simulia_Multipactor_lib/html/index.html).
+Documentation is available at [this link](https://simultipac.readthedocs.io/en/latest/).
 
 ## Tutorial
-Examples are provided in the `examples` folder and in the documentation (work in progress).
+Examples are provided in the `examples` folder and [in the documentation](https://simultipac.readthedocs.io/en/latest/manual/examples_jupyter_notebooks.html).
 
 # Gallery
 ## Compute exponential growth factor
