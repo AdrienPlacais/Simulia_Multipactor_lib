@@ -9,10 +9,9 @@ import pandas as pd
 from numpy.typing import NDArray
 
 from simultipac.types import PARTICLE_0D_t, PARTICLE_3D_t
-from simultipac.util.singleton import SingletonMeta
 
 
-class Plotter(metaclass=SingletonMeta):
+class Plotter:
     """An object used to plot data."""
 
     def __init__(self, *args, **kwargs) -> None:

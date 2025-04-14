@@ -30,6 +30,7 @@ class DefaultPlotter(Plotter):
         ----------
         vedo_backend :
             The backend used by ``vedo``. The options that I tested were:
+
               - ``"k3d"``: Needs ``k3d`` library. Would be the ideal setting.
                 But raises error in Jupyter Notebooks: ``TraitError: The
                 'point_size' trait of a Points instance expected a float or a
