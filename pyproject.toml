@@ -76,7 +76,7 @@ where = ["src"]
 
 [tool.cibuildwheel]
 build-verbosity = 1
-test-command = 'pytest {project}/tests -m "not implementation and not tracewin and not slow"'
+test-command = 'pytest {project}/tests -m "not implementation and not slow"'
 test-extras = "test"
 
 [build-system]
