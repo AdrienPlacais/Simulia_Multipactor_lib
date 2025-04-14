@@ -1,5 +1,6 @@
 """Define a default plotter."""
 
+import logging
 from pathlib import Path
 from typing import Any, Literal
 
@@ -7,9 +8,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import vedo
+import vedo.backends
 from matplotlib.axes import Axes
 from matplotlib.typing import ColorType
 from numpy.typing import NDArray
+from vedo.mesh import Points
 
 from simultipac.constants import markdown
 from simultipac.plotter.plotter import Plotter
@@ -58,6 +61,9 @@ class DefaultPlotter(Plotter):
         """Update the vedo backend."""
         vedo.settings.default_backend = value
         self._vedo_backend = value
+
+        if value in ("k3d",):
+            self._k3d_patch()
 
     def plot(
         self,
@@ -175,7 +181,7 @@ class DefaultPlotter(Plotter):
         collision_color: str | None = None,
         collision_point: NDArray[np.float64] = np.array([], dtype=np.float64),
         lw: int = 7,
-        r: int = 8,
+        r: int = 2,
         **kwargs,
     ) -> vedo.Plotter:
         """Plot the :class:`.Particle` trajectory stored in ``points``.
@@ -225,11 +231,101 @@ class DefaultPlotter(Plotter):
         """Show the plots that were produced.
 
         Useful for the bash interface.
-
         """
         plt.show()
         if not self._show_3d:
             return
 
         _plotter_3d: vedo.Plotter = self._plotter_3d
+
         _plotter_3d.show()
+
+    def _k3d_patch(self) -> None:
+        """Patch ``point_size`` to avoid following error.
+
+        .. code-block::
+
+              File "/home/placais/Documents/simulation/python/simultipac/examples/./analyze_cst_particle_monitor.py", line 61, in <module>
+                result.show()
+                ~~~~~~~~~~~^^
+              File "/home/placais/Documents/simulation/python/simultipac/src/simultipac/simulation_results/simulation_results.py", line 324, in show
+                return self._plotter.show()
+                       ~~~~~~~~~~~~~~~~~~^^
+              File "/home/placais/Documents/simulation/python/simultipac/src/simultipac/plotter/default.py", line 235, in show
+                _plotter_3d.show()
+                ~~~~~~~~~~~~~~~~^^
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/vedo/plotter.py", line 3337, in show
+                return backends.get_notebook_backend(self.objects)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/vedo/backends.py", line 31, in get_notebook_backend
+                return start_k3d(actors2show)
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/vedo/backends.py", line 349, in start_k3d
+                kobj = k3d.points(
+                    ia.coordinates.astype(np.float32),
+                ...<5 lines>...
+                    name=name,
+                )
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/k3d/factory.py", line 620, in points
+                Points(
+                ~~~~~~^
+                    positions=positions,
+                    ^^^^^^^^^^^^^^^^^^^^
+                ...<15 lines>...
+                    compression_level=compression_level,
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                ),
+                ^
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/k3d/objects.py", line 735, in __init__
+                super(Points, self).__init__(**kwargs)
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/k3d/objects.py", line 194, in __init__
+                super(DrawableWithCallback, self).__init__(**kwargs)
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/k3d/objects.py", line 108, in __init__
+                super(Drawable, self).__init__(**kwargs)
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/ipywidgets/widgets/widget.py", line 478, in __init__
+                super(Widget, self).__init__(**kwargs)
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/traitlets/traitlets.py", line 1355, in __init__
+                setattr(self, key, value)
+                ~~~~~~~^^^^^^^^^^^^^^^^^^
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/traitlets/traitlets.py", line 716, in __set__
+                self.set(obj, value)
+                ~~~~~~~~^^^^^^^^^^^^
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/traitlets/traitlets.py", line 690, in set
+                new_value = self._validate(obj, value)
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/traitlets/traitlets.py", line 722, in _validate
+                value = self.validate(obj, value)
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/traitlets/traitlets.py", line 2460, in validate
+                self.error(obj, value)
+                ~~~~~~~~~~^^^^^^^^^^^^
+              File "/home/placais/.pyenv/versions/simultipac/lib/python3.13/site-packages/traitlets/traitlets.py", line 831, in error
+                raise TraitError(e)
+            traitlets.traitlets.TraitError: The 'point_size' trait of a Points instance expected a float or a dict, not the float64 np.float64(0.0).
+
+        This method overrides the default ``k3d.objects.Points`` constructor.
+        May be related to
+        [this issue](https://github.com/marcomusy/vedo/issues/1197).
+
+        """
+        logging.info("Applying patch for k3d.")
+
+        import k3d
+
+        original_k3d_points = k3d.points
+
+        def patched_k3d_points(*args, **kwargs) -> k3d.objects.Points:
+            """Instantiate ``k3d`` points with proper ``point_size`` arg."""
+            ps = kwargs.get("point_size")
+            if ps is None:
+                return original_k3d_points(*args, **kwargs)
+
+            if ps <= 0.0:
+                logging.info("patching invalid point_size=0.0 -> 1.0.")
+                ps = 1.0
+
+            kwargs["point_size"] = ps
+            return original_k3d_points(*args, **kwargs)
+
+        k3d.points = patched_k3d_points
