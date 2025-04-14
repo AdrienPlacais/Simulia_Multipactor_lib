@@ -21,6 +21,9 @@ from __future__ import annotations
 
 import os
 import sys
+from pprint import pformat
+
+from sphinx.util import inspect
 
 import simultipac
 
@@ -28,8 +31,8 @@ import simultipac
 sys.path.append(os.path.abspath("./_ext"))
 
 project = "Simultipac"
-copyright = "2025, Adrien Plaçais"
 author = "Adrien Plaçais"
+copyright = "2025, " + author
 
 # See https://protips.readthedocs.io/git-tag-version.html
 # The full version, including alpha/beta/rc tags.
@@ -42,16 +45,16 @@ version = simultipac.__version__
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    # "sphinxcontrib.bibtex",  # Integrate citations
-    "sphinx.ext.napoleon",  # handle numpy style
-    "sphinx.ext.autodoc",
-    "sphinx_rtd_theme",  # ReadTheDocs theme
-    "myst_parser",
-    "sphinx.ext.intersphinx",  # interlink with other docs, such as numpy
-    "sphinx.ext.todo",  # allow use of TODO
-    "nbsphinx",
     "simultipac_sphinx_extensions",  # use :unit: role
-    "sphinx_autodoc_typehints",  # Printing types in docstrings not necessary anymore
+    "myst_parser",
+    "nbsphinx",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
+    "sphinx_autodoc_typehints",
+    "sphinx_rtd_theme",
     "sphinx_tabs.tabs",
 ]
 
@@ -63,7 +66,6 @@ autodoc_default_options = {
     "undoc-members": True,  # Document members without doc
 }
 
-# autosummary_generate = True
 add_module_names = False
 default_role = "literal"
 todo_include_todos = True
@@ -76,14 +78,6 @@ exclude_patterns = [
     "experimental",
     "simultipac/modules.rst",
 ]
-
-
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
-html_theme = "sphinx_rtd_theme"
-html_theme_options = {}
-html_static_path = ["_static"]
 
 # -- Check that there is no broken link --------------------------------------
 nitpicky = False
@@ -106,6 +100,7 @@ intersphinx_mapping = {
 # Parameters for sphinx-autodoc-typehints
 always_document_param_types = True
 always_use_bar_union = True
+typehints_defaults = "comma"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -118,6 +113,11 @@ html_sidebars = {
 }
 
 
-# -- Options for LaTeX output ------------------------------------------------
-# https://stackoverflow.com/questions/28454217/how-to-avoid-the-too-deeply-nested-error-when-creating-pdfs-with-sphinx
-latex_elements = {"preamble": r"\usepackage{enumitem}\setlistdepth{99}"}
+# -- Constants display fix ---------------------------------------------------
+# https://stackoverflow.com/a/65195854
+def object_description(obj: object) -> str:
+    """Format the given object for a clearer printing."""
+    return pformat(obj, indent=4)
+
+
+inspect.object_description = object_description
