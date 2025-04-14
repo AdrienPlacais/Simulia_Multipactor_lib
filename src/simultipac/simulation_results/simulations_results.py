@@ -578,6 +578,14 @@ class SimulationsResults:
             ):
                 yield result
 
+    def show(self) -> None:
+        """Show the plots that were produced.
+
+        Useful for the bash interface.
+
+        """
+        return self._plotter.show()
+
 
 class SimulationsResultsFactory:
     """An object to create a :class:`.SimulationsResults`."""
