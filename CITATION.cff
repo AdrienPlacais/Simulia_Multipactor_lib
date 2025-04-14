@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "Simulia Multipactor Library"
 abstract: A library dedicated to studying multipactor from Simulia suite simulation tools.
-version: 1.2.x
-date-released: "2024-01-29"
+version: 2.0.1
+date-released: '2025-04-14'
 authors:
   - family-names: Plaçais
     given-names: Adrien
