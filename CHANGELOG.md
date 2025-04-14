@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Modernize and package the library.
 
-## [2.0.1] -- unreleased
+## [2.0.1] -- 2025-04-14
 
 ### Added
 
@@ -21,7 +21,8 @@ Modernize and package the library.
 - UI is more natural. In particular:
     - Simulation results are stored in appropriate `SimulationResults`; a bunch of `SimulationResults` are stored to `SimulationsResults` objects.
     - Factories allow easy creation of these objects.
-    - They have `plot` and `fit_alpha` methods.
+    - They have `plot`, `hist` and `fit_alpha` methods.
+    - Same functionalities can be achieved with way less lines of code.
 - Use `logging` module instead of color printed messages.
 
 ## [2.0.0] -- 2025-01-31
