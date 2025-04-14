@@ -427,6 +427,7 @@ class ParticleMonitor(dict):
         hist_range: tuple[float, float] | None = None,
         plotter: Plotter | None = None,
         filter: FILTER_KEY | FILTER_FUNC | None = None,
+        title: str | None = None,
         **kwargs,
     ) -> Any:
         """Create a histogram.
@@ -443,13 +444,25 @@ class ParticleMonitor(dict):
             Object creating the plots.
         filter :
             To plot only some of the particles.
+        title :
+            Figure title. If not provided, we take a default according to the
+            value of ``filter``.
 
         """
         if plotter is None:
             plotter = self._plotter
         data = self.to_pandas(x, filter=filter)
+
+        if title is None:
+            if isinstance(filter, str):
+                title = filter
+            elif filter is None:
+                title = None
+            else:
+                title = "Personnalized filter"
+
         return self._plotter.hist(
-            data, x, bins=bins, hist_range=hist_range, title=filter, **kwargs
+            data, x, bins=bins, hist_range=hist_range, title=title, **kwargs
         )
 
     def plot_mesh(
