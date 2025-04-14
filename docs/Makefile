@@ -6,7 +6,7 @@ SPHINXBUILD   ?= sphinx-build
 SPHINXAPIDOC  ?= sphinx-apidoc
 # Dirs
 SOURCEDIR     = .
-BUILDDIR      = ../../.simultipac-docs
+BUILDDIR      = _build/
 SRC_DIR       = ../src
 EXCLUDE_DIR   = ../src/simultipac/experimental/*
 APIDOC_DIR    = simultipac
