@@ -103,7 +103,7 @@ def test_missing_file(mocker: MagicMock) -> None:
     )
 
     with pytest.raises(MissingFileError):
-        factory._from_simulation_folder(Path("dummy_folder"))
+        factory.from_simulation_folder(Path("dummy_folder"))
 
 
 @pytest.mark.implementation
@@ -122,7 +122,7 @@ def test_from_simulation_folder(mocker: MagicMock) -> None:
     )
     e_acc = 42.0
     mocker.patch.object(factory, "_pop_e_acc", return_value=e_acc)
-    result = factory._from_simulation_folder(Path("dummy_folder"))
+    result = factory.from_simulation_folder(Path("dummy_folder"))
 
     assert result.id == 1
     assert result.e_acc == e_acc

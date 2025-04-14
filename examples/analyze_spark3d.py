@@ -1,4 +1,5 @@
-"""Define a MP study with SPArK3D results."""
+#!/usr/bin/env python3
+"""Define a MP study with SPARK3D results."""
 
 from pathlib import Path
 
@@ -14,7 +15,6 @@ if __name__ == "__main__":
     results: SimulationsResults = factory.create(
         filepath=Path("spark/time_results.csv"),
         e_acc=np.linspace(1e6, 3e7, 30),
-        freq=1.30145,
     )
     idx_to_plot = (0, 15, 25)
     axes = results.plot(
@@ -32,3 +32,6 @@ if __name__ == "__main__":
     )
     axes.set_yscale("log")
     results.plot(x="e_acc", y="alpha", idx_to_plot=range(0, 5))
+
+    # Sometimes necessary to show the plots, eg when running script from bash
+    results.show()

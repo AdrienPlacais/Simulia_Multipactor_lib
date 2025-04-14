@@ -317,7 +317,7 @@ class CSTResultsFactory(SimulationResultsFactory):
             mandatory.add(self._e_acc_file_mv_m)
         return mandatory
 
-    def _from_simulation_folder(
+    def from_simulation_folder(
         self,
         folderpath: Path,
         delimiter: str = "\t",
@@ -464,6 +464,6 @@ class CSTResultsFactory(SimulationResultsFactory):
         """
         folders = list(master_folder.iterdir())
         return [
-            self._from_simulation_folder(folder, delimiter=delimiter)
+            self.from_simulation_folder(folder, delimiter=delimiter)
             for folder in folders
         ]

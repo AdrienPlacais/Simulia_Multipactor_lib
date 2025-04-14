@@ -29,7 +29,7 @@ if __name__ == "__main__":
         stl_alpha=0.3,
     )
 
-    result: CSTResults = factory._from_simulation_folder(
+    result: CSTResults = factory.from_simulation_folder(
         # Dummy results that are not related to the actual ParticleMonitor data
         # we will use
         folderpath=Path("./cst/Export_Parametric/0307-5216540"),
@@ -57,4 +57,5 @@ if __name__ == "__main__":
             filter=lambda particle: particle.particle_id < 100,
         )
 
+    # Sometimes necessary to show the plots, eg when running script from bash
     result.show()

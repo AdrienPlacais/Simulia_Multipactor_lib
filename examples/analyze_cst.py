@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Perform a parametric MP study with CST results."""
 
 from pathlib import Path
@@ -34,3 +35,6 @@ if __name__ == "__main__":
         sort_by_parameter=("size_cell", "N_0"),
         axes=axes,
     )
+
+    # Sometimes necessary to show the plots, eg when running script from bash
+    results.show()
