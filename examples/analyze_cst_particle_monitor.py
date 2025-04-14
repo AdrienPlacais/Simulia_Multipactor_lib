@@ -6,9 +6,6 @@
     :class:`.SimulationsResults`, but a :class:`.SimulationResults`
     (``Simulation`` is singular).
 
-.. todo::
-    Currently, only showcases ideal UI. Some things are left to implement.
-
 """
 
 from pathlib import Path
@@ -39,7 +36,7 @@ if __name__ == "__main__":
         load_first_n_particles=10,
     )
 
-    histogram_examples = True
+    histogram_examples = False
     if histogram_examples:
         # The three types of histograms currently implemented, with some `hist`
         # method arguments examples
@@ -52,9 +49,9 @@ if __name__ == "__main__":
     if plots_3d_examples:
         result.plot_mesh()
         result.plot_trajectories(
-            emission_color=None,
+            emission_color="blue",
             collision_color="red",
-            filter=lambda particle: particle.particle_id < 100,
+            # filter=lambda particle: particle.particle_id in (10, 100, 1000),
         )
 
     # Sometimes necessary to show the plots, eg when running script from bash
