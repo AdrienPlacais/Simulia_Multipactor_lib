@@ -44,12 +44,9 @@ Compute distribution of the impact angles
 .. note::
    In contrary to the collision angle histogram, the collision and emission energy histograms are natively available in CST.
 
-Plot trajectories
------------------
+Interactive trajectory plots
+----------------------------
 
-.. image:: images/trajectories_1.png
-   :alt: Plot of some trajectories
+.. raw:: html
 
-.. image:: images/trajectories_2.png
-   :alt: Plot of some trajectories
-
+   <iframe src="../_static/k3d_tesla_example.html" width="100%" height="600px" style="border:none;"></iframe>
