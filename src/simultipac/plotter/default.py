@@ -12,7 +12,6 @@ import vedo.backends
 from matplotlib.axes import Axes
 from matplotlib.typing import ColorType
 from numpy.typing import NDArray
-from vedo.mesh import Points
 
 from simultipac.constants import markdown
 from simultipac.plotter.plotter import Plotter
@@ -34,14 +33,10 @@ class DefaultPlotter(Plotter):
         vedo_backend :
             The backend used by ``vedo``. The options that I tested were:
 
-              - ``"k3d"``: Needs ``k3d`` library. Would be the ideal setting.
-                But raises error in Jupyter Notebooks: ``TraitError: The
-                'point_size' trait of a Points instance expected a float or a
-                dict, not the float64 0.0.``
-              - ``"vtk"``: Interactive 3D plots. Does not appear in ``HTML``
-                (documentation).
-              - ``"2d"``: Non-interactive 2D plots. Does appear in ``HTML``
-                outputs.
+              - ``"k3d"``: Needs additional libraries (``pip install -e
+                .[k3d]``). A little bugged, see :meth:`._k3d_patch`.
+              - ``"vtk"``: Interactive 3D plots.
+              - ``"2d"``: Non-interactive 2D plots.
 
         """
         self._vedo_backend: VEDO_BACKENDS_t
@@ -306,7 +301,9 @@ class DefaultPlotter(Plotter):
 
         This method overrides the default ``k3d.objects.Points`` constructor.
         May be related to
-        [this issue](https://github.com/marcomusy/vedo/issues/1197).
+        `this issue <https://github.com/marcomusy/vedo/issues/1197>`_. This
+        quick patch seems to raise other errors... So for now, prefer
+        ``"vtk"``.
 
         """
         logging.info("Applying patch for k3d.")
