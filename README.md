@@ -56,6 +56,11 @@ Results of a parametric study on the number of seed electrons.
 ### Trajectory plots
 Here we represented in red the collision points and in green the emission points.
 Electrons without a green point are seed electrons.
+
+[Interactive trajectory plot](https://simultipac.readthedocs.io/en/latest/_static/k3d_tesla_example.html)
+
+![Interactive trajectory plot](https://simultipac.readthedocs.io/en/latest/_static/k3d_tesla_example.html)
+
 ![Plot of some trajectories](docs/manual/images/trajectories_1.png)
 
 ![Plot of some trajectories](docs/manual/images/trajectories_2.png)
