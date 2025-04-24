@@ -153,6 +153,7 @@ class SimulationResults(ABC):
             [np.inf, 10.0],
         ),
         initial_values: list[float] = [0.0, 0.0],
+        minimum_number_of_points: int = 5,
         **kwargs,
     ) -> None:
         """Fit exp growth factor.
@@ -180,6 +181,10 @@ class SimulationResults(ABC):
         initial_values: list[float], optional
             Initial values for the two variables: initial number of electrons,
             exp growth factor.
+        minimum_number_of_points :
+            Minimum number of fitting points; under this limit, a warning is
+            issued. For CST, should be at least 10 or 20. With SPARK3D, there
+            are two points per RF period so a value of 2 or 4 should be enough.
 
         """
         assert self._period is not None, "RF period is needed."
@@ -195,6 +200,7 @@ class SimulationResults(ABC):
             minimum_final_number_of_electrons=minimum_final_number_of_electrons,
             bounds=bounds,
             initial_values=initial_values,
+            minimum_number_of_points=minimum_number_of_points,
             **kwargs,
         )
 

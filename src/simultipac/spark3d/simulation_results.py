@@ -14,6 +14,62 @@ from simultipac.simulation_results.simulation_results import (
 class Spark3DResults(SimulationResults):
     """Store a single SPARK3D simulation results."""
 
+    def fit_alpha(
+        self,
+        fitting_periods: int,
+        running_mean: bool = False,
+        log_fit: bool = True,
+        minimum_final_number_of_electrons: int = 0,
+        bounds: tuple[list[float], list[float]] = (
+            [1e-10, -10.0],
+            [np.inf, 10.0],
+        ),
+        initial_values: list[float] = [0.0, 0.0],
+        minimum_number_of_points: int = 4,
+        **kwargs,
+    ) -> None:
+        """Fit exp growth factor.
+
+        Parameters
+        ----------
+        fitting_periods :
+            Number of periods over which the exp growth is searched. Longer is
+            better, but you do not want to start the fit before the exp growth
+            starts.
+        running_mean :
+            To tell if you want to average the number of particles over one
+            period. It is recommended with CST, but does not bring anything for
+            SPARK3D. The default is False.
+        log_fit :
+            To perform the fit on :func:`exp_growth_log` rather than
+            :func:`exp_growth`. The default is True, as it generally shows
+            better convergence.
+        minimum_final_number_of_electrons :
+            Under this final number of electrons, we do no bother finding the
+            exp growth factor and set all fit parameters to ``NaN``.
+        bounds :
+            Upper bound and lower bound for the two variables: initial number
+            of electrons, exp growth factor.
+        initial_values: list[float], optional
+            Initial values for the two variables: initial number of electrons,
+            exp growth factor.
+        minimum_number_of_points :
+            Minimum number of fitting points; under this limit, a warning is
+            issued. For CST, should be at least 10 or 20. With SPARK3D, there
+            are two points per RF period so a value of 2 or 4 should be enough.
+
+        """
+        return super().fit_alpha(
+            fitting_periods=fitting_periods,
+            running_mean=running_mean,
+            log_fit=log_fit,
+            minimum_final_number_of_electrons=minimum_final_number_of_electrons,
+            bounds=bounds,
+            initial_values=initial_values,
+            minimum_number_of_points=minimum_number_of_points,
+            **kwargs,
+        )
+
 
 class Spark3DResultsFactory(SimulationResultsFactory):
     """Define an object to easily instantiate :class:`.Spark3DResults`."""
