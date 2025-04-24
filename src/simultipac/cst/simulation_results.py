@@ -253,6 +253,7 @@ class CSTResults(SimulationResults):
         ),
         initial_values: list[float] = [0.0, 0.0],
         minimum_number_of_points: int = 20,
+        min_points_per_period: int = 5,
         **kwargs,
     ) -> None:
         """Fit exp growth factor.
@@ -284,6 +285,10 @@ class CSTResults(SimulationResults):
             Minimum number of fitting points; under this limit, a warning is
             issued. For CST, should be at least 10 or 20. With SPARK3D, there
             are two points per RF period so a value of 2 or 4 should be enough.
+        min_points_per_period :
+            Minimum number of points per period. In SPARK3D, we only have two
+            points per RF period so this number should be lower to avoid
+            unnecessary warnings.
 
         """
         return super().fit_alpha(
@@ -294,6 +299,7 @@ class CSTResults(SimulationResults):
             bounds=bounds,
             initial_values=initial_values,
             minimum_number_of_points=minimum_number_of_points,
+            min_points_per_period=min_points_per_period,
             **kwargs,
         )
 
