@@ -7,10 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # [2.1.x]
 
-Implement new functionalities:
+- Implement new functionalities:
+   - Instantiate `SimulationResult` with power instead of accelerating field.
+   - Surface distribution of TEEY.
+- Modernize and package the library.
 
-  - Instantiate `SimulationResult` with power instead of accelerating field.
-  - Surface distribution of TEEY.
+## [2.0.4] -- unreleased
+
+### Fixed
+
+- Set up different default values in the fitting process for SPARK3D and CST. Avoids unnecessary warnings with SPARK3D.
 
 ## [2.0.3] -- 2025-04-14
 
@@ -24,7 +30,6 @@ Implement new functionalities:
 
 - The package is available on PyPI and can be downloaded with: `pip install simultipac`.
 
-Modernize and package the library.
 
 ## [2.0.1] -- 2025-04-14
 
