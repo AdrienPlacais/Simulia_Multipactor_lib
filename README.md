@@ -68,3 +68,7 @@ Electrons without a green point are seed electrons.
 ![Plot of some trajectories](docs/manual/images/trajectories_2.png)
 
 [See also: interactive trajectory plot](https://simultipac.readthedocs.io/en/latest/_static/k3d_tesla_example.html)
+
+# TO DO
+
+- [ ] Avoid git warnigns
