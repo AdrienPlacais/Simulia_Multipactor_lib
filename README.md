@@ -8,7 +8,7 @@ In particular:
   - Distribution of emission energies.
   - Distribution of impact energies.
   - Distribution of impact angles.
-  - Visualise trajectories.
+  - Visualize trajectories.
 
 # Installation
 ## Requirements
@@ -16,9 +16,15 @@ You will need a recent version of Python (at least 3.12).
 
 ## Installation
 ### Simple installation
-```
-pip install simultipac
-```
+1. Create a dedicated Python environment, activate it.
+2. Run `pip install simultipac`
+
+> [!NOTE]
+> If you are completely new to Python and these instructions are unclear, check [this tutorial](https://python-guide.readthedocs.io/en/latest/).
+> In particular, you will want to:
+> 1. [Install Python](https://python-guide.readthedocs.io/en/latest/starting/installation/) 3.12 or higher.
+> 2. [Learn to use Python environments](https://python-guide.readthedocs.io/en/latest/dev/virtualenvs/), `pipenv` or `virtualenv`.
+> 3. [Install a Python IDE](https://python-guide.readthedocs.io/en/latest/dev/env/#ides) such as Spyder or VSCode.
 
 ### Building form source
 1. Navigate to the library installation folder.
