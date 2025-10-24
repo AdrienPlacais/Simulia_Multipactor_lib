@@ -90,9 +90,27 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         super().__init__(plotter=plotter, freq_ghz=freq_ghz, *args, **kwargs)
 
     def from_file(
-        self, filepath: Path, e_acc: np.ndarray, delimiter: str = " ", **kwargs
+        self,
+        filepath: Path,
+        e_acc: np.ndarray,
+        delimiter: str | None = None,
+        **kwargs,
     ) -> list[Spark3DResults]:
-        """Load a ``TXT`` or ``CSV`` file and create associated objects."""
+        """Load a ``TXT`` or ``CSV`` file and create associated objects.
+
+        Parameters
+        ----------
+        filepath :
+            Filepath to a ``TXT`` or ``CSV`` SPARK3D file. See
+            :meth:`Spark3DResultsFactory._from_csv` and
+            :meth:`Spark3DResultsFactory._from_txt` for information on how to
+            create/where to find these files.
+        e_acc :
+            The accelerating fields in :unit:`V/m`.
+        delimiter :
+            Column separator.
+
+        """
         filetype = filepath.suffix
         if filetype == ".txt":
             return self._from_txt(
@@ -105,7 +123,11 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         raise OSError(f"SPARK3D files must be CSV or TXT. I got {filetype = }")
 
     def _from_txt(
-        self, filepath: Path, e_acc: np.ndarray, delimiter: str = " ", **kwargs
+        self,
+        filepath: Path,
+        e_acc: np.ndarray,
+        delimiter: str | None = "\t",
+        **kwargs,
     ) -> list[Spark3DResults]:
         """
         Create several :class:`.Spark3DResults` from :file:`time_results.txt`.
@@ -113,15 +135,15 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         This file is generally produced with SPARK3D CLI. ``TXT`` file looks
         like this::
 
-            #Sim num    Power(W)    Time(s) Num.elec.
-            1           100         0       1000
-            1           100         1       1010
-            1           100         2       1020
-            ...         ...         ...     ...
-            2           50          0       1000
-            2           50          1       900
-            2           50          2       500
-            ...         ...         ...     ...
+        #Sim num	Power(W)	Time(s)	Num.elec.
+        1	100	0	1000
+        1	100	1	1010
+        1	100	2	1020
+        ...	...	...	...
+        2	50	0	1000
+        2	50	1	900
+        2	50	2	500
+        ...	...	...	...
 
         It is typically stored in ``<project_name>/Results/@Mod1/@ConfGr1/
         @EMConfGr1/@MuConf1/region1/signalCW 1/``.
@@ -137,9 +159,11 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         e_acc : np.ndarray
             Accelerating field values in :unit:`V/m`.
         delimiter : str, optional
-            Delimiter between columns. The default is a space.
+            Delimiter between columns.
 
         """
+        if delimiter is None:
+            delimiter = "\t"
         raw_data = np.loadtxt(filepath, delimiter=delimiter)
         raw_data[:, 2] *= 1e9
 
@@ -166,7 +190,11 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         return results
 
     def _from_csv(
-        self, filepath: Path, e_acc: np.ndarray, delimiter: str = " ", **kwargs
+        self,
+        filepath: Path,
+        e_acc: np.ndarray,
+        delimiter: str | None = " ",
+        **kwargs,
     ) -> list[Spark3DResults]:
         """
         Create several :class:`.Spark3DResults` from :file:`time_results.csv`.
@@ -192,14 +220,16 @@ class Spark3DResultsFactory(SimulationResultsFactory):
 
         Parameters
         ----------
-        filepath : Path
+        filepath :
             Path to the file to load.
-        e_acc : np.ndarray
+        e_acc :
             Accelerating field values in :unit:`V/m`.
-        delimiter : str, optional
-            Delimiter between columns. The default is a space.
+        delimiter :
+            Delimiter between columns.
 
         """
+        if delimiter is None:
+            delimiter = " "
         raw_data = np.loadtxt(filepath, delimiter=delimiter)
         time = raw_data[:, 0] * 1e9
         p_rms = None
