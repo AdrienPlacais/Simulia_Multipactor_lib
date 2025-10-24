@@ -8,15 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 # [2.1.x]
 
 - Implement new functionalities:
-   - Instantiate `SimulationResult` with power instead of accelerating field.
-   - Surface distribution of TEEY.
+  - Instantiate `SimulationResult` with power instead of accelerating field.
+  - Surface distribution of TEEY.
 - Modernize and package the library.
 
 ## [2.0.4] -- unreleased
 
+### Added
+
+- Better documentation on SPARK3D files.
+
 ### Fixed
 
-- Set up different default values in the fitting process for SPARK3D and CST. Avoids unnecessary warnings with SPARK3D.
+- Set up different default values in the fitting process for SPARK3D and CST.
+  Avoids unnecessary warnings with SPARK3D.
+- Different delimiters in SPARK3D `TXT` and `CSV` files is handled.
 
 ## [2.0.3] -- 2025-04-14
 
@@ -30,7 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The package is available on PyPI and can be downloaded with: `pip install simultipac`.
 
-
 ## [2.0.1] -- 2025-04-14
 
 ### Added
@@ -41,10 +46,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - UI is more natural. In particular:
-    - Simulation results are stored in appropriate `SimulationResults`; a bunch of `SimulationResults` are stored to `SimulationsResults` objects.
-    - Factories allow easy creation of these objects.
-    - They have `plot`, `hist` and `fit_alpha` methods.
-    - Same functionalities can be achieved with way less lines of code.
+  - Simulation results are stored in appropriate `SimulationResults`; a bunch of `SimulationResults` are stored to `SimulationsResults` objects.
+  - Factories allow easy creation of these objects.
+  - They have `plot`, `hist` and `fit_alpha` methods.
+  - Same functionalities can be achieved with way less lines of code.
 - Use `logging` module instead of color printed messages.
 
 ## [2.0.0] -- 2025-01-31
