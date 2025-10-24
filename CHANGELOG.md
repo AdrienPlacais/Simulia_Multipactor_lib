@@ -10,9 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement new functionalities:
   - Instantiate `SimulationResult` with power instead of accelerating field.
   - Surface distribution of TEEY.
-- Modernize and package the library.
 
-## [2.0.4] -- unreleased
+## [2.1.0]
 
 ### Added
 
