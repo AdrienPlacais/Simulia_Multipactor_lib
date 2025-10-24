@@ -128,6 +128,8 @@ def fit_alpha(
     minimum_final_number_of_electrons: int = 0,
     bounds: tuple[list[float], list[float]] = ([1e-10, -10.0], [np.inf, 10.0]),
     initial_values: list[float] = [0.0, 0.0],
+    minimum_number_of_points: int = 5,
+    min_points_per_period: int = 5,
     **kwargs,
 ) -> ExpGrowthParameters:
     """Perform the exponential growth fitting.
@@ -157,6 +159,14 @@ def fit_alpha(
     initial_values: list[float | None], optional
         Initial values for the two variables: initial number of electrons, exp
         growth factor.
+    minimum_number_of_points :
+        Minimum number of fitting points; under this limit, a warning is
+        issued. For CST, should be at least 10 or 20. With SPARK3D, there are
+        two points per RF period so a value of 2 or 4 should be enough.
+    min_points_per_period :
+        Minimum number of points per period. In SPARK3D, we only have two
+        points per RF period so this number should be lower to avoid
+        unnecessary warnings.
     kwargs :
         Other keyword arguments passed to the ``curve_fit`` function.
 
@@ -180,12 +190,20 @@ def fit_alpha(
         )
         return exp_growth_parameters
 
-    fit_args = _to_fit(time, population, fitting_range, log_fit=log_fit)
+    fit_args = _to_fit(
+        time,
+        population,
+        fitting_range,
+        log_fit=log_fit,
+        minimum_number_of_points=minimum_number_of_points,
+    )
     fit_func, fit_time, fit_pop = fit_args
     exp_growth_parameters["t_0"] = float(fit_time[0])
 
     if running_mean:
-        width = _n_points_in_a_period(fit_time, period)
+        width = _n_points_in_a_period(
+            fit_time, period, min_points_per_period=min_points_per_period
+        )
         population = _smoothen(fit_pop, width)
 
     bounds, initial_values = _design_space(
@@ -217,6 +235,7 @@ def _to_fit(
     population: np.ndarray,
     fitting_range: float,
     log_fit: bool = True,
+    minimum_number_of_points: int = 5,
 ) -> tuple[Callable, np.ndarray, np.ndarray]:
     """Determine the ``x``, ``f(x)`` arrays as well as ``f`` for the fit.
 
@@ -233,6 +252,10 @@ def _to_fit(
         To perform the fit on :func:`exp_growth_log` rather than
         :func:`exp_growth`. The default is True, as it generally shows better
         convergence.
+    minimum_number_of_points :
+        Minimum number of fitting points; under this limit, a warning is
+        issued. For CST, should be at least 10 or 20. With SPARK3D, there are
+        two points per RF period so a value of 2 or 4 should be enough.
 
     Returns
     -------
@@ -245,7 +268,12 @@ def _to_fit(
 
     """
 
-    indexes = _indexes_for_fit(time, population, fitting_range)
+    indexes = _indexes_for_fit(
+        time,
+        population,
+        fitting_range,
+        minimum_number_of_points=minimum_number_of_points,
+    )
 
     fit_time = time[indexes]
     t_0 = fit_time[0]

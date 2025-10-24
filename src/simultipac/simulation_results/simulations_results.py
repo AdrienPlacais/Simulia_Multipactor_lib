@@ -632,12 +632,15 @@ class SimulationsResultsFactory:
         plotter :
             An object to plot data.
         filepath :
-            Filepath to a ``TXT`` or ``CSV`` file for SPARK3D.
+            Filepath to a ``TXT`` or ``CSV`` file for SPARK3D. See
+            :meth:`Spark3DResultsFactory._from_csv` and
+            :meth:`Spark3DResultsFactory._from_txt` for information on how to
+            create/where to find these files.
         master_folder :
             Filepath to the folder holding all the ``mmdd-xxxxxxx`` folders for
             CST.
         e_acc :
-            The accelerating fields, used by SPARK3D.
+            The accelerating fields in :unit:`V/m`, used by SPARK3D.
         kwargs :
             Keyword arguments passed to the appropriate subclass of
             :class:`.SimulationResultsFactory`.
@@ -668,6 +671,7 @@ class SimulationsResultsFactory:
         filepath: Path | None = None,
         master_folder: Path | None = None,
         e_acc: np.ndarray | None = None,
+        delimiter: str | None = None,
         **kwargs,
     ) -> Sequence[SimulationResults]:
         """Create several individual :class:`.SimulationResults`.
@@ -683,6 +687,8 @@ class SimulationsResultsFactory:
             CST.
         e_acc :
             The accelerating fields, used by SPARK3D.
+        delimiter :
+            Column delimiter. Used by SPARK3D.
         kwargs :
             Keyword arguments passed to the appropriate subclass of
             :class:`.SimulationResultsFactory`.
@@ -720,5 +726,7 @@ class SimulationsResultsFactory:
             factory = Spark3DResultsFactory(
                 plotter=plotter, freq_ghz=self._freq_ghz, **kwargs
             )
-            return factory.from_file(filepath, e_acc=e_acc)
+            return factory.from_file(
+                filepath, e_acc=e_acc, delimiter=delimiter
+            )
         raise NotImplementedError(f"The tool {self._tool} is not implemented.")
