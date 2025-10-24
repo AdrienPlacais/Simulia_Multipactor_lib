@@ -632,12 +632,15 @@ class SimulationsResultsFactory:
         plotter :
             An object to plot data.
         filepath :
-            Filepath to a ``TXT`` or ``CSV`` file for SPARK3D.
+            Filepath to a ``TXT`` or ``CSV`` file for SPARK3D. See
+            :meth:`Spark3DResultsFactory._from_csv` and
+            :meth:`Spark3DResultsFactory._from_txt` for information on how to
+            create/where to find these files.
         master_folder :
             Filepath to the folder holding all the ``mmdd-xxxxxxx`` folders for
             CST.
         e_acc :
-            The accelerating fields, used by SPARK3D.
+            The accelerating fields in :unit:`V/m`, used by SPARK3D.
         kwargs :
             Keyword arguments passed to the appropriate subclass of
             :class:`.SimulationResultsFactory`.

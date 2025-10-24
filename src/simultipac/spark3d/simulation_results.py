@@ -110,10 +110,10 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         """
         Create several :class:`.Spark3DResults` from :file:`time_results.txt`.
 
-        These file are generally produced with SPARK3D CLI. ``TXT`` files look
+        This file is generally produced with SPARK3D CLI. ``TXT`` file looks
         like this::
 
-            #Sim num	Power(W)	Time(s)	Num.elec.
+            #Sim num    Power(W)    Time(s) Num.elec.
             1           100         0       1000
             1           100         1       1010
             1           100         2       1020
@@ -122,6 +122,9 @@ class Spark3DResultsFactory(SimulationResultsFactory):
             2           50          1       900
             2           50          2       500
             ...         ...         ...     ...
+
+        It is typically stored in ``<project_name>/Results/@Mod1/@ConfGr1/
+        @EMConfGr1/@MuConf1/region1/signalCW 1/``.
 
         .. todo::
             Handle malformed files. In particular what happens if simulation
@@ -169,7 +172,7 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         Create several :class:`.Spark3DResults` from :file:`time_results.csv`.
 
         Right-click on ``Multipactor results``, ``Export to CSV``.
-        These file are manually produed by the user. ``CSV`` files look like
+        These files are manually produced by the user. ``CSV`` files look like
         this::
 
             0      1000    1000    1000    1000
