@@ -1,34 +1,35 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
-title: "Simulia Multipactor Library"
-abstract: A library dedicated to studying multipactor from Simulia suite simulation tools.
-version: 2.0.3
-date-released: '2025-04-14'
+message: If you use this software, please cite it as below.
+title: Simulia Multipactor Library
+abstract: A library dedicated to studying multipactor from Simulia suite simulation
+  tools.
+version: 2.1.0
+date-released: '2025-10-24'
 authors:
-  - family-names: Plaçais
-    given-names: Adrien
-    orcid: "https://orcid.org/0000-0001-6840-1685"
+- family-names: Plaçais
+  given-names: Adrien
+  orcid: https://orcid.org/0000-0001-6840-1685
 license: MIT
-repository-code: "https://github.com/AdrienPlacais/simulia_multipactor_lib"
+repository-code: https://github.com/AdrienPlacais/simulia_multipactor_lib
 preferred-citation:
   type: proceedings
   authors:
-   - family-names: Plaçais
-     given-names: Adrien
-   - family-names: Bouly
-     given-names: Frédéric
-   - family-names: Faus-Golfe
-     given-names: Angeles
-   - family-names: "Gómez-Martínez"
-     given-names: Yolanda
-   - family-names: "Gorgi Zadeh"
-     given-names: Shahnam
-   - family-names: Meyer
-     given-names: Manon
-   - family-names: Peauger
-     given-names: Franck
-  doi: "10.5170/CERN-1989-004"
-  title: "Multipactor Studies for the FCC-ee Superconducting SWELL cavities"
-  date-released: "2023-05-10"
-  journal: "Proc. 14th Int. Particle Acc. Conf. (IPAC'23)"
+  - family-names: Plaçais
+    given-names: Adrien
+  - family-names: Bouly
+    given-names: Frédéric
+  - family-names: Faus-Golfe
+    given-names: Angeles
+  - family-names: Gómez-Martínez
+    given-names: Yolanda
+  - family-names: Gorgi Zadeh
+    given-names: Shahnam
+  - family-names: Meyer
+    given-names: Manon
+  - family-names: Peauger
+    given-names: Franck
+  doi: 10.5170/CERN-1989-004
+  title: Multipactor Studies for the FCC-ee Superconducting SWELL cavities
+  date-released: '2023-05-10'
+  journal: Proc. 14th Int. Particle Acc. Conf. (IPAC'23)
   year: 2023
