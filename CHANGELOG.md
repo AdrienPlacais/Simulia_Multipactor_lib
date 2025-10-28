@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Instantiate `SimulationResult` with power instead of accelerating field.
   - Surface distribution of TEEY.
 
+## [2.1.1] -- unreleased
+
+### Added
+
+- More explicit warning when fitting range exceeds simulation time.
+
 ## [2.1.0] -- 2025-10-24
 
 ### Added
