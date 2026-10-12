@@ -12,6 +12,7 @@ https://uran198.github.io/en/python/2016/07/12/colorful-python-logging.html
 https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 
 """
+
 import logging
 import subprocess
 import sys

@@ -228,7 +228,7 @@ class SimulationsResults:
 
         """
         if to_plot is not None:
-            return [r for r in to_plot]
+            return [*to_plot]
         if id_to_plot is not None:
             return [self.get_by_id(id) for id in id_to_plot]
         if idx_to_plot is None:
