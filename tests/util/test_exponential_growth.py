@@ -28,7 +28,7 @@ def test_indexes_for_fit_no_multipactor() -> None:
         time, population, fitting_range=5.0, minimum_number_of_points=0
     )
 
-    assert [i for i in indexes] == [1, 2, 3, 4, 5, 6]
+    assert [*indexes] == [1, 2, 3, 4, 5, 6]
 
 
 def test_indexes_for_fit_with_multipactor() -> None:
@@ -41,7 +41,7 @@ def test_indexes_for_fit_with_multipactor() -> None:
         time, population, fitting_range=4.0, minimum_number_of_points=0
     )
 
-    assert [i for i in indexes] == [6, 7, 8, 9, 10]
+    assert [*indexes] == [6, 7, 8, 9, 10]
 
 
 def test_indexes_for_fit_fitting_larger_than_simulation_warning(
@@ -57,7 +57,7 @@ def test_indexes_for_fit_fitting_larger_than_simulation_warning(
         time, population, fitting_range=5.0, minimum_number_of_points=0
     )
 
-    assert [i for i in indexes] == [0, 1, 2]
+    assert [*indexes] == [0, 1, 2]
     mock_warning.assert_called_once()
 
 
@@ -74,7 +74,7 @@ def test_indexes_for_fit_fitting_not_enough_points_warning(
         time, population, fitting_range=2.0, minimum_number_of_points=5
     )
 
-    assert [i for i in indexes] == [0, 1, 2]
+    assert [*indexes] == [0, 1, 2]
     mock_warning.assert_called_once()
 
 
