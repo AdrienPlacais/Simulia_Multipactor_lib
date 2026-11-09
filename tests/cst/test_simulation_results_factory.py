@@ -92,8 +92,7 @@ def test_get_e_acc_not_found() -> None:
         factory._pop_e_acc(mock_raw_results, Path("dummy"))
 
 
-@pytest.mark.implementation
-def test_missing_file(mocker: MagicMock) -> None:
+def test_missing_file(mocker: MagicMock, tmp_path: Path) -> None:
     """Test that MissingFileError is raised when a mandatory file is missing."""
     factory = CSTResultsFactory()
     mocker.patch.multiple(
@@ -103,11 +102,10 @@ def test_missing_file(mocker: MagicMock) -> None:
     )
 
     with pytest.raises(MissingFileError):
-        factory.from_simulation_folder(Path("dummy_folder"))
+        factory.from_simulation_folder(tmp_path)
 
 
-@pytest.mark.implementation
-def test_from_simulation_folder(mocker: MagicMock) -> None:
+def test_from_simulation_folder(mocker: MagicMock, tmp_path: Path) -> None:
     """Test the _from_simulation_folder method of :class:`.CSTResultsFactory`."""
     factory = CSTResultsFactory()
     mock_raw_results = {
@@ -122,7 +120,7 @@ def test_from_simulation_folder(mocker: MagicMock) -> None:
     )
     e_acc = 42.0
     mocker.patch.object(factory, "_pop_e_acc", return_value=e_acc)
-    result = factory.from_simulation_folder(Path("dummy_folder"))
+    result = factory.from_simulation_folder(tmp_path)
 
     assert result.id == 1
     assert result.e_acc == e_acc
