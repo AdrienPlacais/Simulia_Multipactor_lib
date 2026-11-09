@@ -38,7 +38,12 @@ from simultipac.simulation_results.simulation_results import (
     SimulationResults,
     SimulationResultsFactory,
 )
-from simultipac.types import PARTICLE_0D_t, PARTICLE_3D_t
+from simultipac.types import (
+    E_ACC_TO_V_PER_M,
+    E_ACC_UNIT_t,
+    PARTICLE_0D_t,
+    PARTICLE_3D_t,
+)
 
 
 class MissingFileError(Exception):
@@ -321,6 +326,8 @@ class CSTResultsFactory(SimulationResultsFactory):
             "accelerating_field",
         ),
         e_acc_file_mv_m: str = "E_acc in MV per m.txt",
+        e_acc_unit: E_ACC_UNIT_t = "V/m",
+        e_acc_file_unit: E_ACC_UNIT_t = "MV/m",
         p_rms_file: str | None = None,
         stl_path: Path | str | None = None,
         stl_alpha: float | None = None,
@@ -346,6 +353,11 @@ class CSTResultsFactory(SimulationResultsFactory):
             Name of the file where the value of the accelerating field in
             :unit:`MV/m` is written. This is a fallback, we prefer getting
             accelerating field from the :file:`Parameters.txt` file.
+        e_acc_unit :
+            Unit of the accelerating field in :file:`Parameters.txt`.
+        e_acc_file_unit :
+            Unit of the accelerating field in the ``e_acc_file_mv_m`` file.
+            Change it if the file name does not reflect its actual content.
         p_rms_file :
             Name of the file where the value of the RMS power in W is written.
             If not provided, we do not load RMS power.
@@ -361,6 +373,8 @@ class CSTResultsFactory(SimulationResultsFactory):
             plotter = DefaultPlotter()
         self._e_acc_parameter = e_acc_parameter
         self._e_acc_file_mv_m = e_acc_file_mv_m
+        self._e_acc_unit = e_acc_unit
+        self._e_acc_file_unit = e_acc_file_unit
         self._p_rms_file = p_rms_file
         super().__init__(
             *args,
@@ -494,16 +508,16 @@ class CSTResultsFactory(SimulationResultsFactory):
                     f"{folder}: took accelerating field from {name} in "
                     f"{self._parameters_file}."
                 )
-                return e_acc
+                return e_acc * E_ACC_TO_V_PER_M[self._e_acc_unit]
 
         if self._e_acc_file_mv_m is not None:
             e_acc = raw_results.pop(no_extension(self._e_acc_file_mv_m), None)
             if e_acc is not None:
                 logging.debug(
-                    f"{folder}: took accelerating field from "
-                    f"{self._e_acc_file_mv_m} file. Multiplied it by 1e6."
+                    f"{self._e_acc_file_mv_m} file, interpreted as "
+                    f"{self._e_acc_file_unit}."
                 )
-                return e_acc * 1e-6
+                return e_acc * E_ACC_TO_V_PER_M[self._e_acc_file_unit]
 
         raise ValueError(
             f"Could not find accelerating field in {folder}. Tried to look for"

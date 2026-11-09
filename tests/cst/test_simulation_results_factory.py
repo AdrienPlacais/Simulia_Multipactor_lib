@@ -10,6 +10,7 @@ from simultipac.cst.simulation_results import (
     CSTResultsFactory,
     MissingFileError,
 )
+from simultipac.types import E_ACC_UNIT_t
 
 
 def test_mandatory_files() -> None:
@@ -62,16 +63,46 @@ def test_get_e_acc_from_file(mocker: MagicMock) -> None:
     )
     factory._parameters_file = "dummy_param.txt"
 
-    e_acc = 42.0
     mock_raw_results = {
         "a": 3.0,
-        "dummy_file": e_acc * 1e6,
+        "dummy_file": 42.0,
         "dummy_param": {"b": 5.0},
         "c": -1.0,
     }
     mock_debug = mocker.patch("logging.debug")
-    assert factory._pop_e_acc(mock_raw_results, Path("dummy")) == e_acc
+    assert factory._pop_e_acc(
+        mock_raw_results, Path("dummy")
+    ) == pytest.approx(42e6)
     mock_debug.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "unit,factor", [("V/m", 1.0), ("kV/m", 1e3), ("MV/m", 1e6)]
+)
+def test_get_e_acc_from_parameters_unit(
+    unit: E_ACC_UNIT_t, factor: float
+) -> None:
+    """Test that the unit of :file:`Parameters.txt` is taken into account."""
+    factory = CSTResultsFactory(
+        e_acc_parameter=("dummy_acc",), e_acc_unit=unit
+    )
+    factory._parameters_file = "dummy_param.txt"
+    mock_raw_results = {"dummy_param": {"dummy_acc": 2.0}}
+    returned = factory._pop_e_acc(mock_raw_results, Path("dummy"))
+    assert returned == pytest.approx(2.0 * factor)
+
+
+def test_get_e_acc_from_file_unit() -> None:
+    """Test that the unit of the dedicated file is taken into account."""
+    factory = CSTResultsFactory(
+        e_acc_parameter=(),
+        e_acc_file_mv_m="dummy_file.txt",
+        e_acc_file_unit="kV/m",
+    )
+    factory._parameters_file = "dummy_param.txt"
+    mock_raw_results = {"dummy_file": 2.0, "dummy_param": {}}
+    returned = factory._pop_e_acc(mock_raw_results, Path("dummy"))
+    assert returned == pytest.approx(2e3)
 
 
 def test_get_e_acc_not_found() -> None:
