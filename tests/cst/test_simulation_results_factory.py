@@ -157,3 +157,19 @@ def test_from_simulation_folder(mocker: MagicMock, tmp_path: Path) -> None:
     assert result.e_acc == e_acc
     assert np.array_equal(result.time, [0, 1, 2])
     assert np.array_equal(result.population, [1000, 900, 500])
+
+
+def test_get_e_acc_expression_warns_and_falls_back(mocker: MagicMock) -> None:
+    """Test that an unevaluated expression is skipped with a warning."""
+    factory = CSTResultsFactory(
+        e_acc_parameter=("dummy_acc",), e_acc_file_mv_m="dummy_file.txt"
+    )
+    factory._parameters_file = "dummy_param.txt"
+    mock_raw_results = {
+        "dummy_file": 3.0,
+        "dummy_param": {"dummy_acc": "2*3"},
+    }
+    mock_warning = mocker.patch("logging.warning")
+    returned = factory._pop_e_acc(mock_raw_results, Path("dummy"))
+    assert returned == pytest.approx(3e6)
+    mock_warning.assert_called_once()

@@ -503,12 +503,20 @@ class CSTResultsFactory(SimulationResultsFactory):
         parameters = raw_results[no_extension(self._parameters_file)]
         for name in self._e_acc_parameter:
             e_acc = parameters.pop(name, None)
-            if e_acc is not None:
-                logging.debug(
-                    f"{folder}: took accelerating field from {name} in "
-                    f"{self._parameters_file}."
+            if e_acc is None:
+                continue
+            if isinstance(e_acc, str):
+                logging.warning(
+                    f"{folder}: {name} in {self._parameters_file} is an "
+                    f"expression ({e_acc}); expressions are not supported. "
+                    f"Store its value in {self._e_acc_file_mv_m} instead."
                 )
-                return e_acc * E_ACC_TO_V_PER_M[self._e_acc_unit]
+                continue
+            logging.debug(
+                f"{folder}: took accelerating field from {name} in "
+                f"{self._parameters_file}."
+            )
+            return e_acc * E_ACC_TO_V_PER_M[self._e_acc_unit]
 
         if self._e_acc_file_mv_m is not None:
             e_acc = raw_results.pop(no_extension(self._e_acc_file_mv_m), None)
