@@ -31,6 +31,15 @@ class NonExistingIDError(Exception):
     """Raise when asking a non-existent ID."""
 
 
+def _drive_level_key(result: SimulationResults) -> tuple[int, float]:
+    """Sort by power, then by accelerating field, then the rest."""
+    if result.p_rms is not None:
+        return 0, result.p_rms
+    if result.e_acc is not None:
+        return 1, result.e_acc
+    return 2, 0.0
+
+
 class SimulationsResults:
     """Store multiple :class:`.SimulationResults` with retrieval methods.
 
@@ -56,7 +65,8 @@ class SimulationsResults:
         """
         self._results_by_id: dict[int, SimulationResults] = {}
 
-        #: :class:`.SimulationResults` sorted by increasing accelerating field
+        #: :class:`.SimulationResults` sorted by increasing power, else
+        #: accelerating field
         self._results: list[SimulationResults] = []
         for x in simulations_results:
             self._add(x)
@@ -82,7 +92,7 @@ class SimulationsResults:
             )
 
         self._results_by_id[result.id] = result
-        bisect.insort(self._results, result, key=lambda r: r.e_acc)
+        bisect.insort(self._results, result, key=_drive_level_key)
 
     def get_by_id(self, result_id: int) -> SimulationResults:
         """Retrieve a :class:`SimulationResults` by its ID."""
@@ -93,7 +103,7 @@ class SimulationsResults:
 
     @property
     def to_list(self) -> list[SimulationResults]:
-        """Retrieve all results sorted by ``acc_field``."""
+        """Retrieve all results sorted by power, else by accelerating field."""
         return self._results
 
     def plot(

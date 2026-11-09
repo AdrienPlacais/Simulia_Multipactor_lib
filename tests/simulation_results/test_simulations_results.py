@@ -336,3 +336,37 @@ def test_format_for_save_1d_merge() -> None:
         ],
     )
     pd.testing.assert_frame_equal(expected, returned)
+
+
+def test_p_rms_sorting() -> None:
+    """Check that results are sorted by increasing ``p_rms``."""
+    time = np.linspace(0, 10, 11)
+    results = [
+        SimulationResults(id=i, p_rms=p, time=time, population=time)
+        for i, p in enumerate((3.0, 1.0, 2.0))
+    ]
+    expected = [results[1], results[2], results[0]]
+    assert SimulationsResults(results).to_list == expected
+
+
+def test_sorting_without_drive_level_is_last() -> None:
+    """Check that results without ``p_rms``/``e_acc`` come last, in order."""
+    time = np.linspace(0, 10, 11)
+    none_a = SimulationResults(id=0, time=time, population=time)
+    p_2 = SimulationResults(id=1, p_rms=2.0, time=time, population=time)
+    none_b = SimulationResults(id=2, time=time, population=time)
+    p_1 = SimulationResults(id=3, p_rms=1.0, time=time, population=time)
+    returned = SimulationsResults([none_a, p_2, none_b, p_1]).to_list
+    assert returned == [p_1, p_2, none_a, none_b]
+
+
+def test_p_rms_takes_precedence_over_e_acc_in_sorting() -> None:
+    """Check that ``p_rms`` is the sorting key when both are given."""
+    time = np.linspace(0, 10, 11)
+    r_1 = SimulationResults(
+        id=1, e_acc=1.0, p_rms=20.0, time=time, population=time
+    )
+    r_2 = SimulationResults(
+        id=2, e_acc=2.0, p_rms=10.0, time=time, population=time
+    )
+    assert SimulationsResults([r_1, r_2]).to_list == [r_2, r_1]

@@ -56,9 +56,9 @@ class CSTResults(SimulationResults):
     def __init__(
         self,
         id: int,
-        e_acc: float,
         time: np.ndarray,
         population: np.ndarray,
+        e_acc: float | None = None,
         p_rms: float | None = None,
         plotter: Plotter | None = None,
         trim_trailing: bool = False,
@@ -74,14 +74,16 @@ class CSTResults(SimulationResults):
         ----------
         id :
             Unique simulation identifier.
-        e_acc :
-            Accelerating field in :unit:`V/m`.
         time :
             Time in :unit:`ns`.
         population :
             Evolution of population with time. Same shape as ``time``.
+        e_acc :
+            Accelerating field in :unit:`V/m`. Generally, only one of ``e_acc``
+            and ``p_rms`` is provided.
         p_rms :
-            RMS power in :unit:`W`.
+            RMS power in :unit:`W`. Takes precedence over ``e_acc`` to sort
+            and display results.
         plotter :
             An object allowing to plot data.
         trim_trailing :
