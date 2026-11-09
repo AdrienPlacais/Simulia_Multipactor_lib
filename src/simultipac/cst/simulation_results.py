@@ -346,7 +346,7 @@ class CSTResultsFactory(SimulationResultsFactory):
             Name of the file where the value of the accelerating field in
             :unit:`MV/m` is written. This is a fallback, we prefer getting
             accelerating field from the :file:`Parameters.txt` file.
-        e_acc_file :
+        p_rms_file :
             Name of the file where the value of the RMS power in W is written.
             If not provided, we do not load RMS power.
         stl_path :
@@ -362,7 +362,7 @@ class CSTResultsFactory(SimulationResultsFactory):
         self._e_acc_parameter = e_acc_parameter
         self._e_acc_file_mv_m = e_acc_file_mv_m
         self._p_rms_file = p_rms_file
-        return super().__init__(
+        super().__init__(
             *args,
             plotter=plotter,
             freq_ghz=freq_ghz,
@@ -501,7 +501,7 @@ class CSTResultsFactory(SimulationResultsFactory):
             if e_acc is not None:
                 logging.debug(
                     f"{folder}: took accelerating field from "
-                    "{self._e_acc_file_mv_m} file. Multiplied it by 1e6."
+                    f"{self._e_acc_file_mv_m} file. Multiplied it by 1e6."
                 )
                 return e_acc * 1e-6
 
