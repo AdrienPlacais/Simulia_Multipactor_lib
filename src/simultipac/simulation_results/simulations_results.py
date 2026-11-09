@@ -2,11 +2,11 @@
 
 import bisect
 import logging
-from collections.abc import Collection, Generator, Iterable, Sequence
+from collections.abc import Collection, Generator, Iterable, Iterator, Sequence
 from functools import reduce
 from itertools import product
 from pathlib import Path
-from typing import Any, Iterator, Literal
+from typing import Any, Literal
 
 import numpy as np
 import pandas as pd
@@ -444,7 +444,6 @@ class SimulationsResults:
 
         df.to_csv(filepath, sep=sep, **kwargs)
         logging.info(f"File saved to {filepath.absolute()}")
-        return
 
     def _format_for_save(
         self,
@@ -719,10 +718,9 @@ class SimulationsResultsFactory:
                 filepath is not None
             ), "You must provide the path to the SPARK3D file results."
             assert filepath.is_file(), f"{filepath = } must exist"
-            assert isinstance(e_acc, np.ndarray), (
-                "You must provide an array of accelerating fields. You gave "
-                f"{e_acc = }"
-            )
+            assert isinstance(
+                e_acc, np.ndarray
+            ), f"You must provide an array of accelerating fields. You gave {e_acc = }"
             factory = Spark3DResultsFactory(
                 plotter=plotter, freq_ghz=self._freq_ghz, **kwargs
             )
