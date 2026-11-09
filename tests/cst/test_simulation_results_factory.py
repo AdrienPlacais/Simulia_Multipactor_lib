@@ -10,7 +10,7 @@ from simultipac.cst.simulation_results import (
     CSTResultsFactory,
     MissingFileError,
 )
-from simultipac.types import E_ACC_UNIT_t
+from simultipac.types import E_ACC_UNIT_t, P_RMS_UNIT_t
 
 
 def test_mandatory_files() -> None:
@@ -105,22 +105,19 @@ def test_get_e_acc_from_file_unit() -> None:
     assert returned == pytest.approx(2e3)
 
 
-def test_get_e_acc_not_found() -> None:
-    """Test that error is raised when e_acc could not be found."""
+def test_get_e_acc_not_found(mocker: MagicMock) -> None:
+    """Test that ``None`` is returned when e_acc could not be found."""
     factory = CSTResultsFactory(
         e_acc_parameter=("key_1", "key_2"), e_acc_file_mv_m="dummy_file.txt"
     )
     factory._parameters_file = "dummy_param.txt"
-
-    e_acc = 42.0
     mock_raw_results = {
-        "a": 3.0,
-        "dummy_file_with_typo": e_acc,
-        "dummy_param": {"key_1_with_typo": e_acc},
-        "c": -1.0,
+        "dummy_file_with_typo": 42.0,
+        "dummy_param": {"key_1_with_typo": 42.0},
     }
-    with pytest.raises(ValueError):
-        factory._pop_e_acc(mock_raw_results, Path("dummy"))
+    mock_debug = mocker.patch("logging.debug")
+    assert factory._pop_e_acc(mock_raw_results, Path("dummy")) is None
+    mock_debug.assert_called_once()
 
 
 def test_missing_file(mocker: MagicMock, tmp_path: Path) -> None:
@@ -172,4 +169,52 @@ def test_get_e_acc_expression_warns_and_falls_back(mocker: MagicMock) -> None:
     mock_warning = mocker.patch("logging.warning")
     returned = factory._pop_e_acc(mock_raw_results, Path("dummy"))
     assert returned == pytest.approx(3e6)
+    mock_warning.assert_called_once()
+
+
+def test_get_p_rms_default_name() -> None:
+    """Test that power is found under one of the default names."""
+    factory = CSTResultsFactory()
+    mock_raw_results = {"Parameters": {"P": 3.0}}
+    assert factory._pop_p_rms(mock_raw_results, Path("dummy")) == 3.0
+
+
+@pytest.mark.parametrize("unit,factor", [("W", 1.0), ("kW", 1e3), ("MW", 1e6)])
+def test_get_p_rms_from_parameters_unit(
+    unit: P_RMS_UNIT_t, factor: float
+) -> None:
+    """Test that the unit of :file:`Parameters.txt` is taken into account."""
+    factory = CSTResultsFactory(p_rms_parameter=("dummy_p",), p_rms_unit=unit)
+    factory._parameters_file = "dummy_param.txt"
+    mock_raw_results = {"dummy_param": {"dummy_p": 2.0}}
+    returned = factory._pop_p_rms(mock_raw_results, Path("dummy"))
+    assert returned == pytest.approx(2.0 * factor)
+
+
+def test_get_p_rms_from_file_unit() -> None:
+    """Test that power is found in a dedicated file, with its unit."""
+    factory = CSTResultsFactory(
+        p_rms_parameter=(), p_rms_file="dummy_file.txt", p_rms_file_unit="kW"
+    )
+    factory._parameters_file = "dummy_param.txt"
+    mock_raw_results = {"dummy_file": 2.0, "dummy_param": {}}
+    returned = factory._pop_p_rms(mock_raw_results, Path("dummy"))
+    assert returned == pytest.approx(2e3)
+
+
+def test_get_p_rms_not_found() -> None:
+    """Test that ``None`` is returned when power could not be found."""
+    factory = CSTResultsFactory(p_rms_parameter=("key",))
+    factory._parameters_file = "dummy_param.txt"
+    mock_raw_results = {"dummy_param": {}}
+    assert factory._pop_p_rms(mock_raw_results, Path("dummy")) is None
+
+
+def test_get_p_rms_expression_warns(mocker: MagicMock) -> None:
+    """Test that an unevaluated expression is skipped with a warning."""
+    factory = CSTResultsFactory(p_rms_parameter=("dummy_p",))
+    factory._parameters_file = "dummy_param.txt"
+    mock_raw_results = {"dummy_param": {"dummy_p": "2*3"}}
+    mock_warning = mocker.patch("logging.warning")
+    assert factory._pop_p_rms(mock_raw_results, Path("dummy")) is None
     mock_warning.assert_called_once()
