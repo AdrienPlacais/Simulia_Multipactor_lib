@@ -117,7 +117,7 @@ def test_to_pandas() -> None:
     returned = SimulationsResults(results)._to_pandas("id", "e_acc")
     expected = pd.DataFrame(
         {
-            "id": [i for i in range(n_points)],
+            "id": [*range(n_points)],
             "e_acc": [i**2 for i in range(n_points)],
         }
     )
@@ -139,7 +139,7 @@ def test_to_pandas_with_exp_growth_params() -> None:
     returned = SimulationsResults(results)._to_pandas("id", "alpha")
     expected = pd.DataFrame(
         {
-            "id": [i for i in range(n_points)],
+            "id": [*range(n_points)],
             "alpha": [i**2 for i in range(n_points)],
         }
     )
