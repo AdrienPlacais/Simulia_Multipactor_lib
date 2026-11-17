@@ -93,3 +93,50 @@ def test_spark3d_results_factory_from_csv_with_trim(mocker: MagicMock) -> None:
     assert results[1].e_acc == 2e6
     assert np.array_equal(results[1].time, [0, 1])
     assert np.array_equal(results[1].population, [1000, 900])
+
+
+def test_spark3d_results_factory_from_txt_without_e_acc(
+    mocker: MagicMock,
+) -> None:
+    """Test ``TXT`` loading without accelerating field."""
+    factory = Spark3DResultsFactory()
+    mock_data = np.array(
+        [
+            [3, 100, 0, 1000],
+            [3, 100, 1, 1010],
+            [7, 50, 0, 1000],
+            [7, 50, 1, 900],
+        ],
+        dtype=np.float64,
+    )
+    mocker.patch("numpy.loadtxt", return_value=mock_data)
+    mock_warning = mocker.patch("logging.warning")
+
+    results = factory._from_txt(Path("dummy.txt"), delimiter=" ")
+
+    assert [r.id for r in results] == [3, 7]
+    assert [r.p_rms for r in results] == [100.0, 50.0]
+    assert all(r.e_acc is None for r in results)
+    assert np.array_equal(results[1].population, [1000, 900])
+    mock_warning.assert_not_called()
+
+
+def test_spark3d_results_factory_from_csv_without_e_acc(
+    mocker: MagicMock,
+) -> None:
+    """Test ``CSV`` loading without accelerating field."""
+    factory = Spark3DResultsFactory()
+    mock_data = np.array(
+        [
+            [0, 1000, 1000],
+            [1e-9, 1010, 900],
+            [2e-9, 1020, 500],
+        ]
+    )
+    mocker.patch("numpy.loadtxt", return_value=mock_data)
+
+    results = factory._from_csv(Path("dummy.csv"), delimiter=" ")
+
+    assert [r.id for r in results] == [1, 2]
+    assert all(r.e_acc is None and r.p_rms is None for r in results)
+    assert np.array_equal(results[1].population, [1000, 900, 500])

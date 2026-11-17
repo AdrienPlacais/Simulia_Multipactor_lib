@@ -1,5 +1,7 @@
 """Define tests for the ABC :class:`.SimulationResults`."""
 
+from unittest.mock import MagicMock
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -106,3 +108,46 @@ def test_to_pandas_with_float() -> None:
     )
     with pytest.raises(ValueError):
         result.to_pandas("e_acc")
+
+
+def test_no_e_acc_no_p_rms() -> None:
+    """Check that an object without drive level can be created."""
+    time = np.array([0, 1, 2, 3])
+    population = np.array([1000, 1200, 1500, 10000])
+    result = SimulationResults(id=1, time=time, population=population)
+    assert result.e_acc is None
+    assert result.p_rms is None
+    assert str(result) == "Sim. #1"
+    assert repr(result) == "SimulationResults(id=1)"
+
+
+def test_warning_when_both_e_acc_and_p_rms(mocker: MagicMock) -> None:
+    """Check that providing both quantities raises a warning."""
+    mock_warning = mocker.patch("logging.warning")
+    SimulationResults(
+        id=1, time=np.zeros(2), population=np.zeros(2), e_acc=5.0, p_rms=2.0
+    )
+    mock_warning.assert_called_once()
+
+
+def test_no_warning_with_a_single_quantity(mocker: MagicMock) -> None:
+    """Check that no warning is raised when only one is provided."""
+    mock_warning = mocker.patch("logging.warning")
+    SimulationResults(
+        id=1, time=np.zeros(2), population=np.zeros(2), p_rms=2.0
+    )
+    SimulationResults(
+        id=2, time=np.zeros(2), population=np.zeros(2), e_acc=5.0
+    )
+    mock_warning.assert_not_called()
+
+
+def test_str_and_repr_prefer_p_rms() -> None:
+    """Check that power is displayed first, with ``e_acc`` as backup."""
+    kwargs = {"time": np.zeros(2), "population": np.zeros(2)}
+    power = SimulationResults(id=1, p_rms=2.0, **kwargs)
+    field = SimulationResults(id=2, e_acc=5.0, **kwargs)
+    assert "P_rms = 2.00e+00 W" in str(power)
+    assert repr(power) == "SimulationResults(id=1, p_rms=2.00e+00)"
+    assert "E_acc = 5.00e+00 V/m" in str(field)
+    assert repr(field) == "SimulationResults(id=2, e_acc=5.00e+00)"

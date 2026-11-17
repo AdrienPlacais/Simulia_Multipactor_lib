@@ -8,10 +8,6 @@
 .. todo::
     Evaluate expressions such as ``param2 = 2 * param1``
 
-.. todo::
-    Allow to have P_rms instead of E_acc; E_acc does not make a lot of sense in
-    a lot of cases.
-
 """
 
 import logging
@@ -38,7 +34,14 @@ from simultipac.simulation_results.simulation_results import (
     SimulationResults,
     SimulationResultsFactory,
 )
-from simultipac.types import PARTICLE_0D_t, PARTICLE_3D_t
+from simultipac.types import (
+    E_ACC_TO_V_PER_M,
+    P_RMS_TO_W,
+    E_ACC_UNIT_t,
+    P_RMS_UNIT_t,
+    PARTICLE_0D_t,
+    PARTICLE_3D_t,
+)
 
 
 class MissingFileError(Exception):
@@ -51,9 +54,9 @@ class CSTResults(SimulationResults):
     def __init__(
         self,
         id: int,
-        e_acc: float,
         time: np.ndarray,
         population: np.ndarray,
+        e_acc: float | None = None,
         p_rms: float | None = None,
         plotter: Plotter | None = None,
         trim_trailing: bool = False,
@@ -69,14 +72,16 @@ class CSTResults(SimulationResults):
         ----------
         id :
             Unique simulation identifier.
-        e_acc :
-            Accelerating field in :unit:`V/m`.
         time :
             Time in :unit:`ns`.
         population :
             Evolution of population with time. Same shape as ``time``.
+        e_acc :
+            Accelerating field in :unit:`V/m`. Generally, only one of ``e_acc``
+            and ``p_rms`` is provided.
         p_rms :
-            RMS power in :unit:`W`.
+            RMS power in :unit:`W`. Takes precedence over ``e_acc`` to sort
+            and display results.
         plotter :
             An object allowing to plot data.
         trim_trailing :
@@ -321,7 +326,18 @@ class CSTResultsFactory(SimulationResultsFactory):
             "accelerating_field",
         ),
         e_acc_file_mv_m: str = "E_acc in MV per m.txt",
+        e_acc_unit: E_ACC_UNIT_t = "V/m",
+        e_acc_file_unit: E_ACC_UNIT_t = "MV/m",
         p_rms_file: str | None = None,
+        p_rms_parameter: Sequence[str] = (
+            "P",
+            "power",
+            "P_rms",
+            "p_rms",
+            "rms_power",
+        ),
+        p_rms_unit: P_RMS_UNIT_t = "W",
+        p_rms_file_unit: P_RMS_UNIT_t = "W",
         stl_path: Path | str | None = None,
         stl_alpha: float | None = None,
         **kwargs,
@@ -346,9 +362,22 @@ class CSTResultsFactory(SimulationResultsFactory):
             Name of the file where the value of the accelerating field in
             :unit:`MV/m` is written. This is a fallback, we prefer getting
             accelerating field from the :file:`Parameters.txt` file.
-        e_acc_file :
-            Name of the file where the value of the RMS power in W is written.
-            If not provided, we do not load RMS power.
+        e_acc_unit :
+            Unit of the accelerating field in :file:`Parameters.txt`.
+        e_acc_file_unit :
+            Unit of the accelerating field in the ``e_acc_file_mv_m`` file.
+            Change it if the file name does not reflect its actual content.
+        p_rms_file :
+            Name of the file where the value of the RMS power. If not provided,
+            we do not look for a file.
+        p_rms_parameter :
+            The possible names of the RMS power in :file:`Parameters.txt`; we
+            try all of them sequentially, and resort to ``p_rms_file`` if
+            none was found.
+        p_rms_unit :
+            Unit of the RMS power in :file:`Parameters.txt`.
+        p_rms_file_unit :
+            Unit of the RMS power in the ``p_rms_file`` file.
         stl_path :
             Path to the `STL` file describing the geometry. Used by
             :class:`.ParticleMonitor` to compute emission and collision angles,
@@ -361,8 +390,13 @@ class CSTResultsFactory(SimulationResultsFactory):
             plotter = DefaultPlotter()
         self._e_acc_parameter = e_acc_parameter
         self._e_acc_file_mv_m = e_acc_file_mv_m
+        self._e_acc_unit = e_acc_unit
+        self._e_acc_file_unit = e_acc_file_unit
         self._p_rms_file = p_rms_file
-        return super().__init__(
+        self._p_rms_parameter = p_rms_parameter
+        self._p_rms_unit = p_rms_unit
+        self._p_rms_file_unit = p_rms_file_unit
+        super().__init__(
             *args,
             plotter=plotter,
             freq_ghz=freq_ghz,
@@ -448,13 +482,9 @@ class CSTResultsFactory(SimulationResultsFactory):
                 )
 
         e_acc = self._pop_e_acc(raw_results, folderpath)
+        p_rms = self._pop_p_rms(raw_results, folderpath)
         part_time = raw_results.pop(no_extension(self._time_population_file))
         time, population = part_time[:, 0], part_time[:, 1]
-        p_rms = (
-            raw_results.pop(no_extension(self._p_rms_file))
-            if self._p_rms_file
-            else None
-        )
 
         particle_monitor = None
         if folder_particle_monitor is not None:
@@ -478,38 +508,72 @@ class CSTResultsFactory(SimulationResultsFactory):
         )
         return results
 
-    def _pop_e_acc(self, raw_results: dict[str, Any], folder: Path) -> float:
-        """Pop the value of the accelerating field from ``raw_results.``
+    def _pop_e_acc(
+        self, raw_results: dict[str, Any], folder: Path
+    ) -> float | None:
+        """Pop the accelerating field in V/m, ``None`` if not found."""
+        return self._pop_quantity(
+            raw_results,
+            folder,
+            names=self._e_acc_parameter,
+            parameter_factor=E_ACC_TO_V_PER_M[self._e_acc_unit],
+            filename=self._e_acc_file_mv_m,
+            file_factor=E_ACC_TO_V_PER_M[self._e_acc_file_unit],
+        )
 
-        First, we try to get it from the :file:`Parameters.txt` under the names
-        listed in ``self._e_acc_parameter``. If was not found, we look into the
-        ``self._e_acc_file_mv_m`` file.
+    def _pop_p_rms(
+        self, raw_results: dict[str, Any], folder: Path
+    ) -> float | None:
+        """Pop the RMS power in W, ``None`` if not found."""
+        return self._pop_quantity(
+            raw_results,
+            folder,
+            names=self._p_rms_parameter,
+            parameter_factor=P_RMS_TO_W[self._p_rms_unit],
+            filename=self._p_rms_file,
+            file_factor=P_RMS_TO_W[self._p_rms_file_unit],
+        )
+
+    def _pop_quantity(
+        self,
+        raw_results: dict[str, Any],
+        folder: Path,
+        names: Sequence[str],
+        parameter_factor: float,
+        filename: str | None,
+        file_factor: float,
+    ) -> float | None:
+        """Pop a value from :file:`Parameters.txt`, or else from a file.
+
+        Expressions (strings) in :file:`Parameters.txt` are skipped with a
+        warning.
 
         """
         parameters = raw_results[no_extension(self._parameters_file)]
-        for name in self._e_acc_parameter:
-            e_acc = parameters.pop(name, None)
-            if e_acc is not None:
-                logging.debug(
-                    f"{folder}: took accelerating field from {name} in "
-                    f"{self._parameters_file}."
+        for name in names:
+            value = parameters.pop(name, None)
+            if value is None:
+                continue
+            if isinstance(value, str):
+                logging.warning(
+                    f"{folder}: {name} in {self._parameters_file} is an "
+                    f"expression ({value}); expressions are not supported. "
+                    "Store its value in a separate file instead."
                 )
-                return e_acc
+                continue
+            logging.debug(
+                f"{folder}: took {name} from {self._parameters_file}."
+            )
+            return value * parameter_factor
 
-        if self._e_acc_file_mv_m is not None:
-            e_acc = raw_results.pop(no_extension(self._e_acc_file_mv_m), None)
-            if e_acc is not None:
-                logging.debug(
-                    f"{folder}: took accelerating field from "
-                    "{self._e_acc_file_mv_m} file. Multiplied it by 1e6."
-                )
-                return e_acc * 1e-6
+        if filename is not None:
+            value = raw_results.pop(no_extension(filename), None)
+            if value is not None:
+                logging.debug(f"{folder}: took value from {filename}.")
+                return value * file_factor
 
-        raise ValueError(
-            f"Could not find accelerating field in {folder}. Tried to look for"
-            f" {self._e_acc_parameter = } key in Parameters.txt, and then for "
-            f"a file named {self._e_acc_file_mv_m = }"
-        )
+        logging.debug(f"{folder}: found none of {tuple(names)}.")
+        return None
 
     def from_simulation_folders(
         self,

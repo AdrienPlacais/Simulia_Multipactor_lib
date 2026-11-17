@@ -312,7 +312,9 @@ def _indexes_for_fit(
 
     start_time = final_time - fitting_range
     if start_time < 0.0:
-        logging.warning("Fitting range is larger than simulation time")
+        logging.warning(
+            f"{fitting_range = } is larger than simulation time ({final_time})"
+        )
     idx_start = np.argmin(np.abs(time - start_time))
 
     if not isinstance(idx_start, int):

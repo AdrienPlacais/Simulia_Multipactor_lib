@@ -29,3 +29,13 @@ PARTICLE_3D = ("trajectory", "collision_distribution", "emission_distribution")
 PARTICLE_3D_t = Literal[
     "trajectory", "collision_distribution", "emission_distribution"
 ]
+
+#: Conversion factors from the accepted accelerating field units to V/m.
+E_ACC_TO_V_PER_M = {"V/m": 1.0, "kV/m": 1e3, "MV/m": 1e6}
+#: Accepted units for the accelerating field.
+E_ACC_UNIT_t = Literal["V/m", "kV/m", "MV/m"]
+
+#: Conversion factors from the accepted power units to W.
+P_RMS_TO_W = {"W": 1.0, "kW": 1e3, "MW": 1e6}
+#: Accepted units for the RMS power.
+P_RMS_UNIT_t = Literal["W", "kW", "MW"]

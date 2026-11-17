@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD024 -->
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -8,8 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 # [2.1.x]
 
 - Implement new functionalities:
-  - Instantiate `SimulationResult` with power instead of accelerating field.
   - Surface distribution of TEEY.
+
+## [2.1.1] -- 2026-11-17
+
+### Added
+
+- More explicit warning when fitting range exceeds simulation time.
+- Possibility to choose unit of accelerating field. `Parameters.txt` do not
+  always hold expected units.
+- Instantiate `SimulationResult` with power instead of accelerating field.
 
 ## [2.1.0] -- 2025-10-24
 
@@ -33,20 +43,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- The package is available on PyPI and can be downloaded with: `pip install simultipac`.
+- The package is available on PyPI and can be downloaded with: `pip install
+simultipac`.
 
 ## [2.0.1] -- 2025-04-14
 
 ### Added
 
-- `SimulationResults` and `ParticleMonitor` can be initialized with the `load_first_n_particles`.
-  Will only load the first `load_first_n_particles` in `folder_particle_monitor` to speed up the script for debug purposes.
+- `SimulationResults` and `ParticleMonitor` can be initialized with the
+  `load_first_n_particles`. Will only load the first `load_first_n_particles` in
+  `folder_particle_monitor` to speed up the script for debug purposes.
 
 ### Changed
 
 - UI is more natural. In particular:
-  - Simulation results are stored in appropriate `SimulationResults`; a bunch of `SimulationResults` are stored to `SimulationsResults` objects.
-  - Factories allow easy creation of these objects.
+  - Simulation results are stored in appropriate `SimulationResults`; a bunch of
+    `SimulationResults` are stored to `SimulationsResults` objects.
+- Factories allow easy creation of these objects.
   - They have `plot`, `hist` and `fit_alpha` methods.
   - Same functionalities can be achieved with way less lines of code.
 - Use `logging` module instead of color printed messages.

@@ -2,8 +2,9 @@
 
 import logging
 from abc import ABC
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Literal
+from typing import Any, Literal
 
 import numpy as np
 import pandas as pd
@@ -28,9 +29,9 @@ class SimulationResults(ABC):
     def __init__(
         self,
         id: int,
-        e_acc: float,
         time: np.ndarray,
         population: np.ndarray,
+        e_acc: float | None = None,
         p_rms: float | None = None,
         plotter: Plotter | None = None,
         trim_trailing: bool = False,
@@ -44,14 +45,16 @@ class SimulationResults(ABC):
         ----------
         id :
             Unique simulation identifier.
-        e_acc :
-            Accelerating field in :unit:`V/m`.
         time :
             Time in :unit:`ns`.
         population :
             Evolution of population with time. Same shape as ``time``.
+        e_acc :
+            Accelerating field in :unit:`V/m`. Generally, only one of ``e_acc``
+            and ``p_rms`` is provided.
         p_rms :
-            RMS power in :unit:`W`.
+            RMS power in :unit:`W`. Takes precedence over ``e_acc`` to sort
+            and display results.
         plotter :
             An object allowing to plot data.
         trim_trailing :
@@ -64,6 +67,11 @@ class SimulationResults(ABC):
             magnetic field, number of PIC cells, simulation flags...
 
         """
+        if e_acc is not None and p_rms is not None:
+            logging.warning(
+                f"Sim. #{id}: both e_acc and p_rms were provided. p_rms takes "
+                "precedence to sort and display the results."
+            )
         self.id = id
         self.e_acc = e_acc
         self.p_rms = p_rms
@@ -89,7 +97,16 @@ class SimulationResults(ABC):
 
     def __str__(self) -> str:
         """Print info on current simulation."""
-        info = [f"Sim. #{self.id}", f"E_acc = {self.e_acc:.2e} V/m"]
+        info = [f"Sim. #{self.id}"]
+        if self.p_rms is not None:
+            info.append(f"P_rms = {self.p_rms:.2e} W")
+        elif self.e_acc is not None:
+            info.append(f"E_acc = {self.e_acc:.2e} V/m")
+
+        if len(self._exp_growth_parameters) == 0:
+            return ", ".join(info)
+        info.append(r"$\alpha = $" + f"{self.alpha:.3f} ns^-1")
+        return ", ".join(info)
         if len(self._exp_growth_parameters) == 0:
             return ", ".join(info)
         info.append(r"$\alpha = $" + f"{self.alpha:.3f} ns^-1")
@@ -97,7 +114,11 @@ class SimulationResults(ABC):
 
     def __repr__(self) -> str:
         """Print minimal info on current simulation."""
-        return f"SimulationResults(id={self.id}, e_acc={self.e_acc:.2e})"
+        if self.p_rms is not None:
+            return f"SimulationResults(id={self.id}, p_rms={self.p_rms:.2e})"
+        if self.e_acc is not None:
+            return f"SimulationResults(id={self.id}, e_acc={self.e_acc:.2e})"
+        return f"SimulationResults(id={self.id})"
 
     def _check_consistent_shapes(self) -> None:
         """Raise an error if ``time`` and ``population`` have diff shapes."""
