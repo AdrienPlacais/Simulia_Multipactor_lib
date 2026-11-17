@@ -728,9 +728,6 @@ class SimulationsResultsFactory:
                 filepath is not None
             ), "You must provide the path to the SPARK3D file results."
             assert filepath.is_file(), f"{filepath = } must exist"
-            assert isinstance(
-                e_acc, np.ndarray
-            ), f"You must provide an array of accelerating fields. You gave {e_acc = }"
             factory = Spark3DResultsFactory(
                 plotter=plotter, freq_ghz=self._freq_ghz, **kwargs
             )

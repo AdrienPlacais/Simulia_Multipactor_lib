@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import numpy as np
+from numpy._typing import NDArray
 
 from simultipac.plotter.plotter import Plotter
 from simultipac.simulation_results.simulation_results import (
@@ -92,7 +93,7 @@ class Spark3DResultsFactory(SimulationResultsFactory):
     def from_file(
         self,
         filepath: Path,
-        e_acc: np.ndarray,
+        e_acc: NDArray | None = None,
         delimiter: str | None = None,
         **kwargs,
     ) -> list[Spark3DResults]:
@@ -125,7 +126,7 @@ class Spark3DResultsFactory(SimulationResultsFactory):
     def _from_txt(
         self,
         filepath: Path,
-        e_acc: np.ndarray,
+        e_acc: NDArray | None = None,
         delimiter: str | None = "\t",
         **kwargs,
     ) -> list[Spark3DResults]:
@@ -157,7 +158,8 @@ class Spark3DResultsFactory(SimulationResultsFactory):
         filepath : Path
             Path to the file to load.
         e_acc : np.ndarray
-            Accelerating field values in :unit:`V/m`.
+            Accelerating field values in :unit:`V/m`. If not given, we use the
+            powers found in the file.
         delimiter : str, optional
             Delimiter between columns.
 
@@ -169,7 +171,14 @@ class Spark3DResultsFactory(SimulationResultsFactory):
 
         results: list[Spark3DResults] = []
 
-        for i, this_e_acc in enumerate(e_acc, start=1):
+        if e_acc is None:
+            simu_ids = np.unique(raw_data[:, 0]).astype(int).tolist()
+            _e_acc = [None] * len(simu_ids)
+        else:
+            simu_ids = list(range(1, len(e_acc) + 1))
+            _e_acc = e_acc
+
+        for i, this_e_acc in zip(simu_ids, _e_acc):
             idx_lines = np.where(raw_data[:, 0] == float(i))[0]
             power = raw_data[idx_lines, 1][0]
             time = raw_data[idx_lines, 2]
@@ -192,7 +201,7 @@ class Spark3DResultsFactory(SimulationResultsFactory):
     def _from_csv(
         self,
         filepath: Path,
-        e_acc: np.ndarray,
+        e_acc: NDArray | None = None,
         delimiter: str | None = " ",
         **kwargs,
     ) -> list[Spark3DResults]:
@@ -236,7 +245,8 @@ class Spark3DResultsFactory(SimulationResultsFactory):
 
         results: list[Spark3DResults] = []
 
-        for idx_col, this_e_acc in enumerate(e_acc, start=1):
+        fields = [None] * (raw_data.shape[1] - 1) if e_acc is None else e_acc
+        for idx_col, this_e_acc in enumerate(fields, start=1):
             population = raw_data[:, idx_col]
             results.append(
                 Spark3DResults(
