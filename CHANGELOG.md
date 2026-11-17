@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement new functionalities:
   - Surface distribution of TEEY.
 
+## [2.1.2]
+
+### Added
+
+- Use the keyword `aggregate=True` on `SimulationsResults.plot` with 0D data,
+  when several simulations with the same parameters were performed, to show
+  medians and standard deviations. Typical use case: several simulations were
+  performed for better representativeness, and you want to plot exponential
+  growth factor vs power or accelerating field.
+
 ## [2.1.1] -- 2026-11-17
 
 ### Added

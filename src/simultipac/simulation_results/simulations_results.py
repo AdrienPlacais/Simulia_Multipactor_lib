@@ -118,9 +118,10 @@ class SimulationsResults:
         grid: bool = True,
         axes: Any | None = None,
         sort_by_parameter: Collection[str] | None = None,
+        aggregate: bool = False,
         **kwargs,
     ) -> Any:
-        """Recursively call :meth:`.SimulationResults.plot`.
+        r"""Recursively call :meth:`.SimulationResults.plot`.
 
         .. note::
             0D ``x`` vs ``y`` not implemented yet.
@@ -152,6 +153,11 @@ class SimulationsResults:
         sort_by_parameter :
             If provided, results are grouped by the given parameters before
             plotting.
+        aggregate :
+            Whether :class:`.SimulationResults`\s with the same ``x`` and the
+            same parameters should be merged. In the latter scenario, the
+            marker represents the median, the error bar the standard deviation.
+            Only of 0D results.
         kwargs :
             Other keyword arguments passed to the :meth:`.Plotter.plot` method.
 
@@ -181,6 +187,7 @@ class SimulationsResults:
                     axes=axes,
                     to_plot=to_plot,
                     sort_by_parameter=None,
+                    aggregate=aggregate,
                     color=None,
                     **kwargs,
                 )
@@ -197,6 +204,7 @@ class SimulationsResults:
                 grid=grid,
                 axes=axes,
                 to_plot=to_plot,
+                aggregate=aggregate,
                 **kwargs,
             )
 
@@ -255,9 +263,10 @@ class SimulationsResults:
         axes: Any | None = None,
         to_plot: Sequence[SimulationResults] | None = None,
         color: Any = "auto",
+        aggregate: bool = False,
         **kwargs,
     ) -> Any:
-        """Concatenate and plot 0D data from ``results``.
+        r"""Concatenate and plot 0D data from ``results``.
 
         Parameters
         ----------
@@ -278,6 +287,10 @@ class SimulationsResults:
         color :
             Color for the plot. If "auto", we use the
             :attr:`.SimulationsResults._color` attribute.
+        aggregate :
+            Whether :class:`.SimulationResults`\s with the same ``x`` and the
+            same parameters should be merged. In the latter scenario, the
+            marker represents the median, the error bar the standard deviation.
         kwargs :
             Other keyword arguments passed to the :meth:`.Plotter.plot` method.
 
@@ -287,7 +300,11 @@ class SimulationsResults:
             Objects created by the :meth:`.Plotter.plot`.
 
         """
-        data = self._to_pandas(x, y, results=to_plot)
+        if aggregate:
+            data = self._to_pandas_aggregated(x, y, results=to_plot)
+            kwargs["yerr"] = data[f"{y}_std"].to_numpy()
+        else:
+            data = self._to_pandas(x, y, results=to_plot)
 
         if label == "auto":
             n_simulations = f"{len(self)} simulations"
@@ -372,6 +389,49 @@ class SimulationsResults:
             raise ValueError(
                 f"Could not get a data, creating malformed dataframe.\n{e}"
             )
+
+    def _to_pandas_aggregated(
+        self,
+        x: DATA_0D_t,
+        y: DATA_0D_t,
+        results: Sequence[SimulationResults] | None = None,
+    ) -> pd.DataFrame:
+        """Give median and std of ``y`` for identical ``x`` and parameters.
+
+        Parameters
+        ----------
+        x, y :
+            Name of the 0D properties.
+        results :
+            If given, only these :class:`.SimulationResults` are used.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Columns are ``x``, ``y`` (median) and ``f"{y}_std"`` (sample
+            standard deviation, ``NaN`` for a single simulation).
+
+        """
+        if results is None:
+            results = self.to_list
+        data = pd.DataFrame(
+            {
+                x: [getattr(r, x) for r in results],
+                y: [getattr(r, y) for r in results],
+                "_parameters": [
+                    tuple(sorted(r.parameters.items())) for r in results
+                ],
+            }
+        )
+        stats = (
+            data.groupby([x, "_parameters"], sort=False)[y]
+            .agg(["median", "std"])
+            .reset_index()
+            .sort_values(x, kind="stable", ignore_index=True)
+        )
+        return stats.drop(columns="_parameters").rename(
+            columns={"median": y, "std": f"{y}_std"}
+        )
 
     def fit_alpha(
         self,
