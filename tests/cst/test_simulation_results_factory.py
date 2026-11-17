@@ -156,6 +156,33 @@ def test_from_simulation_folder(mocker: MagicMock, tmp_path: Path) -> None:
     assert np.array_equal(result.population, [1000, 900, 500])
 
 
+def test_from_simulation_folders_skips_incomplete(
+    mocker: MagicMock, tmp_path: Path
+) -> None:
+    """Test that incomplete folders are skipped, hidden ones silently."""
+    for name in ("0101-0000001", "0101-0000002", ".hidden"):
+        (tmp_path / name).mkdir()
+
+    def fake_from_simulation_folder(folder: Path, **kwargs) -> str:
+        if folder.name == "0101-0000002":
+            raise MissingFileError("missing")
+        return folder.name
+
+    factory = CSTResultsFactory()
+    mock_single = mocker.patch.object(
+        factory,
+        "from_simulation_folder",
+        side_effect=fake_from_simulation_folder,
+    )
+    mock_warning = mocker.patch("logging.warning")
+
+    returned = factory.from_simulation_folders(tmp_path)
+
+    assert returned == ["0101-0000001"]
+    assert mock_single.call_count == 2
+    mock_warning.assert_called_once()
+
+
 def test_get_e_acc_expression_warns_and_falls_back(mocker: MagicMock) -> None:
     """Test that an unevaluated expression is skipped with a warning."""
     factory = CSTResultsFactory(

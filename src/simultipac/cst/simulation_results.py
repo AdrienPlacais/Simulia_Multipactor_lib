@@ -539,14 +539,23 @@ class CSTResultsFactory(SimulationResultsFactory):
     ) -> list[CSTResults]:
         """Load all :file:`mmdd-xxxxxxx` folders in ``master_folder``.
 
+        Folders missing a mandatory file are skipped with a warning. Entries
+        whose name starts with a dot are skipped silently.
+
         Note
         ----
         Loading of :class:`.ParticleMonitor` for multiple simulations is
         currently not supported.
 
         """
-        folders = list(master_folder.iterdir())
-        return [
-            self.from_simulation_folder(folder, delimiter=delimiter)
-            for folder in folders
-        ]
+        results: list[CSTResults] = []
+        for folder in master_folder.iterdir():
+            if folder.name.startswith("."):
+                continue
+            try:
+                results.append(
+                    self.from_simulation_folder(folder, delimiter=delimiter)
+                )
+            except MissingFileError as e:
+                logging.warning(f"Skipping {folder}: {e}")
+        return results
