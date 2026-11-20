@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement new functionalities:
   - Surface distribution of TEEY.
 
-## [2.1.2]
+## [2.1.2] -- 2026-11-20
 
 ### Added
 
