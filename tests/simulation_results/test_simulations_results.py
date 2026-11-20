@@ -370,3 +370,38 @@ def test_p_rms_takes_precedence_over_e_acc_in_sorting() -> None:
         id=2, e_acc=2.0, p_rms=10.0, time=time, population=time
     )
     assert SimulationsResults([r_1, r_2]).to_list == [r_2, r_1]
+
+
+def test_to_pandas_aggregated() -> None:
+    """Test median/std over simulations sharing the same parameters."""
+    time = np.linspace(0, 10, 11)
+    specs = [
+        (0, 1.0, 1.0, {"B": 0}),
+        (1, 1.0, 3.0, {"B": 0}),
+        (2, 1.0, 5.0, {"B": 0}),
+        (3, 2.0, 5.0, {"B": 0}),
+        (4, 1.0, 7.0, {"B": 1}),
+    ]
+    results = []
+    for id, p_rms, alpha, parameters in specs:
+        result = SimulationResults(
+            id=id,
+            p_rms=p_rms,
+            time=time,
+            population=time,
+            parameters=parameters,
+        )
+        result.alpha = alpha
+        results.append(result)
+
+    returned = SimulationsResults(results)._to_pandas_aggregated(
+        "p_rms", "alpha"
+    )
+    expected = pd.DataFrame(
+        {
+            "p_rms": [1.0, 1.0, 2.0],
+            "alpha": [3.0, 7.0, 5.0],
+            "alpha_std": [2.0, np.nan, np.nan],
+        }
+    )
+    pd.testing.assert_frame_equal(expected, returned)

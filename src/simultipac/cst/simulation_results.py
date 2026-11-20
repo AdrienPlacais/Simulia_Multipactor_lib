@@ -203,49 +203,6 @@ class CSTResults(SimulationResults):
         """Plot the stored mesh."""
         return self._particle_monitor.plot_mesh(*args, **kwargs)
 
-    def plot_trajectories(
-        self,
-        emission_color: str | None = None,
-        collision_color: str | None = None,
-        lw: int = 7,
-        r: int = 8,
-        plotter: Plotter | None = None,
-        filter: FILTER_KEY | FILTER_FUNC | None = None,
-        **kwargs,
-    ) -> Any:
-        """Plot trajectories in 3D.
-
-        Parameters
-        ----------
-        emission_color :
-            If provided, the first known position is colored with this color.
-        collision_color :
-            If provided, the last known position is colored with this color.
-        collision_point :
-            If provided and ``collision_color`` is not ``None``, we plot this
-            point instead of the last of ``points``. This is useful when the
-            extrapolated time is large, and actuel collision point may differ
-            significantly from last position points.
-        lw :
-            Trajectory line width.
-        r :
-            Size of the emission/collision points.
-        plotter :
-            An object allowing to plot data.
-        filter :
-            To select the particles to be plotted.
-
-        """
-        return self._particle_monitor.plot_trajectories(
-            emission_color=emission_color,
-            collision_color=collision_color,
-            lw=lw,
-            r=r,
-            plotter=plotter,
-            filter=filter,
-            **kwargs,
-        )
-
     def fit_alpha(
         self,
         fitting_periods: int,
@@ -582,14 +539,23 @@ class CSTResultsFactory(SimulationResultsFactory):
     ) -> list[CSTResults]:
         """Load all :file:`mmdd-xxxxxxx` folders in ``master_folder``.
 
+        Folders missing a mandatory file are skipped with a warning. Entries
+        whose name starts with a dot are skipped silently.
+
         Note
         ----
         Loading of :class:`.ParticleMonitor` for multiple simulations is
         currently not supported.
 
         """
-        folders = list(master_folder.iterdir())
-        return [
-            self.from_simulation_folder(folder, delimiter=delimiter)
-            for folder in folders
-        ]
+        results: list[CSTResults] = []
+        for folder in master_folder.iterdir():
+            if folder.name.startswith("."):
+                continue
+            try:
+                results.append(
+                    self.from_simulation_folder(folder, delimiter=delimiter)
+                )
+            except MissingFileError as e:
+                logging.warning(f"Skipping {folder}: {e}")
+        return results

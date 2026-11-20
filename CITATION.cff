@@ -3,8 +3,8 @@ message: If you use this software, please cite it as below.
 title: Simulia Multipactor Library
 abstract: A library dedicated to studying multipactor from Simulia suite simulation
   tools.
-version: 2.1.1
-date-released: '2026-11-17'
+version: 2.1.2
+date-released: '2026-11-20'
 authors:
 - family-names: Plaçais
   given-names: Adrien
